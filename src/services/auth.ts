@@ -17,6 +17,13 @@ export const auth = {
     authUrl.searchParams.set('response_type', 'code')
     authUrl.searchParams.set('scope', 'tasks:read tasks:write')
 
+    // 调试信息
+    console.log('OAuth Config:', {
+      client_id: CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      auth_url: authUrl.toString(),
+    })
+
     return new Promise((resolve, reject) => {
       chrome.identity.launchWebAuthFlow(
         {

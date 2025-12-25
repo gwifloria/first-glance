@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { Spin, Empty, Alert, Button, Select, Space } from 'antd'
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons'
+import { useState, useMemo, useEffect } from 'react'
+import { Spin, Empty, Alert, Input } from 'antd'
 import { TaskItem } from './TaskItem'
 import { TaskEditor } from './TaskEditor'
 import type { Task, Project } from '@/types'
@@ -10,6 +9,7 @@ interface TaskListProps {
   projects: Project[]
   loading: boolean
   error: string | null
+  filter: string
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onUpdate: (taskId: string, updates: Partial<Task>) => void
@@ -17,41 +17,226 @@ interface TaskListProps {
   onRefresh: () => void
 }
 
+interface TaskGroup {
+  id: string
+  title: string
+  tasks: Task[]
+}
+
 export function TaskList({
   tasks,
   projects,
   loading,
   error,
+  filter,
   onComplete,
   onDelete,
   onUpdate,
   onCreate,
-  onRefresh,
 }: TaskListProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    null
-  )
+  const [quickAddValue, setQuickAddValue] = useState('')
+  const [currentTime, setCurrentTime] = useState(new Date())
 
-  const filteredTasks = selectedProjectId
-    ? tasks.filter((t) => t.projectId === selectedProjectId)
-    : tasks
+  // 更新时间
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
-  // 按优先级和日期排序
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-    // 先按优先级排序（高优先级在前）
-    if (b.priority !== a.priority) {
-      return b.priority - a.priority
+  // 分组折叠状态
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('taskGroupCollapsed')
+      return saved ? new Set(JSON.parse(saved)) : new Set()
+    } catch {
+      return new Set()
     }
-    // 再按截止日期排序
-    if (a.dueDate && b.dueDate) {
-      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-    }
-    if (a.dueDate) return -1
-    if (b.dueDate) return 1
-    return 0
   })
+
+  const toggleGroup = (groupId: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev)
+      if (next.has(groupId)) {
+        next.delete(groupId)
+      } else {
+        next.add(groupId)
+      }
+      localStorage.setItem('taskGroupCollapsed', JSON.stringify([...next]))
+      return next
+    })
+  }
+
+  // 获取日期字符串 (YYYY-MM-DD 格式)，避免时区问题
+  const getDateStr = (date: Date) => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+  }
+
+  // 从任务的 dueDate 提取日期字符串 (只取 YYYY-MM-DD 部分)
+  const getTaskDateStr = (dueDate: string) => {
+    return dueDate.slice(0, 10)
+  }
+
+  // 根据 filter 过滤任务
+  const filteredTasks = useMemo(() => {
+    const now = new Date()
+    const todayStr = getDateStr(now)
+
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowStr = getDateStr(tomorrow)
+
+    const nextWeek = new Date(now)
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    const nextWeekStr = getDateStr(nextWeek)
+
+    if (filter.startsWith('project:')) {
+      const projectId = filter.replace('project:', '')
+      return tasks.filter((t) => t.projectId === projectId)
+    }
+
+    switch (filter) {
+      case 'today':
+        return tasks.filter((t) => {
+          if (!t.dueDate) return false
+          const taskDateStr = getTaskDateStr(t.dueDate)
+          return taskDateStr === todayStr
+        })
+      case 'tomorrow':
+        return tasks.filter((t) => {
+          if (!t.dueDate) return false
+          const taskDateStr = getTaskDateStr(t.dueDate)
+          return taskDateStr === tomorrowStr
+        })
+      case 'week':
+        return tasks.filter((t) => {
+          if (!t.dueDate) return false
+          const taskDateStr = getTaskDateStr(t.dueDate)
+          return taskDateStr >= todayStr && taskDateStr < nextWeekStr
+        })
+      case 'overdue':
+        return tasks.filter((t) => {
+          if (!t.dueDate) return false
+          const taskDateStr = getTaskDateStr(t.dueDate)
+          return taskDateStr < todayStr
+        })
+      case 'nodate':
+        return tasks.filter((t) => !t.dueDate)
+      default:
+        return tasks
+    }
+  }, [tasks, filter])
+
+  // 按日期分组
+  const groupedTasks = useMemo<TaskGroup[]>(() => {
+    const now = new Date()
+    const todayStr = getDateStr(now)
+
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowStr = getDateStr(tomorrow)
+
+    const dayAfter = new Date(now)
+    dayAfter.setDate(dayAfter.getDate() + 2)
+    const dayAfterStr = getDateStr(dayAfter)
+
+    const groups: TaskGroup[] = []
+
+    // 置顶任务 (sortOrder 较大的表示置顶)
+    const pinned = filteredTasks.filter((t) => t.sortOrder > 0)
+    if (pinned.length > 0) {
+      groups.push({
+        id: 'pinned',
+        title: '置顶',
+        tasks: pinned.sort((a, b) => b.sortOrder - a.sortOrder),
+      })
+    }
+
+    // 非置顶任务
+    const unpinned = filteredTasks.filter((t) => t.sortOrder <= 0)
+
+    // 已过期
+    const overdue = unpinned.filter((t) => {
+      if (!t.dueDate) return false
+      const taskDateStr = getTaskDateStr(t.dueDate)
+      return taskDateStr < todayStr
+    })
+    if (overdue.length > 0) {
+      groups.push({
+        id: 'overdue',
+        title: '已过期',
+        tasks: overdue,
+      })
+    }
+
+    // 今天
+    const todayTasks = unpinned.filter((t) => {
+      if (!t.dueDate) return false
+      const taskDateStr = getTaskDateStr(t.dueDate)
+      return taskDateStr === todayStr
+    })
+    if (todayTasks.length > 0) {
+      groups.push({
+        id: 'today',
+        title: '今天',
+        tasks: todayTasks,
+      })
+    }
+
+    // 明天
+    const tomorrowTasks = unpinned.filter((t) => {
+      if (!t.dueDate) return false
+      const taskDateStr = getTaskDateStr(t.dueDate)
+      return taskDateStr === tomorrowStr
+    })
+    if (tomorrowTasks.length > 0) {
+      groups.push({
+        id: 'tomorrow',
+        title: '明天',
+        tasks: tomorrowTasks,
+      })
+    }
+
+    // 之后
+    const later = unpinned.filter((t) => {
+      if (!t.dueDate) return false
+      const taskDateStr = getTaskDateStr(t.dueDate)
+      return taskDateStr >= dayAfterStr
+    })
+    if (later.length > 0) {
+      groups.push({
+        id: 'later',
+        title: '之后',
+        tasks: later,
+      })
+    }
+
+    // 无日期
+    const noDate = unpinned.filter((t) => !t.dueDate)
+    if (noDate.length > 0) {
+      groups.push({
+        id: 'nodate',
+        title: '无日期',
+        tasks: noDate,
+      })
+    }
+
+    return groups
+  }, [filteredTasks])
+
+  // 对每组内的任务排序（按优先级）
+  const sortedGroups = useMemo(() => {
+    return groupedTasks.map((group) => ({
+      ...group,
+      tasks: [...group.tasks].sort((a, b) => b.priority - a.priority),
+    }))
+  }, [groupedTasks])
 
   const handleEdit = (task: Task) => {
     setEditingTask(task)
@@ -73,71 +258,187 @@ export function TaskList({
     setEditingTask(null)
   }
 
+  const handleQuickAdd = async () => {
+    if (!quickAddValue.trim()) return
+    const projectId = filter.startsWith('project:')
+      ? filter.replace('project:', '')
+      : projects[0]?.id
+    await onCreate({
+      title: quickAddValue.trim(),
+      projectId,
+    })
+    setQuickAddValue('')
+  }
+
   const getProjectById = (projectId: string) =>
     projects.find((p) => p.id === projectId)
 
+  const getFilterTitle = () => {
+    if (filter.startsWith('project:')) {
+      const projectId = filter.replace('project:', '')
+      const project = projects.find((p) => p.id === projectId)
+      return project?.name || '清单'
+    }
+    const titles: Record<string, string> = {
+      all: '所有任务',
+      today: '今天',
+      tomorrow: '明天',
+      week: '最近7天',
+      overdue: '已过期',
+      nodate: '无日期',
+    }
+    return titles[filter] || '任务'
+  }
+
+  const getFilterLabel = () => {
+    if (filter.startsWith('project:')) {
+      return '清单'
+    }
+    return 'SMART LIST'
+  }
+
+  // 格式化时间
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  }
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('zh-CN', {
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    })
+  }
+
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div
-        style={{
-          padding: '16px',
-          borderBottom: '1px solid #f0f0f0',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Space>
-          <Select
-            placeholder="所有项目"
-            allowClear
-            style={{ width: 150 }}
-            value={selectedProjectId}
-            onChange={setSelectedProjectId}
-          >
-            {projects
-              .filter((p) => !p.closed)
-              .map((project) => (
-                <Select.Option key={project.id} value={project.id}>
-                  {project.name}
-                </Select.Option>
-              ))}
-          </Select>
-          <span style={{ color: '#999' }}>{sortedTasks.length} 个任务</span>
-        </Space>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={onRefresh}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleNew}>
-            新建
-          </Button>
-        </Space>
+    <div className="flex flex-col h-full bg-[var(--bg-card)] relative py-10 px-[60px] overflow-hidden max-md:p-5">
+      {/* 头部 */}
+      <div className="flex justify-between items-start mb-8">
+        <div className="flex flex-col gap-1">
+          <span className="text-[11px] font-medium text-[var(--text-secondary)] tracking-[1px]">
+            {getFilterLabel()}
+          </span>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-[32px] max-md:text-2xl font-light text-[var(--text-primary)] m-0 font-[var(--font-secondary)]">
+              {getFilterTitle()}
+            </h1>
+            <span className="text-base text-[var(--warning)]">✦</span>
+            <span className="text-2xl font-light text-[var(--text-secondary)]">
+              {filteredTasks.length}
+            </span>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-xs text-[var(--text-secondary)] mb-1">
+            Today is a gift
+          </div>
+          <div className="text-4xl max-md:text-2xl font-extralight text-[var(--text-secondary)] leading-none">
+            {formatTime(currentTime)}
+          </div>
+          <div className="text-xs text-[var(--text-secondary)] mt-1">
+            {formatDate(currentTime)}
+          </div>
+        </div>
+      </div>
+
+      {/* 快速添加 */}
+      <div className="mb-6">
+        <Input
+          placeholder="+ 添加任务，回车保存..."
+          value={quickAddValue}
+          onChange={(e) => setQuickAddValue(e.target.value)}
+          onPressEnter={handleQuickAdd}
+          className="!bg-[var(--bg-secondary)] !rounded-xl !py-3.5 !px-5 !text-sm [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-[var(--text-primary)] [&_.ant-input::placeholder]:!text-[var(--text-secondary)]"
+          variant="borderless"
+          suffix={
+            <span
+              className="text-[11px] text-[var(--text-secondary)] bg-[var(--bg-card)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
+              onClick={handleNew}
+            >
+              ⌘ K
+            </span>
+          }
+        />
       </div>
 
       {error && (
-        <Alert message={error} type="error" showIcon style={{ margin: 16 }} />
+        <Alert
+          message={error}
+          type="error"
+          showIcon
+          className="!mb-4 !rounded-lg"
+        />
       )}
 
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      <div className="flex-1 overflow-y-auto -mx-5 px-5">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 40 }}>
+          <div className="flex flex-col items-center justify-center py-20 px-5 gap-4">
             <Spin size="large" />
+            <span className="text-[var(--text-secondary)] text-sm">
+              正在加载...
+            </span>
           </div>
-        ) : sortedTasks.length === 0 ? (
-          <Empty description="暂无任务" style={{ marginTop: 60 }} />
+        ) : sortedGroups.length === 0 ? (
+          <Empty
+            description={
+              <span className="text-[var(--text-secondary)] text-sm">
+                太棒了，没有待办任务！
+              </span>
+            }
+            className="!py-[100px] !px-5 !bg-transparent"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
         ) : (
-          sortedTasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              project={getProjectById(task.projectId)}
-              onComplete={onComplete}
-              onDelete={onDelete}
-              onEdit={handleEdit}
-            />
-          ))
+          sortedGroups.map((group) => {
+            const isCollapsed = collapsedGroups.has(group.id)
+            return (
+              <div key={group.id} className="mb-4">
+                {/* 只有多个分组时才显示分组标题 */}
+                {sortedGroups.length > 1 && (
+                  <div
+                    className="flex items-center gap-2 py-3 cursor-pointer select-none border-b border-[var(--border)] mb-2 hover:opacity-80"
+                    onClick={() => toggleGroup(group.id)}
+                  >
+                    <span
+                      className={`text-xs text-[var(--text-secondary)] w-3.5 text-center transition-transform duration-200 ${isCollapsed ? '' : '-rotate-90'}`}
+                    >
+                      ›
+                    </span>
+                    <span className="text-[11px] font-medium text-[var(--text-secondary)] tracking-[1px]">
+                      {group.title.toUpperCase()}
+                    </span>
+                    <span className="ml-auto text-xs text-[var(--text-secondary)]">
+                      {group.tasks.length}
+                    </span>
+                  </div>
+                )}
+                {!isCollapsed && (
+                  <div className="flex flex-col gap-1">
+                    {group.tasks.map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        project={getProjectById(task.projectId)}
+                        onComplete={onComplete}
+                        onDelete={onDelete}
+                        onEdit={handleEdit}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })
         )}
+      </div>
+
+      {/* 右下角水印 */}
+      <div className="absolute right-10 bottom-10 text-sm text-[var(--border)] italic pointer-events-none">
+        today
       </div>
 
       <TaskEditor

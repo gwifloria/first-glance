@@ -4,10 +4,10 @@
   "description": "在新标签页展示滴答清单任务",
   "version": "1.0.0",
   "chrome_url_overrides": {
-    "newtab": "newtab/index.html"
+    "newtab": "src/newtab/index.html"
   },
   "background": {
-    "service_worker": "background/index.js",
+    "service_worker": "src/background/index.ts",
     "type": "module"
   },
   "permissions": ["storage", "identity"],

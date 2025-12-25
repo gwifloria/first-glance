@@ -1,14 +1,14 @@
-import { Layout, Button, Typography, Space } from 'antd'
+import { useState } from 'react'
+import { Button } from 'antd'
 import { LogoutOutlined } from '@ant-design/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useTasks } from '@/hooks/useTasks'
 import { TaskList } from '@/components/TaskList'
+import { Sidebar } from '@/components/Sidebar'
 import { LoginButton } from '@/components/LoginButton'
+import { ThemeSwitch } from '@/components/ThemeSwitch'
 
-const { Header, Content } = Layout
-const { Title } = Typography
-
-function App() {
+function AppContent() {
   const { isLoggedIn, loading: authLoading, login, logout } = useAuth()
   const {
     tasks,
@@ -22,53 +22,55 @@ function App() {
     createTask,
   } = useTasks(isLoggedIn)
 
+  const [selectedFilter, setSelectedFilter] = useState('today')
+
   if (!isLoggedIn) {
     return <LoginButton loading={authLoading} onLogin={login} />
   }
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header
-        style={{
-          background: '#fff',
-          padding: '0 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid #f0f0f0',
-        }}
-      >
-        <Title level={4} style={{ margin: 0 }}>
-          滴答清单
-        </Title>
-        <Space>
-          <Button type="text" icon={<LogoutOutlined />} onClick={logout}>
-            退出
-          </Button>
-        </Space>
-      </Header>
-      <Content
-        style={{
-          background: '#fff',
-          maxWidth: 800,
-          margin: '0 auto',
-          width: '100%',
-        }}
-      >
-        <TaskList
+    <div className="min-h-screen bg-[var(--bg-primary)] relative flex flex-col">
+      {/* 控制按钮 */}
+      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
+        <ThemeSwitch />
+        <Button
+          type="text"
+          size="small"
+          icon={<LogoutOutlined />}
+          onClick={logout}
+          className="text-[var(--text-secondary)] text-xs hover:text-[var(--accent)]"
+        />
+      </div>
+
+      {/* 主内容区 */}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar
           tasks={tasks}
           projects={projects}
-          loading={tasksLoading}
-          error={error}
-          onComplete={completeTask}
-          onDelete={deleteTask}
-          onUpdate={updateTask}
-          onCreate={createTask}
-          onRefresh={refresh}
+          selectedFilter={selectedFilter}
+          onFilterChange={setSelectedFilter}
         />
-      </Content>
-    </Layout>
+        <main className="flex-1 overflow-y-auto bg-[var(--bg-card)]">
+          <TaskList
+            tasks={tasks}
+            projects={projects}
+            loading={tasksLoading}
+            error={error}
+            filter={selectedFilter}
+            onComplete={completeTask}
+            onDelete={deleteTask}
+            onUpdate={updateTask}
+            onCreate={createTask}
+            onRefresh={refresh}
+          />
+        </main>
+      </div>
+    </div>
   )
+}
+
+function App() {
+  return <AppContent />
 }
 
 export default App

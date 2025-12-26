@@ -22,6 +22,8 @@ export function useFilteredTasks(
     }
 
     switch (filter) {
+      case 'inbox':
+        return tasks.filter((t) => t.projectId.startsWith('inbox'))
       case 'today':
         return tasks.filter((t) => {
           if (!t.dueDate) return false

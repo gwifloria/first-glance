@@ -6,6 +6,7 @@ import {
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  InboxOutlined,
 } from '@ant-design/icons'
 import { useTheme } from '@/contexts/ThemeContext'
 import { SettingsModal } from './SettingsModal'
@@ -261,6 +262,12 @@ export function Sidebar({
 
   const smartFilters = useMemo<SmartFilter[]>(
     () => [
+      {
+        id: 'inbox',
+        name: '收集箱',
+        icon: <InboxOutlined />,
+        count: tasks.filter((t) => t.projectId.startsWith('inbox')).length,
+      },
       {
         id: 'today',
         name: '今天',

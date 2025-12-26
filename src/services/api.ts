@@ -69,6 +69,17 @@ export const api = {
       }
     }
 
+    // 尝试获取收集箱任务（硬编码测试）
+    const inboxId = 'inbox1024271155'
+    try {
+      const inboxData = await this.getProjectData(inboxId)
+      if (inboxData.tasks) {
+        allTasks.push(...inboxData.tasks)
+      }
+    } catch {
+      console.error('获取收集箱任务失败')
+    }
+
     // 只返回未完成的任务
     const incompleteTasks = allTasks.filter((task) => task.status === 0)
     await storage.setCachedTasks(incompleteTasks)

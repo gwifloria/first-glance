@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { CheckOutlined } from '@ant-design/icons'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useSettings } from '@/contexts/SettingsContext'
 import { getGreeting } from '@/utils/greeting'
 import { formatTime, formatDateStr, extractDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
@@ -19,6 +20,7 @@ interface FocusViewProps {
   tasks: Task[]
   loading: boolean
   onComplete: (task: Task) => void
+  onCreate: (task: Partial<Task>) => Promise<Task>
   onSwitchView: () => void
   todayTaskCount: number
 }
@@ -27,12 +29,16 @@ export function FocusView({
   tasks,
   loading,
   onComplete,
+  onCreate,
   onSwitchView,
   todayTaskCount,
 }: FocusViewProps) {
   const { themeType, setThemeType } = useTheme()
+  const { settings } = useSettings()
   const [currentTime, setCurrentTime] = useState(new Date())
   const [quote] = useState<Quote>(() => getRandomQuote())
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [creating, setCreating] = useState(false)
 
   // 更新时间
   useEffect(() => {
@@ -56,6 +62,23 @@ export function FocusView({
   }, [tasks])
 
   const greeting = getGreeting()
+
+  const handleCreateTask = async () => {
+    if (!newTaskTitle.trim() || creating) return
+
+    setCreating(true)
+    try {
+      await onCreate({
+        title: newTaskTitle.trim(),
+        dueDate: formatDateStr(new Date()),
+        priority: 3, // 高优先级，这样会显示在 focus 列表
+        projectId: settings.defaultProjectId || undefined,
+      })
+      setNewTaskTitle('')
+    } finally {
+      setCreating(false)
+    }
+  }
 
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative">
@@ -125,15 +148,23 @@ export function FocusView({
             </div>
           )}
 
-          {/* Add another focus */}
-          <div className="mt-8 text-center">
-            <button
-              onClick={onSwitchView}
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent text-sm"
+          {/* Add another focus - 输入框 */}
+          <div className="mt-8">
+            <input
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateTask()}
+              placeholder="Add another focus..."
+              disabled={creating}
+              className="w-full text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
+            />
+            <div
+              onClick={handleCreateTask}
+              className={`text-[var(--text-secondary)] text-xl mt-2 text-center cursor-pointer hover:text-[var(--accent)] transition-colors ${creating ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              Add another focus...
-            </button>
-            <div className="text-[var(--text-secondary)] text-xl mt-2">+</div>
+              +
+            </div>
           </div>
         </div>
       </div>

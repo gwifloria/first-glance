@@ -47,6 +47,7 @@ function AppContent() {
         tasks={tasks}
         loading={tasksLoading}
         onComplete={completeTask}
+        onCreate={createTask}
         onSwitchView={() => setViewMode('list')}
         todayTaskCount={todayTaskCount}
       />

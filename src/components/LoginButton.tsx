@@ -1,7 +1,4 @@
-import { Button, Typography, Space } from 'antd'
-import { LoginOutlined } from '@ant-design/icons'
-
-const { Title, Text } = Typography
+import { ArrowRightOutlined, CheckOutlined } from '@ant-design/icons'
 
 interface LoginButtonProps {
   loading: boolean
@@ -10,49 +7,38 @@ interface LoginButtonProps {
 
 export function LoginButton({ loading, onLogin }: LoginButtonProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#fdf8f3] via-[#fce8e8] to-[#f5ede4] relative overflow-hidden">
-      {/* 背景装饰 */}
-      <div className="absolute text-[60px] max-sm:text-[40px] opacity-30 animate-float top-[10%] left-[10%]">
-        🌸
-      </div>
-      <div className="absolute text-[60px] max-sm:text-[40px] opacity-30 animate-float top-[20%] right-[15%] [animation-delay:1s]">
-        🍃
-      </div>
-      <div className="absolute text-[60px] max-sm:text-[40px] opacity-30 animate-float bottom-[20%] left-[20%] [animation-delay:2s]">
-        ✨
-      </div>
-      <div className="absolute text-[60px] max-sm:text-[40px] opacity-30 animate-float bottom-[15%] right-[10%] [animation-delay:3s]">
-        🌷
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-[var(--bg-primary)] bg-dotted">
+      <div className="bg-white rounded-2xl py-12 px-16 shadow-[0_4px_24px_rgba(0,0,0,0.08)] text-center max-w-[400px]">
+        {/* 图标 */}
+        <div className="text-5xl mb-6">📓</div>
 
-      <div className="bg-white/90 backdrop-blur-[10px] rounded-[32px] max-sm:rounded-3xl py-[60px] px-[80px] max-sm:py-10 max-sm:px-[30px] max-sm:mx-5 shadow-[0_20px_60px_rgba(232,160,160,0.2),0_0_0_1px_rgba(232,160,160,0.1)] relative z-[1]">
-        <Space direction="vertical" align="center" size="large">
-          <div className="text-[64px] max-sm:text-[48px] mb-2 animate-bounce">
-            📔
-          </div>
-          <Title
-            level={2}
-            className="!text-[#5d4e4e] !font-serif !font-semibold !m-0 tracking-[2px]"
-          >
-            我的待办手帐
-          </Title>
-          <Text className="!text-[#9b8b8b] text-[15px]">
-            连接滴答清单，开始记录美好的一天
-          </Text>
-          <Button
-            type="primary"
-            size="large"
-            icon={<LoginOutlined />}
-            loading={loading}
-            onClick={onLogin}
-            className="!h-[52px] !px-10 !text-base !font-medium !rounded-[26px] !bg-gradient-to-br !from-[#e8a0a0] !to-[#f5d6a8] !border-none !shadow-[0_8px_24px_rgba(232,160,160,0.4)] hover:!-translate-y-[3px] hover:!shadow-[0_12px_32px_rgba(232,160,160,0.5)] !transition-all !duration-300"
-          >
-            登录滴答清单
-          </Button>
-          <Text className="!text-[#9b8b8b] text-xs mt-2">
-            🔐 安全登录，数据同步
-          </Text>
-        </Space>
+        {/* 标题 */}
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-3">
+          Wonderland Tasks
+        </h1>
+
+        {/* 副标题 */}
+        <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-8">
+          在这个宁静的角落，
+          <br />
+          专注记录与完成你的每一件小事。
+        </p>
+
+        {/* 登录按钮 */}
+        <button
+          onClick={onLogin}
+          disabled={loading}
+          className="w-full py-4 px-6 bg-[#2c2c2c] text-white rounded-lg text-base font-medium flex items-center justify-center gap-2 hover:bg-[#1a1a1a] transition-colors cursor-pointer border-0 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? '登录中...' : '登录滴答清单'}
+          {!loading && <ArrowRightOutlined />}
+        </button>
+
+        {/* 底部标识 */}
+        <div className="flex items-center justify-center gap-1.5 mt-6 text-xs text-[var(--text-secondary)] tracking-wider">
+          <CheckOutlined className="text-green-500" />
+          <span>SYNCED & SECURE</span>
+        </div>
       </div>
     </div>
   )

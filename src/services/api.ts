@@ -52,11 +52,12 @@ export const api = {
     return request(`/project/${projectId}/data`)
   },
 
-  // 获取所有任务（遍历所有项目）
+  // 获取所有任务
   async getAllTasks(): Promise<{ tasks: Task[]; projects: Project[] }> {
     const projects = await this.getProjects()
     const allTasks: Task[] = []
 
+    // 遍历每个项目获取任务
     for (const project of projects) {
       if (project.closed) continue
       try {
@@ -69,10 +70,9 @@ export const api = {
       }
     }
 
-    // 尝试获取收集箱任务
-    const inboxId = 'inbox'
+    // 获取收集箱任务
     try {
-      const inboxData = await this.getProjectData(inboxId)
+      const inboxData = await this.getProjectData('inbox')
       if (inboxData.tasks) {
         allTasks.push(...inboxData.tasks)
       }

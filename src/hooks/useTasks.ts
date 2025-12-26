@@ -70,8 +70,13 @@ export function useTasks(isLoggedIn: boolean) {
   const createTask = useCallback(async (task: Partial<Task>) => {
     try {
       const created = await api.createTask(task)
-      // 合并请求参数，确保本地数据完整（API 可能不返回 dueDate 等字段）
-      const mergedTask = { ...task, ...created } as Task
+      // 合并：优先用 API 返回值，但保留我们设置的 dueDate 和 priority（如果 API 没返回）
+      const mergedTask = {
+        ...task,
+        ...created,
+        dueDate: created.dueDate || task.dueDate,
+        priority: created.priority ?? task.priority,
+      } as Task
       setTasks((prev) => [...prev, mergedTask])
       return mergedTask
     } catch (err) {

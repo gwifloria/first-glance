@@ -66,13 +66,12 @@ export function FocusView({
 
     setCreating(true)
     try {
-      // 今天 0 点作为截止日期
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
+      // 使用本地日期格式（避免 UTC 时区问题）
+      const dueDate = formatDateStr(new Date()) + 'T00:00:00.000+0800'
 
       await onCreate({
         title: newTaskTitle.trim(),
-        dueDate: today.toISOString(),
+        dueDate,
         priority: 5, // 最高优先级
       })
       setNewTaskTitle('')

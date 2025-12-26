@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { CheckOutlined } from '@ant-design/icons'
 import { useTheme } from '@/contexts/ThemeContext'
-import { useSettings } from '@/contexts/SettingsContext'
 import { getGreeting } from '@/utils/greeting'
 import { formatTime, formatDateStr, extractDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
@@ -34,7 +33,6 @@ export function FocusView({
   todayTaskCount,
 }: FocusViewProps) {
   const { themeType, setThemeType } = useTheme()
-  const { settings } = useSettings()
   const [currentTime, setCurrentTime] = useState(new Date())
   const [quote] = useState<Quote>(() => getRandomQuote())
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -68,11 +66,14 @@ export function FocusView({
 
     setCreating(true)
     try {
+      // 今天 0 点作为截止日期
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
       await onCreate({
         title: newTaskTitle.trim(),
-        dueDate: formatDateStr(new Date()),
-        priority: 3, // 高优先级，这样会显示在 focus 列表
-        projectId: settings.defaultProjectId || undefined,
+        dueDate: today.toISOString(),
+        priority: 5, // 最高优先级
       })
       setNewTaskTitle('')
     } finally {

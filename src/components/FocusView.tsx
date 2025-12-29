@@ -4,16 +4,8 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { getGreeting } from '@/utils/greeting'
 import { formatTime, formatDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
-import type { ThemeType } from '@/themes'
+import { THEME_OPTIONS } from '@/constants/theme'
 import type { Task } from '@/types'
-
-// 主题配置
-const themeOptions: { type: ThemeType; color: string; name: string }[] = [
-  { type: 'journal', color: '#E8E4DF', name: '手帐' },
-  { type: 'rose', color: '#F5F0ED', name: '玫瑰' },
-  { type: 'ocean', color: '#D8E3E8', name: '海洋' },
-  { type: 'tech', color: '#1C1C1E', name: '暗黑' },
-]
 
 interface FocusViewProps {
   focusTasks: Task[] // 今日高优先级任务（已筛选）
@@ -72,7 +64,7 @@ export function FocusView({
       {/* 顶部栏 - 右上角主题切换 */}
       <div className="flex justify-end items-center p-6">
         <div className="flex items-center gap-2">
-          {themeOptions.map((option) => (
+          {THEME_OPTIONS.map((option) => (
             <button
               key={option.type}
               onClick={() => setThemeType(option.type)}

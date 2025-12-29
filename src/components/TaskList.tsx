@@ -7,7 +7,7 @@ import { FocusButton } from './FocusButton'
 import { useSettings } from '@/contexts/SettingsContext'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { useRelativeDates } from '@/hooks/useRelativeDates'
-import { filterTasks, sortTasks } from '@/utils/taskFilters'
+import { filterTasks, sortTasks, type TaskGroup } from '@/utils/taskFilters'
 import { extractDateStr, formatDisplayDate, formatTime } from '@/utils/date'
 import type { Task, Project } from '@/types'
 
@@ -23,12 +23,6 @@ interface TaskListProps {
   onUpdate: (taskId: string, updates: Partial<Task>) => void
   onCreate: (task: Partial<Task>) => Promise<Task>
   onFocus?: () => void
-}
-
-interface TaskGroup {
-  id: string
-  title: string
-  tasks: Task[]
 }
 
 export function TaskList({

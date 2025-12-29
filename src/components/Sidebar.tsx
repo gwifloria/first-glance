@@ -15,17 +15,9 @@ import { CollapseArrow } from './CollapseArrow'
 import { ProjectColorDot } from './ProjectColorDot'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
-import type { ThemeType } from '@/themes'
+import { THEME_OPTIONS } from '@/constants/theme'
 import type { Task, Project } from '@/types'
 import type { TaskCounts } from '@/utils/taskFilters'
-
-// 主题配置
-const themeOptions: { type: ThemeType; color: string; name: string }[] = [
-  { type: 'journal', color: '#E8E4DF', name: '手帐' },
-  { type: 'rose', color: '#F5F0ED', name: '玫瑰' },
-  { type: 'ocean', color: '#D8E3E8', name: '海洋' },
-  { type: 'tech', color: '#1C1C1E', name: '暗黑' },
-]
 
 interface SidebarProps {
   tasks: Task[]
@@ -70,7 +62,7 @@ function SidebarHeader({
       >
         {!collapsed && (
           <div className="flex items-center gap-1.5">
-            {themeOptions.map((option) => (
+            {THEME_OPTIONS.map((option) => (
               <button
                 key={option.type}
                 onClick={() => setThemeType(option.type)}

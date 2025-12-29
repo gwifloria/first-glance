@@ -1,5 +1,10 @@
 import { useMemo } from 'react'
-import { formatDateStr } from '@/utils/date'
+import {
+  getTodayStr,
+  getTomorrowStr,
+  getDayAfterStr,
+  getNextWeekStr,
+} from '@/utils/date'
 
 interface RelativeDates {
   todayStr: string
@@ -14,21 +19,11 @@ interface RelativeDates {
  */
 export function useRelativeDates(): RelativeDates {
   return useMemo(() => {
-    const now = new Date()
-    const todayStr = formatDateStr(now)
-
-    const tomorrow = new Date(now)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const tomorrowStr = formatDateStr(tomorrow)
-
-    const dayAfter = new Date(now)
-    dayAfter.setDate(dayAfter.getDate() + 2)
-    const dayAfterStr = formatDateStr(dayAfter)
-
-    const nextWeek = new Date(now)
-    nextWeek.setDate(nextWeek.getDate() + 7)
-    const nextWeekStr = formatDateStr(nextWeek)
-
-    return { todayStr, tomorrowStr, dayAfterStr, nextWeekStr }
+    return {
+      todayStr: getTodayStr(),
+      tomorrowStr: getTomorrowStr(),
+      dayAfterStr: getDayAfterStr(),
+      nextWeekStr: getNextWeekStr(),
+    }
   }, [])
 }

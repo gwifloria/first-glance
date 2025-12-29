@@ -1,4 +1,9 @@
-import { extractDateStr, formatDateStr } from './date'
+import {
+  extractDateStr,
+  getTodayStr,
+  getTomorrowStr,
+  getNextWeekStr,
+} from './date'
 import type { Task, Project } from '@/types'
 
 // ============ 类型定义 ============
@@ -10,24 +15,6 @@ export interface TaskGroup {
   id: string
   title: string
   tasks: Task[]
-}
-
-// ============ 日期工具 ============
-
-function getTodayStr(): string {
-  return formatDateStr(new Date())
-}
-
-function getTomorrowStr(): string {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return formatDateStr(tomorrow)
-}
-
-function getNextWeekStr(): string {
-  const nextWeek = new Date()
-  nextWeek.setDate(nextWeek.getDate() + 7)
-  return formatDateStr(nextWeek)
 }
 
 // ============ 日期判断 ============

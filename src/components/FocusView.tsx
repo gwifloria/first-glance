@@ -69,18 +69,8 @@ export function FocusView({
 
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative">
-      {/* 顶部栏 */}
-      <div className="flex justify-between items-center p-6">
-        {/* 左上角入口 */}
-        <button
-          onClick={onSwitchView}
-          className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent"
-        >
-          <span className="text-lg">☰</span>
-          <span className="text-sm">Tasks</span>
-        </button>
-
-        {/* 右上角主题切换 */}
+      {/* 顶部栏 - 右上角主题切换 */}
+      <div className="flex justify-end items-center p-6">
         <div className="flex items-center gap-2">
           {themeOptions.map((option) => (
             <button
@@ -106,7 +96,7 @@ export function FocusView({
 
         {/* 问候语 */}
         <div className="text-2xl text-[var(--text-primary)] mt-4 font-light">
-          {greeting}, Wonderland.
+          {greeting}
         </div>
 
         {/* TODAY'S FOCUS */}

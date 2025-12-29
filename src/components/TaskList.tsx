@@ -3,6 +3,7 @@ import { Spin, Empty, Alert, Input } from 'antd'
 import { TaskItem } from './TaskItem'
 import { TaskEditor } from './TaskEditor'
 import { CollapseArrow } from './CollapseArrow'
+import { FocusButton } from './FocusButton'
 import { useSettings } from '@/contexts/SettingsContext'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { useRelativeDates } from '@/hooks/useRelativeDates'
@@ -21,6 +22,7 @@ interface TaskListProps {
   onDelete: (task: Task) => void
   onUpdate: (taskId: string, updates: Partial<Task>) => void
   onCreate: (task: Partial<Task>) => Promise<Task>
+  onFocus?: () => void
 }
 
 interface TaskGroup {
@@ -40,6 +42,7 @@ export function TaskList({
   onDelete,
   onUpdate,
   onCreate,
+  onFocus,
 }: TaskListProps) {
   const { settings } = useSettings()
   const [editingTask, setEditingTask] = useState<Task | null>(null)
@@ -234,15 +237,19 @@ export function TaskList({
             </span>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-xs text-[var(--text-secondary)] mb-1">
-            Today is a gift
-          </div>
-          <div className="text-4xl max-md:text-2xl font-extralight text-[var(--text-secondary)] leading-none">
-            {formatTime(currentTime)}
-          </div>
-          <div className="text-xs text-[var(--text-secondary)] mt-1">
-            {formatDisplayDate(currentTime)}
+        <div className="flex items-start gap-6">
+          {/* Focus 按钮 */}
+          {onFocus && <FocusButton onClick={onFocus} size="large" />}
+          <div className="text-right">
+            <div className="text-xs text-[var(--text-secondary)] mb-1">
+              Today is a gift
+            </div>
+            <div className="text-4xl max-md:text-2xl font-extralight text-[var(--text-secondary)] leading-none">
+              {formatTime(currentTime)}
+            </div>
+            <div className="text-xs text-[var(--text-secondary)] mt-1">
+              {formatDisplayDate(currentTime)}
+            </div>
           </div>
         </div>
       </div>

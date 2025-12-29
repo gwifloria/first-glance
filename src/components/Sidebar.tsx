@@ -66,46 +66,35 @@ function SidebarHeader({
   return (
     <div className={`p-4 pb-2 ${collapsed ? 'px-2' : ''}`}>
       <div
-        className={`flex items-center gap-2 mb-3 ${collapsed ? 'flex-col' : ''}`}
+        className={`flex items-center gap-2 mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}
       >
-        <span className="text-lg">🌸</span>
         {!collapsed && (
-          <>
-            <span className="font-medium text-[var(--text-primary)]">
-              Wonderland
-            </span>
-            <div className="flex items-center gap-1.5 ml-auto">
-              {themeOptions.map((option) => (
-                <button
-                  key={option.type}
-                  onClick={() => setThemeType(option.type)}
-                  title={option.name}
-                  className={`
-                    w-3 h-3 rounded-full transition-all cursor-pointer border-0 p-0
-                    ${themeType === option.type ? 'ring-2 ring-offset-1 ring-[var(--text-secondary)] scale-110' : 'opacity-70 hover:opacity-100 hover:scale-110'}
-                  `}
-                  style={{ backgroundColor: option.color }}
-                />
-              ))}
+          <div className="flex items-center gap-1.5">
+            {themeOptions.map((option) => (
               <button
-                onClick={onToggleCollapse}
-                title="折叠侧边栏"
-                className="w-5 h-5 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent p-0 ml-1"
-              >
-                <MenuFoldOutlined className="text-xs" />
-              </button>
-            </div>
-          </>
+                key={option.type}
+                onClick={() => setThemeType(option.type)}
+                title={option.name}
+                className={`
+                  w-3 h-3 rounded-full transition-all cursor-pointer border-0 p-0
+                  ${themeType === option.type ? 'ring-2 ring-offset-1 ring-[var(--text-secondary)] scale-110' : 'opacity-70 hover:opacity-100 hover:scale-110'}
+                `}
+                style={{ backgroundColor: option.color }}
+              />
+            ))}
+          </div>
         )}
-        {collapsed && (
-          <button
-            onClick={onToggleCollapse}
-            title="展开侧边栏"
-            className="w-6 h-6 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent p-0 mt-1"
-          >
+        <button
+          onClick={onToggleCollapse}
+          title={collapsed ? '展开侧边栏' : '折叠侧边栏'}
+          className="w-5 h-5 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent p-0"
+        >
+          {collapsed ? (
             <MenuUnfoldOutlined className="text-sm" />
-          </button>
-        )}
+          ) : (
+            <MenuFoldOutlined className="text-xs" />
+          )}
+        </button>
       </div>
     </div>
   )

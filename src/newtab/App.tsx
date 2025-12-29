@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from 'antd'
-import { LogoutOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { LogoutOutlined } from '@ant-design/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useTasks } from '@/hooks/useTasks'
 import { TaskList } from '@/components/TaskList'
@@ -66,19 +66,8 @@ function AppContent() {
       {/* 右侧内容区域 - 有外边距 */}
       <div className="flex-1 p-3 pl-0 min-h-0">
         <div className="h-full bg-[var(--bg-content)] bg-dotted rounded-2xl overflow-hidden relative shadow-[var(--shadow-small)]">
-          {/* 顶部按钮区 */}
-          <div className="absolute top-3 right-3 z-50 flex items-center gap-2">
-            {/* 返回专注模式按钮 */}
-            <Button
-              type="text"
-              size="small"
-              icon={<ArrowLeftOutlined />}
-              onClick={() => setViewMode('focus')}
-              className="text-[var(--text-secondary)] text-xs hover:text-[var(--accent)]"
-            >
-              专注
-            </Button>
-            {/* 登出按钮 */}
+          {/* 登出按钮 */}
+          <div className="absolute top-3 right-3 z-50">
             <Button
               type="text"
               size="small"
@@ -100,6 +89,7 @@ function AppContent() {
               onDelete={deleteTask}
               onUpdate={updateTask}
               onCreate={createTask}
+              onFocus={() => setViewMode('focus')}
             />
           </main>
         </div>

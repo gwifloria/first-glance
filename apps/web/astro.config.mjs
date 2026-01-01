@@ -7,5 +7,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  site: 'https://first-glance.app',
+  site: 'https://gwifloria.github.io',
+  base: '/first-glance/',
 })

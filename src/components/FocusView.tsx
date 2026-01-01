@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { CheckOutlined, MenuOutlined } from '@ant-design/icons'
+import { MenuOutlined } from '@ant-design/icons'
 import { useTheme } from '@/contexts/ThemeContext'
 import { getGreeting } from '@/utils/greeting'
 import { formatTime, formatDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
-import { THEME_OPTIONS } from '@/constants/theme'
+import { ThemeToggle } from './common/ThemeToggle'
+import { TaskCheckbox } from './common/TaskCheckbox'
+import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { FocusSkeleton } from './TaskSkeleton'
 import type { Task } from '@/types'
 
@@ -25,7 +27,7 @@ export function FocusView({
   onSwitchView,
   todayTaskCount,
 }: FocusViewProps) {
-  const { theme, themeType, setThemeType } = useTheme()
+  const { theme } = useTheme()
   const [currentTime, setCurrentTime] = useState(new Date())
   const [quote] = useState<Quote>(() => getRandomQuote())
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -79,20 +81,7 @@ export function FocusView({
         </button>
 
         {/* 右上角主题切换 */}
-        <div className="flex items-center gap-1.5">
-          {THEME_OPTIONS.map((option) => (
-            <button
-              key={option.type}
-              onClick={() => setThemeType(option.type)}
-              title={option.name}
-              className={`
-                w-3 h-3 rounded-full transition-all cursor-pointer border border-black/5 p-0
-                ${themeType === option.type ? 'ring-1 ring-offset-1 ring-[var(--text-secondary)] scale-125' : 'opacity-60 hover:opacity-100 hover:scale-125'}
-              `}
-              style={{ backgroundColor: option.color }}
-            />
-          ))}
-        </div>
+        <ThemeToggle variant="minimal" size="sm" />
       </div>
 
       {/* 主内容区 */}
@@ -191,30 +180,18 @@ function FocusTaskItem({
   onComplete: (task: Task) => void
 }) {
   const { theme } = useTheme()
-  const [completing, setCompleting] = useState(false)
-
-  const handleComplete = async () => {
-    setCompleting(true)
-    await onComplete(task)
-    setCompleting(false)
-  }
+  const { completing, handleComplete } = useTaskCompletion(onComplete, {
+    delayBefore: false,
+  })
 
   return (
     <div className="flex items-center gap-4 py-3 px-4 bg-[var(--bg-card)] rounded-xl shadow-sm">
-      <button
-        onClick={handleComplete}
+      <TaskCheckbox
+        completing={completing}
+        onComplete={() => handleComplete(task)}
+        variant="focus"
         disabled={completing}
-        className={`
-          w-6 h-6 rounded border-2 border-[var(--border)] flex items-center justify-center
-          cursor-pointer transition-all bg-transparent
-          hover:border-[var(--accent)] hover:bg-[var(--accent-light)]
-          ${completing ? 'opacity-50' : ''}
-        `}
-      >
-        {completing && (
-          <CheckOutlined className="text-xs text-[var(--accent)]" />
-        )}
-      </button>
+      />
       <span
         className={`flex-1 text-lg text-[var(--text-primary)] ${completing ? 'line-through opacity-40' : ''}`}
         style={{

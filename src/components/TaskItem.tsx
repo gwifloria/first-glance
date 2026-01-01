@@ -1,9 +1,10 @@
-import { useState } from 'react'
 import { Button, Popconfirm } from 'antd'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { formatDateStr, extractDateStr, formatShortDate } from '@/utils/date'
 import { getPriorityColor } from '@/constants/task'
 import { ProjectColorDot } from './ProjectColorDot'
+import { TaskCheckbox } from './common/TaskCheckbox'
+import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import type { Task, Project } from '@/types'
 
 interface TaskItemProps {
@@ -21,18 +22,13 @@ export function TaskItem({
   onDelete,
   onEdit,
 }: TaskItemProps) {
-  const [completing, setCompleting] = useState(false)
+  const { completing, handleComplete } = useTaskCompletion(onComplete)
 
   const isOverdue = () => {
     if (!task.dueDate) return false
     const taskDate = extractDateStr(task.dueDate)
     const todayStr = formatDateStr(new Date())
     return taskDate < todayStr
-  }
-
-  const handleComplete = () => {
-    setCompleting(true)
-    setTimeout(() => onComplete(task), 300)
   }
 
   const priorityColor = getPriorityColor(task.priority)
@@ -47,24 +43,11 @@ export function TaskItem({
       `}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">
-        {/* 圆形复选框 */}
-        <div
-          onClick={handleComplete}
-          style={{ borderColor: priorityColor }}
-          className={`
-            w-5 h-5 rounded-full border-2 bg-transparent cursor-pointer
-            transition-all shrink-0 mt-0.5 flex items-center justify-center
-            hover:bg-[var(--accent-light)]
-            ${completing ? '!bg-[var(--accent)] !border-[var(--accent)]' : ''}
-          `}
-        >
-          <div
-            className={`
-              w-2 h-2 rounded-full bg-[var(--border)] transition-opacity
-              ${completing ? 'opacity-100 !bg-white' : 'opacity-0 group-hover:opacity-100'}
-            `}
-          />
-        </div>
+        <TaskCheckbox
+          completing={completing}
+          onComplete={() => handleComplete(task)}
+          priorityColor={priorityColor}
+        />
 
         <div className="flex-1 min-w-0">
           <div

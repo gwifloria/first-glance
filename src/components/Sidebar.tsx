@@ -8,14 +8,13 @@ import {
   MenuUnfoldOutlined,
   InboxOutlined,
 } from '@ant-design/icons'
-import { useTheme } from '@/contexts/ThemeContext'
 import { SettingsModal } from './SettingsModal'
 import { SearchInput } from './SearchInput'
 import { CollapseArrow } from './CollapseArrow'
 import { ProjectColorDot } from './ProjectColorDot'
+import { ThemeToggle } from './common/ThemeToggle'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
-import { THEME_OPTIONS } from '@/constants/theme'
 import type { Task, Project } from '@/types'
 import type { TaskCounts } from '@/utils/taskFilters'
 
@@ -53,29 +52,12 @@ function SidebarHeader({
   collapsed: boolean
   onToggleCollapse: () => void
 }) {
-  const { themeType, setThemeType } = useTheme()
-
   return (
     <div className={`p-4 pb-2 ${collapsed ? 'px-2' : ''}`}>
       <div
         className={`flex items-center gap-2 mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}
       >
-        {!collapsed && (
-          <div className="flex items-center gap-1.5">
-            {THEME_OPTIONS.map((option) => (
-              <button
-                key={option.type}
-                onClick={() => setThemeType(option.type)}
-                title={option.name}
-                className={`
-                  w-3 h-3 rounded-full transition-all cursor-pointer border-0 p-0
-                  ${themeType === option.type ? 'ring-2 ring-offset-1 ring-[var(--text-secondary)] scale-110' : 'opacity-70 hover:opacity-100 hover:scale-110'}
-                `}
-                style={{ backgroundColor: option.color }}
-              />
-            ))}
-          </div>
-        )}
+        {!collapsed && <ThemeToggle />}
         <button
           onClick={onToggleCollapse}
           title={collapsed ? '展开侧边栏' : '折叠侧边栏'}

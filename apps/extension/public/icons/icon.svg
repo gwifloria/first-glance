@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background: Cream Paper -->
+  <rect width="128" height="128" rx="36" fill="#f7f1e4"/>
+
+  <!-- Aesthetic Border (Subtle) -->
+  <rect x="8" y="8" width="112" height="112" rx="28" stroke="#e2ddd3" stroke-width="4"/>
+
+  <!-- The "Focus Lens" Symbol -->
+  <g transform="translate(64, 64)">
+    <!-- Central Focus Point (Toast Yellow) -->
+    <circle r="16" fill="#e9ca89"/>
+
+    <!-- Focus Ring / Viewfinder (Deep Brown) -->
+    <circle r="36" stroke="#4f2b2b" stroke-width="8" stroke-linecap="round" stroke-dasharray="30 26.5" stroke-dashoffset="15" />
+
+    <!-- Small accent dot to make it look like a lens reflection or UI element -->
+    <circle cx="10" cy="-10" r="3" fill="#ffffff" fill-opacity="0.6"/>
+  </g>
+</svg>

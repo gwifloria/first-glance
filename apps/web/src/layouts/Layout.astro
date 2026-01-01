@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content="将新标签页变成专注仪表盘，一眼看到今日重要任务。" />
+  </head>
+  <body class="min-h-screen bg-[#f7f1e4] text-[#4f2b2b]">
+    <slot />
+  </body>
+</html>

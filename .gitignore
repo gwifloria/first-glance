@@ -26,3 +26,9 @@ npm-debug.log*
 
 # Release artifacts
 *.zip
+
+# Turborepo
+.turbo
+
+# pnpm
+pnpm-lock.yaml

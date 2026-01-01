@@ -2,18 +2,28 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import { resolve } from 'path'
-import manifest from './manifest.json'
+import manifestJson from './manifest.json'
 
-export default defineConfig({
-  plugins: [react(), crx({ manifest })],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
+// 生产构建时移除 key（Chrome Web Store 不允许）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { key, ...prodManifest } = manifestJson
+
+export default defineConfig(({ command, mode }) => {
+  // mode: 'development' (yarn dev / yarn build:dev) 或 'production' (yarn build)
+  const isRelease = command === 'build' && mode === 'production'
+  const manifest = isRelease ? prodManifest : manifestJson
+
+  return {
+    plugins: [react(), crx({ manifest })],
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src'),
+      },
     },
-  },
-  base: '',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-  },
+    base: '',
+    build: {
+      outDir: isRelease ? 'build' : 'dist',
+      emptyOutDir: true,
+    },
+  }
 })

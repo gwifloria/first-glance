@@ -9,6 +9,10 @@ const REDIRECT_URI = chrome.identity.getRedirectURL()
 const AUTH_URL = 'https://dida365.com/oauth/authorize'
 const TOKEN_URL = 'https://dida365.com/oauth/token'
 
+// Debug: 检查配置
+console.log('[Auth Debug] CLIENT_ID:', CLIENT_ID ? '已配置' : '未配置')
+console.log('[Auth Debug] REDIRECT_URI:', REDIRECT_URI)
+
 class AuthService {
   private refreshPromise: Promise<AuthToken | null> | null = null
 

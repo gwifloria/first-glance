@@ -6,14 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:dev": "tsc -b && vite build --mode development",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "prepare": "husky",
-    "zip": "cd dist && zip -r ../first-glance.zip .",
-    "release": "npm run build && npm run zip"
+    "zip": "cd build && zip -r ../first-glance.zip . -x '.vite/*'",
+    "release": "yarn build && yarn zip"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

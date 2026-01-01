@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - deploy
     paths:
       - 'apps/web/**'
       - '.github/workflows/deploy-web.yml'
@@ -39,6 +40,9 @@ jobs:
 
       - name: Build
         run: pnpm --filter @first-glance/web build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

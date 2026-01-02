@@ -10,7 +10,7 @@ import { FocusTopBar } from './FocusTopBar'
 import { FocusTaskInput } from './FocusTaskInput'
 import { FocusQuote } from './FocusQuote'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
-import { FocusSkeleton } from '../task/TaskSkeleton'
+import { FocusSkeleton } from '../Task/TaskSkeleton'
 import type { Task, LocalTask } from '@/types'
 
 interface FocusViewProps {

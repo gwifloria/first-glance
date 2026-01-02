@@ -1,4 +1,4 @@
-import { FocusView } from '@/components/focusView'
+import { FocusView } from '@/components/FocusView'
 import { Onboarding } from '@/components/Onboarding'
 import { ConnectPrompt } from '@/components/ConnectPrompt'
 import type { Task, LocalTask } from '@/types'

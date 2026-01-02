@@ -11,7 +11,7 @@ import '@/i18n'
 import App from './App'
 import './index.css'
 
-function Root() {
+export function Root() {
   const { i18n } = useTranslation()
   const [antdLocale, setAntdLocale] = useState(
     i18n.language.startsWith('zh') ? zhCN : enUS

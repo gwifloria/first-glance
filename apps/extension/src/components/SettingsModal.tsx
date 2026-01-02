@@ -1,6 +1,6 @@
 import { Modal, Select, Form } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useSettings } from '@/contexts/SettingsContext'
+import { useSettings } from '@/hooks/useSettings'
 import { filterActiveProjects } from '@/utils/project'
 import type { Project } from '@/types'
 

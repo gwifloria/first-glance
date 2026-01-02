@@ -8,16 +8,19 @@ export function useLocalTasks() {
   const [tasks, setTasks] = useState<LocalTask[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Load tasks on mount
   const refresh = useCallback(async () => {
     const pendingTasks = await localTaskStorage.getPendingTasks()
     setTasks(pendingTasks)
     setLoading(false)
   }, [])
 
+  // Load tasks on mount
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    localTaskStorage.getPendingTasks().then((pendingTasks) => {
+      setTasks(pendingTasks)
+      setLoading(false)
+    })
+  }, [])
 
   const createTask = useCallback(
     async (title: string): Promise<LocalTask | null> => {

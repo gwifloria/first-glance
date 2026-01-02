@@ -7,7 +7,7 @@ import { CollapseArrow } from './CollapseArrow'
 import { FocusButton } from './FocusButton'
 import { TaskSkeleton } from './TaskSkeleton'
 import { Clock } from './common/Clock'
-import { useSettings } from '@/contexts/SettingsContext'
+import { useSettings } from '@/hooks/useSettings'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { useRelativeDates } from '@/hooks/useRelativeDates'
 import { filterTasks, sortTasks, type TaskGroup } from '@/utils/taskFilters'
@@ -250,7 +250,7 @@ export function TaskList({
           value={quickAddValue}
           onChange={(e) => setQuickAddValue(e.target.value)}
           onPressEnter={handleQuickAdd}
-          className="!bg-[var(--bg-secondary)] !rounded-xl !py-3.5 !px-5 !text-sm [&_.ant-input]:!bg-transparent !border !border-transparent hover:!border-[var(--border)] hover:!shadow-sm !transition-all !duration-200 focus-within:!border-[var(--accent)] focus-within:!shadow-md"
+          className="quick-add-input"
           variant="borderless"
           suffix={
             <span

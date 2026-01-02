@@ -8,7 +8,7 @@ import { Onboarding } from '@/components/Onboarding'
 import { Sidebar } from '@/components/Sidebar'
 import { TaskList } from '@/components/TaskList'
 import { ConnectPrompt } from '@/components/ConnectPrompt'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '@/hooks/useTheme'
 import { useAppMode } from '@/hooks/useAppMode'
 import { useLocalTasks } from '@/hooks/useLocalTasks'
 import { useTasks } from '@/hooks/useTasks'
@@ -77,7 +77,7 @@ function AppContent() {
       }
       await refreshRemoteTasks()
       setShowConnectPrompt(false)
-    } catch (err) {
+    } catch {
       message.error(t('message.failedToConnect'))
     } finally {
       setConnectLoading(false)
@@ -91,7 +91,7 @@ function AppContent() {
       await connect()
       await clearLocalTasks()
       setShowConnectPrompt(false)
-    } catch (err) {
+    } catch {
       message.error(t('message.failedToConnect'))
     } finally {
       setConnectLoading(false)

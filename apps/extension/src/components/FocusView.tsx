@@ -2,7 +2,7 @@ import { useState, memo } from 'react'
 import { Button } from 'antd'
 import { LinkOutlined, PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '@/hooks/useTheme'
 import { getGreeting } from '@/utils/greeting'
 import { formatDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
@@ -186,7 +186,7 @@ export function FocusView({
           type="default"
           shape="round"
           onClick={onSwitchView}
-          className="!absolute !bottom-6 !right-6 !z-50 !shadow-sm hover:!shadow-md !flex !items-center !gap-2"
+          className="todo-float-btn"
         >
           Todo
           <span className="bg-[var(--accent)] text-white text-xs px-2 py-0.5 rounded-full">

@@ -106,7 +106,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               type="default"
               size="large"
               onClick={handleSkip}
-              className="!flex-1 !rounded-xl !text-[var(--text-secondary)] !border-[var(--border)] hover:!text-[var(--text-primary)] hover:!border-[var(--text-secondary)]"
+              className="onboarding-btn-skip"
             >
               {t('common:button.skip')}
             </Button>
@@ -115,7 +115,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             type="primary"
             size="large"
             onClick={handleNext}
-            className={`${isLastStep ? '!w-full' : '!flex-1'} !rounded-xl !bg-[var(--text-primary)] hover:!bg-[var(--text-primary)] hover:!opacity-90`}
+            className={`onboarding-btn-primary ${isLastStep ? '!w-full' : '!flex-1'}`}
           >
             {isLastStep ? t('common:button.start') : t('common:button.next')}
           </Button>

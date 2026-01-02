@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
@@ -20,7 +19,7 @@ interface SettingsContextValue {
   error: string | null
 }
 
-const SettingsContext = createContext<SettingsContextValue | null>(null)
+export const SettingsContext = createContext<SettingsContextValue | null>(null)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettingsState] = useState<AppSettings>(defaultSettings)
@@ -64,14 +63,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       {children}
     </SettingsContext.Provider>
   )
-}
-
-export function useSettings() {
-  const context = useContext(SettingsContext)
-  if (!context) {
-    throw new Error('useSettings must be used within a SettingsProvider')
-  }
-  return context
 }
 
 // 导出类型供外部使用

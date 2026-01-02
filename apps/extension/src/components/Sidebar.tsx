@@ -1,24 +1,24 @@
-import { useMemo, useState, memo } from 'react'
-import { Button } from 'antd'
+import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
+import { usePersistedSet } from '@/hooks/usePersistedSet'
+import type { Project, Task } from '@/types'
+import type { TaskCounts } from '@/utils/taskFilters'
 import {
   CalendarOutlined,
-  FieldTimeOutlined,
   ClockCircleOutlined,
-  SettingOutlined,
+  FieldTimeOutlined,
+  InboxOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  InboxOutlined,
+  SettingOutlined,
 } from '@ant-design/icons'
+import { Button } from 'antd'
+import { memo, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SettingsModal } from './SettingsModal'
-import { SearchInput } from './SearchInput'
 import { CollapseArrow } from './CollapseArrow'
 import { ProjectColorDot } from './ProjectColorDot'
+import { SearchInput } from './SearchInput'
+import { SettingsModal } from './SettingsModal'
 import { ThemeToggle } from './common/ThemeToggle'
-import { usePersistedSet } from '@/hooks/usePersistedSet'
-import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
-import type { Task, Project } from '@/types'
-import type { TaskCounts } from '@/utils/taskFilters'
 
 interface SidebarProps {
   tasks: Task[]
@@ -295,7 +295,7 @@ export function Sidebar({
       folders: folderList.sort((a, b) => a.id.localeCompare(b.id)),
       ungroupedProjects: ungrouped.sort((a, b) => a.sortOrder - b.sortOrder),
     }
-  }, [projects, tasks])
+  }, [projects, t, tasks])
 
   const handleSearch = (value: string) => {
     setSearchQuery(value)
@@ -376,7 +376,7 @@ export function Sidebar({
           onClick={() => setSettingsOpen(true)}
           title={collapsed ? t('action.settings') : undefined}
           icon={<SettingOutlined />}
-          className={`!flex !items-center !gap-2 !py-2 !h-auto !text-[13px] !rounded-lg ${collapsed ? '!justify-center !px-2' : '!px-3 !justify-start'}`}
+          className={`sidebar-settings-btn ${collapsed ? 'collapsed' : ''}`}
         >
           {!collapsed && t('action.settings')}
         </Button>

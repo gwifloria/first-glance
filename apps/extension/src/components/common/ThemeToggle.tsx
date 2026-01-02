@@ -1,4 +1,4 @@
-import { useTheme } from '@/contexts/ThemeContext'
+import { useTheme } from '@/hooks/useTheme'
 import { THEME_OPTIONS } from '@/constants/theme'
 
 interface ThemeToggleProps {

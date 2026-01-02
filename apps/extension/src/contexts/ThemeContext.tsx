@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-  type ReactNode,
-} from 'react'
+import { createContext, useCallback, useEffect, type ReactNode } from 'react'
 import {
   type Theme,
   type ThemeType,
@@ -14,7 +8,7 @@ import {
   blueTheme,
   darkTheme,
 } from '@/themes'
-import { useSettings } from './SettingsContext'
+import { useSettings } from '@/hooks/useSettings'
 
 const themes: Record<ThemeType, Theme> = {
   milk: milkTheme,
@@ -39,7 +33,7 @@ interface ThemeContextValue {
   toggleTheme: () => void
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null)
+export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { settings, updateSettings } = useSettings()
@@ -118,12 +112,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   )
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
 }

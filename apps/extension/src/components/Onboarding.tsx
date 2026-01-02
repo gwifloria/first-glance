@@ -17,26 +17,25 @@ const steps = [
   {
     icon: <RocketOutlined className="text-4xl text-[var(--text-primary)]" />,
     title: '欢迎使用',
-    description:
-      '将新标签页变成你的专注任务面板，每次打开都能看到今天最重要的事。',
+    description: '将新标签页变成你的专注任务面板，无需登录即可开始使用。',
   },
   {
     icon: <AppstoreOutlined className="text-4xl text-[var(--text-primary)]" />,
     title: '专注模式',
     description:
-      '默认显示专注模式，大时钟配合今日重点任务。点击右下角「Todo」进入完整列表。',
+      '大时钟配合今日重点任务，让你一眼看到最重要的事。最多添加 3 个专注任务。',
   },
   {
     icon: (
       <CheckCircleOutlined className="text-4xl text-[var(--text-primary)]" />
     ),
     title: '快捷操作',
-    description: '点击任务左侧圆圈完成任务，支持编辑、删除、新建等全部功能。',
+    description: '点击任务左侧圆圈完成任务，简单高效。',
   },
   {
     icon: <BgColorsOutlined className="text-4xl text-[var(--text-primary)]" />,
     title: '个性主题',
-    description: '提供手帐、玫瑰、海洋、暗黑四种主题，点击左上角色块切换。',
+    description: '多种主题可选，点击右上角切换。连接滴答清单可解锁更多功能。',
   },
 ]
 

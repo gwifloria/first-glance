@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   CACHED_TASKS: 'cached_tasks',
   CACHED_PROJECTS: 'cached_projects',
   LAST_SYNC: 'last_sync',
+  LOCAL_TASKS: 'local_tasks', // Guest mode local tasks
 } as const
 
 export const storage = {

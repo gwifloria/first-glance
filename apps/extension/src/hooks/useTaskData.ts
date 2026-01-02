@@ -37,6 +37,13 @@ export function useTaskData(isLoggedIn: boolean) {
     }
   }, [isLoggedIn])
 
+  // 当登录状态变化时自动刷新数据
+  useEffect(() => {
+    if (isLoggedIn) {
+      refresh()
+    }
+  }, [isLoggedIn, refresh])
+
   // 只刷新收集箱任务（用于快速更新）
   const refreshInbox = useCallback(async () => {
     if (!isLoggedIn) return

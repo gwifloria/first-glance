@@ -52,3 +52,16 @@ export interface ApiError {
   errorCode: string
   errorMessage: string
 }
+
+// Guest mode types
+export type AppMode = 'guest' | 'connected'
+
+export interface LocalTask {
+  id: string
+  title: string
+  priority: number
+  dueDate?: string
+  status: number // 0: pending, 2: completed
+  createdTime: string
+  isLocal: true
+}

@@ -1,15 +1,17 @@
 import { useState, useCallback } from 'react'
-import type { Task } from '@/types'
+import type { Task, LocalTask } from '@/types'
 
-export function useTaskCompletion(
-  onComplete: (task: Task) => void | Promise<void>,
+type TaskType = Task | LocalTask
+
+export function useTaskCompletion<T extends TaskType = Task>(
+  onComplete: (task: T) => void | Promise<void>,
   options: { delay?: number; delayBefore?: boolean } = {}
 ) {
   const { delay = 300, delayBefore = true } = options
   const [completing, setCompleting] = useState(false)
 
   const handleComplete = useCallback(
-    async (task: Task) => {
+    async (task: T) => {
       setCompleting(true)
       try {
         if (delayBefore) {

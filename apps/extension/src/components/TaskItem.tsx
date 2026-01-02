@@ -39,7 +39,7 @@ export function TaskItem({
         group flex items-start justify-between py-3 px-3 -mx-3 rounded-lg
         transition-all duration-200 ease-out
         hover:bg-black/[0.02] hover:-translate-y-0.5
-        ${completing ? 'animate-[taskComplete_0.3s_ease_forwards]' : ''}
+        ${completing ? 'animate-[taskComplete_0.4s_ease-out_forwards]' : ''}
       `}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">

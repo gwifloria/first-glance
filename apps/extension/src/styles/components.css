@@ -1,0 +1,123 @@
+/**
+ * 组件样式
+ */
+
+/* Focus 按钮 */
+.focus-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-card) !important;
+  border: 0 !important;
+  padding: 6px 16px !important;
+  height: auto !important;
+}
+.focus-btn-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.focus-btn-gradient {
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--accent) 90deg,
+    transparent 180deg
+  );
+}
+.focus-btn-bg {
+  position: absolute;
+  inset: 2px;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  pointer-events: none;
+}
+.focus-btn-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* 快速添加输入框 */
+.quick-add-input {
+  background: var(--bg-secondary) !important;
+  border-radius: 12px !important;
+  padding: 14px 20px !important;
+  font-size: 14px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s !important;
+}
+.quick-add-input:hover {
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-small) !important;
+}
+.quick-add-input:focus-within {
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-medium) !important;
+}
+.quick-add-input .ant-input {
+  background: transparent !important;
+}
+
+/* Onboarding 按钮 */
+.onboarding-btn-skip {
+  flex: 1 !important;
+  border-radius: 12px !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+}
+.onboarding-btn-skip:hover {
+  color: var(--text-primary) !important;
+  border-color: var(--text-secondary) !important;
+}
+.onboarding-btn-primary {
+  border-radius: 12px !important;
+  background: var(--text-primary) !important;
+}
+.onboarding-btn-primary:hover {
+  opacity: 0.9 !important;
+}
+
+/* 侧边栏设置按钮 */
+.sidebar-settings-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  height: auto !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}
+.sidebar-settings-btn.collapsed {
+  justify-content: center !important;
+  padding: 8px !important;
+}
+
+/* Todo 浮动按钮 */
+.todo-float-btn {
+  position: absolute !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 50 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: var(--shadow-small) !important;
+}
+.todo-float-btn:hover {
+  box-shadow: var(--shadow-medium) !important;
+}
+
+/* Ant Design Modal 防抖动 */
+body.ant-scrolling-effect {
+  width: 100% !important;
+  overflow: hidden !important;
+}

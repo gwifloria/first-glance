@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { ProjectColorDot } from '../ProjectColorDot'
+import { ProjectColorDot } from './ProjectColorDot'
 
 interface FilterItemProps {
   active: boolean

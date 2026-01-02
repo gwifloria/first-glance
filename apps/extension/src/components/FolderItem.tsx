@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { CollapseArrow } from '../CollapseArrow'
+import { CollapseArrow } from './CollapseArrow'
 import { FilterItem } from './FilterItem'
 
 interface ProjectWithCount {

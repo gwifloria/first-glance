@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { SettingsModal } from '../SettingsModal'
+import { SettingsModal } from './SettingsModal'
 import type { Project } from '@/types'
 
 interface SidebarFooterProps {

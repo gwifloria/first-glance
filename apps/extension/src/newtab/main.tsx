@@ -9,7 +9,7 @@ import { SettingsProvider } from '@/contexts/SettingsContext'
 import { antdTheme } from '@/themes/antdTheme'
 import '@/i18n'
 import App from './App'
-import './index.css'
+import '@/styles/index.css'
 
 export function Root() {
   const { i18n } = useTranslation()

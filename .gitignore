@@ -29,3 +29,9 @@ npm-debug.log*
 
 # Turborepo
 .turbo
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Astro generated files
+.astro/

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoCgWDP59X32DDKwXYpa9yKZ1qUg/u4UMaHBLh3zr5VUb9OYlDlOYNDsrNAvAz2gaZtKklRa++cSSDDq6slSl4QEP9GdSBJQ7KbQn9YKRcWPobl09VkBDbQxoq6i1hpKJNwd9I93ISDLqpEO1KJL7H9aaAL0me5HhYKQ9kXmdSVSlEZY4oEieRoXlPihrYZiD/d2YXTuw5lS3c2GMF8EvrPfxfqK9WP4idS9RPNLHPuXyDOIyLzNlQp/v8VIQalrmREMfeBBCm6xHSgdYfrTDziSno60XekoBRAbD3Kyndte09L3SykGFJxJ4jrMzxtTn1Uv3EnEpwBDP8NzTPT8dUQIDAQAB",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo/+AKT+VDIvgaoZP/UQeBm1qiLBmSy2waAllqhMkoU56jzXCBYUMwR+v24DpEfOTf+lvHO0bvyDDD5l9LWIjHHSJ36/R3ESiqir8AO9tJV/+wgDmaPimaDJslX91mYm3WWRrpToDo+BXpHIv1EGjpnjvpHYr5lneUz1FU/G1gVcxxxl+EpSWBUO2VT8v0xxqX3lCH6UTy1IuMB23cwQZ+auiJyBYX/eDh36MZJqfpcNwCmWbqIz2ltJLQGmYB5n9Tw3ju+89ZmNRNDgnIOoHOmrHWVzG3iIlIpP6aH1ZBPhpcolxDCDqfETRLsq8DCZUIK6Rb5Pja72Z4aGGEg0HZQIDAQAB",
   "name": "First Glance - Focus Tab",
   "description": "Turn your new tab into a focus dashboard. View high-priority tasks at a glance. Stay productive, avoid distractions.",
   "version": "1.0.0",

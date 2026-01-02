@@ -29,6 +29,3 @@ npm-debug.log*
 
 # Turborepo
 .turbo
-
-# pnpm
-pnpm-lock.yaml

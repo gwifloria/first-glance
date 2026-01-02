@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { AppstoreOutlined } from '@ant-design/icons'
 
 interface FocusButtonProps {
@@ -9,19 +10,22 @@ export function FocusButton({ onClick, size = 'default' }: FocusButtonProps) {
   const isLarge = size === 'large'
 
   return (
-    <button
+    <Button
+      type="default"
+      shape="round"
+      size={isLarge ? 'large' : 'middle'}
       onClick={onClick}
       className={`
-        focus-button relative rounded-full bg-[var(--bg-card)] cursor-pointer border-0 overflow-hidden
-        ${isLarge ? 'px-5 py-2.5' : 'px-4 py-1.5'}
+        !relative !overflow-hidden !bg-[var(--bg-card)] !border-0
+        ${isLarge ? '!px-5 !py-2.5 !h-auto' : '!px-4 !py-1.5 !h-auto'}
       `}
     >
       {/* 渐变边框动画层 */}
-      <span className="absolute inset-0 rounded-full p-[2px] overflow-hidden">
+      <span className="absolute inset-0 rounded-full p-[2px] overflow-hidden pointer-events-none">
         <span className="absolute inset-[-50%] animate-spin-slow bg-[conic-gradient(from_0deg,transparent_0deg,var(--accent)_90deg,transparent_180deg)]" />
       </span>
       {/* 内容背景层 */}
-      <span className="absolute inset-[2px] rounded-full bg-[var(--bg-card)]" />
+      <span className="absolute inset-[2px] rounded-full bg-[var(--bg-card)] pointer-events-none" />
       {/* 内容层 */}
       <span
         className={`
@@ -32,6 +36,6 @@ export function FocusButton({ onClick, size = 'default' }: FocusButtonProps) {
         <AppstoreOutlined className={isLarge ? 'text-base' : 'text-sm'} />
         <span>FOCUS</span>
       </span>
-    </button>
+    </Button>
   )
 }

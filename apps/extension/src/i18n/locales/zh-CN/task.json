@@ -1,0 +1,48 @@
+{
+  "group": {
+    "pinned": "置顶",
+    "overdue": "已过期",
+    "today": "今天",
+    "tomorrow": "明天",
+    "later": "之后",
+    "noDate": "无日期"
+  },
+  "filter": {
+    "all": "所有任务",
+    "today": "今天",
+    "tomorrow": "明天",
+    "week": "最近7天",
+    "overdue": "已过期",
+    "noDate": "无日期",
+    "default": "任务"
+  },
+  "placeholder": {
+    "quickAdd": "+ 添加任务，回车保存...",
+    "search": "搜索任务..."
+  },
+  "editor": {
+    "titleNew": "新建任务",
+    "titleEdit": "编辑任务",
+    "labelTitle": "标题",
+    "labelContent": "描述",
+    "labelProject": "所属项目",
+    "labelPriority": "优先级",
+    "placeholderTitle": "任务标题",
+    "placeholderContent": "任务描述（可选）"
+  },
+  "confirm": {
+    "delete": "确定删除此任务？"
+  },
+  "validation": {
+    "titleRequired": "请输入任务标题"
+  },
+  "priority": {
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "none": "无"
+  },
+  "empty": {
+    "noTasks": "太棒了，没有待办任务！"
+  }
+}

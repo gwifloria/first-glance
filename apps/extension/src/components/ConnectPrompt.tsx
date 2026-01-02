@@ -1,5 +1,6 @@
-import { Modal } from 'antd'
+import { Modal, Button } from 'antd'
 import { LinkOutlined, SyncOutlined, CloseOutlined } from '@ant-design/icons'
+import { Trans, useTranslation } from 'react-i18next'
 
 interface ConnectPromptProps {
   open: boolean
@@ -18,6 +19,7 @@ export function ConnectPrompt({
   onConnectWithoutMigrate,
   onCancel,
 }: ConnectPromptProps) {
+  const { t } = useTranslation('common')
   const hasLocalTasks = localTaskCount > 0
 
   return (
@@ -27,6 +29,7 @@ export function ConnectPrompt({
       closable={false}
       footer={null}
       width={400}
+      destroyOnClose={false}
       className="connect-prompt-modal"
     >
       <div className="p-6 text-center">
@@ -37,69 +40,77 @@ export function ConnectPrompt({
 
         {/* Title */}
         <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
-          Connect to DidaList
+          {t('connectPrompt.title')}
         </h2>
 
         {/* Description */}
         <p className="text-[var(--text-secondary)] mb-6">
           {hasLocalTasks ? (
-            <>
-              You have{' '}
-              <span className="font-semibold text-[var(--text-primary)]">
-                {localTaskCount}
-              </span>{' '}
-              local task{localTaskCount > 1 ? 's' : ''}. Would you like to sync
-              them to DidaList?
-            </>
+            <Trans
+              i18nKey="connectPrompt.descriptionWithTasks"
+              values={{ count: localTaskCount }}
+              components={{
+                strong: (
+                  <span className="font-semibold text-[var(--text-primary)]" />
+                ),
+              }}
+            />
           ) : (
-            <>Sync your tasks with DidaList for full functionality.</>
+            t('connectPrompt.descriptionNoTasks')
           )}
         </p>
 
         {/* Buttons */}
         <div className="flex flex-col gap-3">
           {hasLocalTasks && (
-            <button
+            <Button
+              type="primary"
+              size="large"
+              block
               onClick={onConnectAndMigrate}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer border-0 text-sm font-medium"
+              icon={<SyncOutlined spin={loading} />}
+              className="!h-12 !rounded-lg !bg-[var(--accent)] hover:!bg-[var(--accent)] hover:!opacity-90"
             >
-              <SyncOutlined spin={loading} />
-              <span>Connect & Sync Tasks</span>
-            </button>
+              {t('connectPrompt.connectAndSync')}
+            </Button>
           )}
 
-          <button
+          <Button
+            type={hasLocalTasks ? 'default' : 'primary'}
+            size="large"
+            block
             onClick={onConnectWithoutMigrate}
             disabled={loading}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-opacity disabled:opacity-50 cursor-pointer text-sm font-medium ${
+            icon={<LinkOutlined />}
+            className={
               hasLocalTasks
-                ? 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--bg-secondary)]'
-                : 'bg-[var(--accent)] text-white border-0 hover:opacity-90'
-            }`}
+                ? '!h-12 !rounded-lg !bg-[var(--bg-card)] !text-[var(--text-primary)] !border-[var(--border)] hover:!bg-[var(--bg-secondary)]'
+                : '!h-12 !rounded-lg !bg-[var(--accent)] hover:!bg-[var(--accent)] hover:!opacity-90'
+            }
           >
-            <LinkOutlined />
-            <span>
-              {hasLocalTasks
-                ? 'Connect Without Syncing'
-                : 'Connect to DidaList'}
-            </span>
-          </button>
+            {hasLocalTasks
+              ? t('connectPrompt.connectWithoutSync')
+              : t('connectPrompt.connectOnly')}
+          </Button>
 
-          <button
+          <Button
+            type="text"
+            size="large"
+            block
             onClick={onCancel}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 text-sm"
+            icon={<CloseOutlined />}
+            className="!h-12 !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] hover:!bg-transparent"
           >
-            <CloseOutlined />
-            <span>Maybe Later</span>
-          </button>
+            {t('button.maybeLater')}
+          </Button>
         </div>
 
         {/* Note for local tasks */}
         {hasLocalTasks && (
           <p className="text-xs text-[var(--text-secondary)] mt-4 opacity-60">
-            Synced tasks will be added to your DidaList inbox
+            {t('connectPrompt.syncNote')}
           </p>
         )}
       </div>

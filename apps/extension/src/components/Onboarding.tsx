@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Modal } from 'antd'
+import { Modal, Button } from 'antd'
 import {
   RocketOutlined,
   CheckCircleOutlined,
   AppstoreOutlined,
   BgColorsOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 const ONBOARDING_KEY = 'onboarding_completed'
 
@@ -13,35 +14,24 @@ interface OnboardingProps {
   onComplete: () => void
 }
 
-const steps = [
-  {
-    icon: <RocketOutlined className="text-4xl text-[var(--text-primary)]" />,
-    title: '欢迎使用',
-    description: '将新标签页变成你的专注任务面板，无需登录即可开始使用。',
-  },
-  {
-    icon: <AppstoreOutlined className="text-4xl text-[var(--text-primary)]" />,
-    title: '专注模式',
-    description:
-      '大时钟配合今日重点任务，让你一眼看到最重要的事。最多添加 3 个专注任务。',
-  },
-  {
-    icon: (
-      <CheckCircleOutlined className="text-4xl text-[var(--text-primary)]" />
-    ),
-    title: '快捷操作',
-    description: '点击任务左侧圆圈完成任务，简单高效。',
-  },
-  {
-    icon: <BgColorsOutlined className="text-4xl text-[var(--text-primary)]" />,
-    title: '个性主题',
-    description: '多种主题可选，点击右上角切换。连接滴答清单可解锁更多功能。',
-  },
+const stepIcons = [
+  <RocketOutlined className="text-4xl text-[var(--text-primary)]" />,
+  <AppstoreOutlined className="text-4xl text-[var(--text-primary)]" />,
+  <CheckCircleOutlined className="text-4xl text-[var(--text-primary)]" />,
+  <BgColorsOutlined className="text-4xl text-[var(--text-primary)]" />,
 ]
 
 export function Onboarding({ onComplete }: OnboardingProps) {
+  const { t } = useTranslation('onboarding')
   const [visible, setVisible] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+
+  const steps = [
+    { key: 'step1', icon: stepIcons[0] },
+    { key: 'step2', icon: stepIcons[1] },
+    { key: 'step3', icon: stepIcons[2] },
+    { key: 'step4', icon: stepIcons[3] },
+  ]
 
   useEffect(() => {
     // 检查是否已完成引导
@@ -102,30 +92,34 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
         {/* 标题 */}
         <h2 className="text-xl font-medium text-[var(--text-primary)] mb-3">
-          {step.title}
+          {t(`${step.key}.title`)}
         </h2>
 
         {/* 描述 */}
         <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-8">
-          {step.description}
+          {t(`${step.key}.description`)}
         </p>
 
         {/* 按钮 */}
         <div className="flex gap-3">
           {!isLastStep && (
-            <button
+            <Button
+              type="default"
+              size="large"
               onClick={handleSkip}
-              className="flex-1 py-2.5 text-sm text-[var(--text-secondary)] bg-transparent border border-[var(--border)] rounded-xl cursor-pointer hover:text-[var(--text-primary)] hover:border-[var(--text-secondary)] transition-colors"
+              className="!flex-1 !rounded-xl !text-[var(--text-secondary)] !border-[var(--border)] hover:!text-[var(--text-primary)] hover:!border-[var(--text-secondary)]"
             >
-              跳过
-            </button>
+              {t('common:button.skip')}
+            </Button>
           )}
-          <button
+          <Button
+            type="primary"
+            size="large"
             onClick={handleNext}
-            className={`${isLastStep ? 'w-full' : 'flex-1'} py-2.5 text-sm text-white bg-[var(--text-primary)] border-0 rounded-xl cursor-pointer hover:opacity-90 transition-opacity`}
+            className={`${isLastStep ? '!w-full' : '!flex-1'} !rounded-xl !bg-[var(--text-primary)] hover:!bg-[var(--text-primary)] hover:!opacity-90`}
           >
-            {isLastStep ? '开始使用' : '下一步'}
-          </button>
+            {isLastStep ? t('common:button.start') : t('common:button.next')}
+          </Button>
         </div>
       </div>
     </Modal>

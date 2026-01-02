@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { message } from 'antd'
 import { LogoutOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { FocusView } from '@/components/FocusView'
 import { Onboarding } from '@/components/Onboarding'
 import { Sidebar } from '@/components/Sidebar'
@@ -20,6 +21,7 @@ import type { Task, LocalTask } from '@/types'
 type ViewMode = 'focus' | 'list'
 
 function AppContent() {
+  const { t } = useTranslation('common')
   const {
     isGuest,
     isConnected,
@@ -68,19 +70,19 @@ function AppContent() {
       await connect()
       const result = await migrateLocalTasksToDidaList()
       if (result.success > 0) {
-        message.success(`Synced ${result.success} task(s) to DidaList`)
+        message.success(t('message.syncSuccess', { count: result.success }))
       }
       if (result.failed > 0) {
-        message.warning(`Failed to sync ${result.failed} task(s)`)
+        message.warning(t('message.syncFailed', { count: result.failed }))
       }
       await refreshRemoteTasks()
       setShowConnectPrompt(false)
     } catch (err) {
-      message.error('Failed to connect')
+      message.error(t('message.failedToConnect'))
     } finally {
       setConnectLoading(false)
     }
-  }, [connect, refreshRemoteTasks])
+  }, [connect, refreshRemoteTasks, t])
 
   // Connect without migrating
   const handleConnectWithoutMigrate = useCallback(async () => {
@@ -90,11 +92,11 @@ function AppContent() {
       await clearLocalTasks()
       setShowConnectPrompt(false)
     } catch (err) {
-      message.error('Failed to connect')
+      message.error(t('message.failedToConnect'))
     } finally {
       setConnectLoading(false)
     }
-  }, [connect])
+  }, [connect, t])
 
   // Cancel connect
   const handleCancelConnect = useCallback(() => {
@@ -119,14 +121,14 @@ function AppContent() {
       if (isGuest) {
         const result = await localTasks.createTask(taskData.title || '')
         if (!result) {
-          message.warning('Task limit reached. Connect to add more.')
+          message.warning(t('message.taskLimitReached'))
         }
         return result
       } else {
         return createInboxTask(taskData)
       }
     },
-    [isGuest, localTasks, createInboxTask]
+    [isGuest, localTasks, createInboxTask, t]
   )
 
   // Determine which tasks to show in FocusView

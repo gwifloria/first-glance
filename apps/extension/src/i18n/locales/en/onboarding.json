@@ -1,0 +1,18 @@
+{
+  "step1": {
+    "title": "Welcome",
+    "description": "Turn your new tab into a focused task panel. Start using without login."
+  },
+  "step2": {
+    "title": "Focus Mode",
+    "description": "A large clock with today's key tasks helps you see what matters most. Add up to 3 focus tasks."
+  },
+  "step3": {
+    "title": "Quick Actions",
+    "description": "Click the circle on the left to complete a task. Simple and efficient."
+  },
+  "step4": {
+    "title": "Themes",
+    "description": "Multiple themes available. Click the top right to switch. Connect TickTick to unlock more features."
+  }
+}

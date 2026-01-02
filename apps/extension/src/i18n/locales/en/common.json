@@ -1,0 +1,32 @@
+{
+  "button": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Get Started",
+    "connect": "Connect",
+    "maybeLater": "Maybe Later"
+  },
+  "label": {
+    "list": "List",
+    "smartList": "SMART LIST"
+  },
+  "message": {
+    "todayIsGift": "Today is a gift",
+    "taskLimitReached": "Task limit reached. Connect to add more.",
+    "failedToConnect": "Failed to connect",
+    "syncSuccess": "Synced {{count}} task(s) to TickTick",
+    "syncFailed": "Failed to sync {{count}} task(s)"
+  },
+  "connectPrompt": {
+    "title": "Connect to TickTick",
+    "descriptionWithTasks": "You have <strong>{{count}}</strong> local task(s). Would you like to sync them to TickTick?",
+    "descriptionNoTasks": "Sync your tasks with TickTick for full functionality.",
+    "connectAndSync": "Connect & Sync Tasks",
+    "connectWithoutSync": "Connect Without Syncing",
+    "connectOnly": "Connect to TickTick",
+    "syncNote": "Synced tasks will be added to your TickTick inbox"
+  }
+}

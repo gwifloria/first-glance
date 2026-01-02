@@ -1,3 +1,4 @@
+import { Button } from 'antd'
 import { CheckOutlined } from '@ant-design/icons'
 
 interface TaskCheckboxProps {
@@ -17,23 +18,26 @@ export function TaskCheckbox({
 }: TaskCheckboxProps) {
   if (variant === 'focus') {
     return (
-      <button
+      <Button
+        type="default"
+        size="small"
         onClick={onComplete}
         disabled={disabled || completing}
+        icon={
+          completing ? (
+            <CheckOutlined className="!text-xs !text-[var(--accent)]" />
+          ) : undefined
+        }
         className={`
-          w-6 h-6 rounded border-2 border-[var(--border)] flex items-center justify-center
-          cursor-pointer transition-all bg-transparent
-          hover:border-[var(--accent)] hover:bg-[var(--accent-light)]
-          ${completing ? 'opacity-50' : ''}
+          !w-6 !h-6 !min-w-0 !p-0 !rounded !border-2 !border-[var(--border)] !flex !items-center !justify-center
+          !bg-transparent hover:!border-[var(--accent)] hover:!bg-[var(--accent-light)]
+          ${completing ? '!opacity-50' : ''}
         `}
-      >
-        {completing && (
-          <CheckOutlined className="text-xs text-[var(--accent)]" />
-        )}
-      </button>
+      />
     )
   }
 
+  // Default variant uses a custom div for the circular checkbox style
   return (
     <div
       onClick={disabled ? undefined : onComplete}

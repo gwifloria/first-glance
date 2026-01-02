@@ -1,15 +1,17 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Empty, Alert, Input } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { TaskItem } from './TaskItem'
 import { TaskEditor } from './TaskEditor'
 import { CollapseArrow } from './CollapseArrow'
 import { FocusButton } from './FocusButton'
 import { TaskSkeleton } from './TaskSkeleton'
+import { Clock } from './common/Clock'
 import { useSettings } from '@/contexts/SettingsContext'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
 import { useRelativeDates } from '@/hooks/useRelativeDates'
 import { filterTasks, sortTasks, type TaskGroup } from '@/utils/taskFilters'
-import { extractDateStr, formatDisplayDate, formatTime } from '@/utils/date'
+import { extractDateStr } from '@/utils/date'
 import type { Task, Project } from '@/types'
 
 interface TaskListProps {
@@ -39,19 +41,11 @@ export function TaskList({
   onCreate,
   onFocus,
 }: TaskListProps) {
+  const { t } = useTranslation('task')
   const { settings } = useSettings()
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [quickAddValue, setQuickAddValue] = useState('')
-  const [currentTime, setCurrentTime] = useState(new Date())
-
-  // 更新时间
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
 
   // 分组折叠状态
   const [collapsedGroups, toggleGroup] = usePersistedSet('taskGroupCollapsed')
@@ -74,7 +68,7 @@ export function TaskList({
     if (pinned.length > 0) {
       groups.push({
         id: 'pinned',
-        title: '置顶',
+        title: t('group.pinned'),
         tasks: pinned.sort((a, b) => b.sortOrder - a.sortOrder),
       })
     }
@@ -83,50 +77,54 @@ export function TaskList({
     const unpinned = filteredTasks.filter((t) => t.sortOrder <= 0)
 
     // 已过期
-    const overdue = unpinned.filter((t) => {
-      if (!t.dueDate) return false
-      const taskDateStr = extractDateStr(t.dueDate)
+    const overdue = unpinned.filter((task) => {
+      if (!task.dueDate) return false
+      const taskDateStr = extractDateStr(task.dueDate)
       return taskDateStr < todayStr
     })
     if (overdue.length > 0) {
-      groups.push({ id: 'overdue', title: '已过期', tasks: overdue })
+      groups.push({ id: 'overdue', title: t('group.overdue'), tasks: overdue })
     }
 
     // 今天
-    const todayTasks = unpinned.filter((t) => {
-      if (!t.dueDate) return false
-      return extractDateStr(t.dueDate) === todayStr
+    const todayTasks = unpinned.filter((task) => {
+      if (!task.dueDate) return false
+      return extractDateStr(task.dueDate) === todayStr
     })
     if (todayTasks.length > 0) {
-      groups.push({ id: 'today', title: '今天', tasks: todayTasks })
+      groups.push({ id: 'today', title: t('group.today'), tasks: todayTasks })
     }
 
     // 明天
-    const tomorrowTasks = unpinned.filter((t) => {
-      if (!t.dueDate) return false
-      return extractDateStr(t.dueDate) === tomorrowStr
+    const tomorrowTasks = unpinned.filter((task) => {
+      if (!task.dueDate) return false
+      return extractDateStr(task.dueDate) === tomorrowStr
     })
     if (tomorrowTasks.length > 0) {
-      groups.push({ id: 'tomorrow', title: '明天', tasks: tomorrowTasks })
+      groups.push({
+        id: 'tomorrow',
+        title: t('group.tomorrow'),
+        tasks: tomorrowTasks,
+      })
     }
 
     // 之后
-    const later = unpinned.filter((t) => {
-      if (!t.dueDate) return false
-      return extractDateStr(t.dueDate) >= dayAfterStr
+    const later = unpinned.filter((task) => {
+      if (!task.dueDate) return false
+      return extractDateStr(task.dueDate) >= dayAfterStr
     })
     if (later.length > 0) {
-      groups.push({ id: 'later', title: '之后', tasks: later })
+      groups.push({ id: 'later', title: t('group.later'), tasks: later })
     }
 
     // 无日期
-    const noDate = unpinned.filter((t) => !t.dueDate)
+    const noDate = unpinned.filter((task) => !task.dueDate)
     if (noDate.length > 0) {
-      groups.push({ id: 'nodate', title: '无日期', tasks: noDate })
+      groups.push({ id: 'nodate', title: t('group.noDate'), tasks: noDate })
     }
 
     return groups
-  }, [filteredTasks, todayStr, tomorrowStr, dayAfterStr])
+  }, [filteredTasks, todayStr, tomorrowStr, dayAfterStr, t])
 
   // 对每组内的任务排序（按优先级）
   const sortedGroups = useMemo(() => {
@@ -194,24 +192,25 @@ export function TaskList({
     if (filter.startsWith('project:')) {
       const projectId = filter.replace('project:', '')
       const project = projects.find((p) => p.id === projectId)
-      return project?.name || '清单'
+      return project?.name || t('common:label.list')
     }
-    const titles: Record<string, string> = {
-      all: '所有任务',
-      today: '今天',
-      tomorrow: '明天',
-      week: '最近7天',
-      overdue: '已过期',
-      nodate: '无日期',
+    const filterKeys: Record<string, string> = {
+      all: 'filter.all',
+      today: 'filter.today',
+      tomorrow: 'filter.tomorrow',
+      week: 'filter.week',
+      overdue: 'filter.overdue',
+      nodate: 'filter.noDate',
     }
-    return titles[filter] || '任务'
+    const key = filterKeys[filter]
+    return key ? t(key) : t('filter.default')
   }
 
   const getFilterLabel = () => {
     if (filter.startsWith('project:')) {
-      return '清单'
+      return t('common:label.list')
     }
-    return 'SMART LIST'
+    return t('common:label.smartList')
   }
 
   return (
@@ -237,14 +236,9 @@ export function TaskList({
           {onFocus && <FocusButton onClick={onFocus} size="large" />}
           <div className="text-right">
             <div className="text-xs text-[var(--text-secondary)] mb-1">
-              Today is a gift
+              {t('common:message.todayIsGift')}
             </div>
-            <div className="text-4xl max-md:text-2xl font-extralight text-[var(--text-secondary)] leading-none">
-              {formatTime(currentTime)}
-            </div>
-            <div className="text-xs text-[var(--text-secondary)] mt-1">
-              {formatDisplayDate(currentTime)}
-            </div>
+            <Clock variant="small" showDate />
           </div>
         </div>
       </div>
@@ -252,7 +246,7 @@ export function TaskList({
       {/* 快速添加 */}
       <div className="mb-6">
         <Input
-          placeholder="+ 添加任务，回车保存..."
+          placeholder={t('placeholder.quickAdd')}
           value={quickAddValue}
           onChange={(e) => setQuickAddValue(e.target.value)}
           onPressEnter={handleQuickAdd}
@@ -285,7 +279,7 @@ export function TaskList({
           <Empty
             description={
               <span className="text-[var(--text-secondary)] text-sm">
-                太棒了，没有待办任务！
+                {t('empty.noTasks')}
               </span>
             }
             className="!py-[100px] !px-5 !bg-transparent"

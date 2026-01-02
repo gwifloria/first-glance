@@ -37,13 +37,6 @@ export function useTaskData(isLoggedIn: boolean) {
     }
   }, [isLoggedIn])
 
-  // 当登录状态变化时自动刷新数据
-  useEffect(() => {
-    if (isLoggedIn) {
-      refresh()
-    }
-  }, [isLoggedIn, refresh])
-
   // 只刷新收集箱任务（用于快速更新）
   const refreshInbox = useCallback(async () => {
     if (!isLoggedIn) return
@@ -61,9 +54,12 @@ export function useTaskData(isLoggedIn: boolean) {
     }
   }, [isLoggedIn])
 
+  // 当登录状态变化时自动刷新数据（仅此一处）
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    if (isLoggedIn) {
+      refresh()
+    }
+  }, [isLoggedIn, refresh])
 
   // ============ 操作 ============
 
@@ -108,33 +104,29 @@ export function useTaskData(isLoggedIn: boolean) {
     [refresh]
   )
 
-  const createTask = useCallback(
-    async (task: Partial<Task>) => {
-      try {
-        const created = await api.createTask(task)
-        await refresh()
-        return created
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '创建任务失败')
-        throw err
-      }
-    },
-    [refresh]
-  )
+  const createTask = useCallback(async (task: Partial<Task>) => {
+    try {
+      const created = await api.createTask(task)
+      // 乐观更新：直接将新任务添加到列表
+      setTasks((prev) => [...prev, created])
+      return created
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '创建任务失败')
+      throw err
+    }
+  }, [])
 
-  const createInboxTask = useCallback(
-    async (task: Partial<Task>) => {
-      try {
-        const created = await api.createTask(task)
-        await refreshInbox()
-        return created
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '创建任务失败')
-        throw err
-      }
-    },
-    [refreshInbox]
-  )
+  const createInboxTask = useCallback(async (task: Partial<Task>) => {
+    try {
+      const created = await api.createTask(task)
+      // 乐观更新：直接将新任务添加到列表
+      setTasks((prev) => [...prev, created])
+      return created
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '创建任务失败')
+      throw err
+    }
+  }, [])
 
   return {
     // 原始数据

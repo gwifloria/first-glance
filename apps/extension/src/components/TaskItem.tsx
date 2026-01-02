@@ -1,5 +1,7 @@
+import { memo } from 'react'
 import { Button, Popconfirm } from 'antd'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { formatDateStr, extractDateStr, formatShortDate } from '@/utils/date'
 import { getPriorityColor } from '@/constants/task'
 import { ProjectColorDot } from './ProjectColorDot'
@@ -15,13 +17,14 @@ interface TaskItemProps {
   onEdit: (task: Task) => void
 }
 
-export function TaskItem({
+export const TaskItem = memo(function TaskItem({
   task,
   project,
   onComplete,
   onDelete,
   onEdit,
 }: TaskItemProps) {
+  const { t } = useTranslation()
   const { completing, handleComplete } = useTaskCompletion(onComplete)
 
   const isOverdue = () => {
@@ -87,10 +90,10 @@ export function TaskItem({
           className="!w-7 !h-7 !text-[var(--text-secondary)] hover:!text-[var(--accent)] hover:!bg-[var(--accent-light)]"
         />
         <Popconfirm
-          title="确定删除此任务？"
+          title={t('task:confirm.delete')}
           onConfirm={() => onDelete(task)}
-          okText="删除"
-          cancelText="取消"
+          okText={t('common:button.delete')}
+          cancelText={t('common:button.cancel')}
         >
           <Button
             type="text"
@@ -103,4 +106,4 @@ export function TaskItem({
       </div>
     </div>
   )
-}
+})

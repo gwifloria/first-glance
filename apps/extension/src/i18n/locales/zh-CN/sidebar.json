@@ -1,0 +1,21 @@
+{
+  "smartList": {
+    "title": "智能清单",
+    "inbox": "收集箱",
+    "today": "今天",
+    "tomorrow": "明天",
+    "week": "最近7天",
+    "overdue": "已过期"
+  },
+  "section": {
+    "lists": "清单"
+  },
+  "folder": {
+    "defaultName": "文件夹 {{index}}"
+  },
+  "action": {
+    "expand": "展开侧边栏",
+    "collapse": "折叠侧边栏",
+    "settings": "设置"
+  }
+}

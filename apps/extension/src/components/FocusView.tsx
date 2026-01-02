@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react'
-import { LinkOutlined } from '@ant-design/icons'
+import { useState, memo } from 'react'
+import { Button } from 'antd'
+import { LinkOutlined, PlusOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/contexts/ThemeContext'
 import { getGreeting } from '@/utils/greeting'
-import { formatTime, formatDateStr } from '@/utils/date'
+import { formatDateStr } from '@/utils/date'
 import { getRandomQuote, type Quote } from '@/data/quotes'
 import { ThemeToggle } from './common/ThemeToggle'
 import { TaskCheckbox } from './common/TaskCheckbox'
+import { Clock } from './common/Clock'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { FocusSkeleton } from './TaskSkeleton'
 import type { Task, LocalTask } from '@/types'
@@ -34,19 +37,11 @@ export function FocusView({
   canAddMore = true,
   onConnect,
 }: FocusViewProps) {
+  const { t } = useTranslation('focus')
   const { theme } = useTheme()
-  const [currentTime, setCurrentTime] = useState(new Date())
   const [quote] = useState<Quote>(() => getRandomQuote())
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [creating, setCreating] = useState(false)
-
-  // 更新时间
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
 
   const greeting = getGreeting()
 
@@ -83,13 +78,16 @@ export function FocusView({
         <div className="flex items-center gap-3">
           {/* 访客模式显示连接按钮 */}
           {isGuestMode && onConnect && (
-            <button
+            <Button
+              type="primary"
+              shape="round"
+              size="small"
               onClick={onConnect}
-              className="flex items-center gap-1.5 text-sm px-4 py-1.5 bg-[var(--accent)] text-white rounded-full hover:opacity-90 transition-opacity cursor-pointer border-0"
+              icon={<LinkOutlined />}
+              className="!bg-[var(--accent)] hover:!bg-[var(--accent)] hover:!opacity-90"
             >
-              <LinkOutlined className="text-xs" />
-              <span>Connect</span>
-            </button>
+              {t('common:button.connect')}
+            </Button>
           )}
           <ThemeToggle variant="minimal" size="sm" />
         </div>
@@ -98,9 +96,7 @@ export function FocusView({
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
         {/* 大时钟 */}
-        <div className="text-[120px] font-extralight text-[var(--text-primary)] leading-none tracking-tight hover:scale-105 transition-transform duration-700">
-          {formatTime(currentTime)}
-        </div>
+        <Clock variant="large" />
 
         {/* 问候语 */}
         <div className="text-2xl text-[var(--text-primary)] mt-4 font-light">
@@ -110,14 +106,14 @@ export function FocusView({
         {/* TODAY'S FOCUS */}
         <div className="mt-16 w-full max-w-md">
           <h2 className="text-xs font-medium tracking-[3px] text-center text-[var(--text-secondary)] mb-8">
-            TODAY'S FOCUS
+            {t('title')}
           </h2>
 
           {loading ? (
             <FocusSkeleton />
           ) : focusTasks.length === 0 ? (
             <div className="text-center text-[var(--text-secondary)] text-lg">
-              今天没有高优先级任务
+              {t('empty')}
             </div>
           ) : (
             <div className="space-y-4">
@@ -140,24 +136,29 @@ export function FocusView({
               onKeyDown={(e) => e.key === 'Enter' && handleCreateTask()}
               placeholder={
                 isGuestMode && !canAddMore
-                  ? 'Connect to add more...'
-                  : 'Add another focus...'
+                  ? t('placeholder.connectToAdd')
+                  : t('placeholder.addFocus')
               }
               disabled={creating || (isGuestMode && !canAddMore)}
               className="w-full text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
             />
-            <div
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
               onClick={handleCreateTask}
-              className={`text-[var(--text-secondary)] text-xl mt-2 text-center cursor-pointer hover:text-[var(--accent)] transition-colors ${creating || (isGuestMode && !canAddMore) ? 'opacity-50 pointer-events-none' : ''}`}
-            >
-              +
-            </div>
+              disabled={creating || (isGuestMode && !canAddMore)}
+              icon={<PlusOutlined />}
+              className="!mx-auto !mt-2 !flex !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+            />
             {/* 访客模式限制提示 */}
             {isGuestMode && (
               <div className="text-xs text-[var(--text-secondary)] text-center mt-2 opacity-60">
                 {canAddMore
-                  ? `${3 - focusTasks.length}/3 available`
-                  : 'Connect to unlock more tasks'}
+                  ? t('guestLimit.available', {
+                      remaining: 3 - focusTasks.length,
+                    })
+                  : t('guestLimit.unlock')}
               </div>
             )}
           </div>
@@ -182,22 +183,24 @@ export function FocusView({
 
       {/* 右下角 Todo 按钮 - 访客模式隐藏 */}
       {!isGuestMode && onSwitchView && (
-        <button
+        <Button
+          type="default"
+          shape="round"
           onClick={onSwitchView}
-          className="absolute bottom-6 right-6 z-50 bg-[var(--bg-card)] text-[var(--text-primary)] px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-[var(--border)] text-sm flex items-center gap-2"
+          className="!absolute !bottom-6 !right-6 !z-50 !bg-[var(--bg-card)] !text-[var(--text-primary)] !border-[var(--border)] !shadow-sm hover:!shadow-md !flex !items-center !gap-2"
         >
-          <span>Todo</span>
+          Todo
           <span className="bg-[var(--accent)] text-white text-xs px-2 py-0.5 rounded-full">
             {todayTaskCount}
           </span>
-        </button>
+        </Button>
       )}
     </div>
   )
 }
 
-// 专注任务项组件
-function FocusTaskItem({
+// 专注任务项组件（使用 memo 避免不必要的重渲染）
+const FocusTaskItem = memo(function FocusTaskItem({
   task,
   onComplete,
 }: {
@@ -234,4 +237,4 @@ function FocusTaskItem({
       </span>
     </div>
   )
-}
+})

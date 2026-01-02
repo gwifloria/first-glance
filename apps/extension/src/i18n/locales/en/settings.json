@@ -1,0 +1,8 @@
+{
+  "title": "Settings",
+  "defaultProject": {
+    "label": "Default list for new tasks",
+    "inbox": "Inbox",
+    "hint": "This list will be used when quickly adding tasks in smart lists"
+  }
+}

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, memo } from 'react'
+import { Button } from 'antd'
 import {
   CalendarOutlined,
   FieldTimeOutlined,
@@ -8,6 +9,7 @@ import {
   MenuUnfoldOutlined,
   InboxOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { SettingsModal } from './SettingsModal'
 import { SearchInput } from './SearchInput'
 import { CollapseArrow } from './CollapseArrow'
@@ -48,9 +50,11 @@ interface FolderGroup {
 function SidebarHeader({
   collapsed,
   onToggleCollapse,
+  toggleTitle,
 }: {
   collapsed: boolean
   onToggleCollapse: () => void
+  toggleTitle: string
 }) {
   return (
     <div className={`p-4 pb-2 ${collapsed ? 'px-2' : ''}`}>
@@ -58,17 +62,14 @@ function SidebarHeader({
         className={`flex items-center gap-2 mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}
       >
         {!collapsed && <ThemeToggle />}
-        <button
+        <Button
+          type="text"
+          size="small"
           onClick={onToggleCollapse}
-          title={collapsed ? '展开侧边栏' : '折叠侧边栏'}
-          className="w-5 h-5 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer border-0 bg-transparent p-0"
-        >
-          {collapsed ? (
-            <MenuUnfoldOutlined className="text-sm" />
-          ) : (
-            <MenuFoldOutlined className="text-xs" />
-          )}
-        </button>
+          title={toggleTitle}
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          className="!w-5 !h-5 !min-w-0 !p-0 !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] hover:!bg-transparent"
+        />
       </div>
     </div>
   )
@@ -84,8 +85,8 @@ function SectionTitle({ title }: { title: string }) {
   )
 }
 
-// 筛选项组件
-function FilterItem({
+// 筛选项组件（使用 memo 避免不必要的重渲染）
+const FilterItem = memo(function FilterItem({
   active,
   onClick,
   icon,
@@ -148,10 +149,10 @@ function FilterItem({
       )}
     </div>
   )
-}
+})
 
-// 文件夹组件
-function FolderItem({
+// 文件夹组件（使用 memo 避免不必要的重渲染）
+const FolderItem = memo(function FolderItem({
   folder,
   collapsed,
   isFolderCollapsed,
@@ -205,7 +206,7 @@ function FolderItem({
       )}
     </div>
   )
-}
+})
 
 export function Sidebar({
   tasks,
@@ -215,6 +216,7 @@ export function Sidebar({
   onFilterChange,
   onSearch,
 }: SidebarProps) {
+  const { t } = useTranslation('sidebar')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [collapsedFolders, toggleFolder] = usePersistedSet(
@@ -226,31 +228,31 @@ export function Sidebar({
   const smartFilters: SmartFilter[] = [
     {
       id: 'inbox',
-      name: '收集箱',
+      name: t('smartList.inbox'),
       icon: <InboxOutlined />,
       count: counts.inbox,
     },
     {
       id: 'today',
-      name: '今天',
+      name: t('smartList.today'),
       icon: <FieldTimeOutlined />,
       count: counts.today,
     },
     {
       id: 'tomorrow',
-      name: '明天',
+      name: t('smartList.tomorrow'),
       icon: <CalendarOutlined />,
       count: counts.tomorrow,
     },
     {
       id: 'week',
-      name: '最近7天',
+      name: t('smartList.week'),
       icon: <CalendarOutlined />,
       count: counts.week,
     },
     {
       id: 'overdue',
-      name: '已过期',
+      name: t('smartList.overdue'),
       icon: <ClockCircleOutlined />,
       count: counts.overdue,
     },
@@ -284,7 +286,7 @@ export function Sidebar({
       folderIndex++
       folderList.push({
         id: groupId,
-        name: `文件夹 ${folderIndex}`,
+        name: t('folder.defaultName', { index: folderIndex }),
         projects: projectList.sort((a, b) => a.sortOrder - b.sortOrder),
       })
     })
@@ -308,7 +310,11 @@ export function Sidebar({
         transition-all duration-300 ease-out
       `}
     >
-      <SidebarHeader collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
+      <SidebarHeader
+        collapsed={collapsed}
+        onToggleCollapse={toggleCollapsed}
+        toggleTitle={collapsed ? t('action.expand') : t('action.collapse')}
+      />
 
       {!collapsed && (
         <SearchInput value={searchQuery} onChange={handleSearch} />
@@ -318,7 +324,7 @@ export function Sidebar({
       <div className="flex-1 overflow-y-auto px-2 scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent">
         {/* 智能清单 */}
         <div className="mb-2">
-          {!collapsed && <SectionTitle title="智能清单" />}
+          {!collapsed && <SectionTitle title={t('smartList.title')} />}
           {smartFilters.map((filter) => (
             <FilterItem
               key={filter.id}
@@ -334,7 +340,7 @@ export function Sidebar({
 
         {/* 清单 */}
         <div className="mb-4">
-          {!collapsed && <SectionTitle title="清单" />}
+          {!collapsed && <SectionTitle title={t('section.lists')} />}
 
           {ungroupedProjects.map((project) => (
             <FilterItem
@@ -364,18 +370,16 @@ export function Sidebar({
 
       {/* 底部设置按钮 */}
       <div className="p-3 border-t border-[var(--border)]">
-        <button
+        <Button
+          type="text"
+          block
           onClick={() => setSettingsOpen(true)}
-          title={collapsed ? '设置' : undefined}
-          className={`
-            flex items-center gap-2 w-full py-2 text-[13px] text-[var(--text-secondary)] rounded-lg
-            hover:bg-black/[0.04] transition-all duration-200 ease-out cursor-pointer border-0 bg-transparent
-            ${collapsed ? 'justify-center px-2' : 'px-3 hover:translate-x-0.5'}
-          `}
+          title={collapsed ? t('action.settings') : undefined}
+          icon={<SettingOutlined />}
+          className={`!flex !items-center !gap-2 !py-2 !h-auto !text-[13px] !text-[var(--text-secondary)] !rounded-lg hover:!bg-black/[0.04] ${collapsed ? '!justify-center !px-2' : '!px-3 !justify-start'}`}
         >
-          <SettingOutlined />
-          {!collapsed && <span>设置</span>}
-        </button>
+          {!collapsed && t('action.settings')}
+        </Button>
       </div>
 
       <SettingsModal

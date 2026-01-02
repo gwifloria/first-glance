@@ -1,0 +1,21 @@
+{
+  "smartList": {
+    "title": "Smart Lists",
+    "inbox": "Inbox",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "week": "Next 7 Days",
+    "overdue": "Overdue"
+  },
+  "section": {
+    "lists": "Lists"
+  },
+  "folder": {
+    "defaultName": "Folder {{index}}"
+  },
+  "action": {
+    "expand": "Expand sidebar",
+    "collapse": "Collapse sidebar",
+    "settings": "Settings"
+  }
+}

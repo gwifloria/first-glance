@@ -1,0 +1,32 @@
+{
+  "button": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "skip": "跳过",
+    "next": "下一步",
+    "start": "开始使用",
+    "connect": "连接",
+    "maybeLater": "以后再说"
+  },
+  "label": {
+    "list": "清单",
+    "smartList": "SMART LIST"
+  },
+  "message": {
+    "todayIsGift": "Today is a gift",
+    "taskLimitReached": "任务数量已达上限，请连接以添加更多",
+    "failedToConnect": "连接失败",
+    "syncSuccess": "已同步 {{count}} 个任务到滴答清单",
+    "syncFailed": "{{count}} 个任务同步失败"
+  },
+  "connectPrompt": {
+    "title": "连接滴答清单",
+    "descriptionWithTasks": "你有 <strong>{{count}}</strong> 个本地任务，要同步到滴答清单吗？",
+    "descriptionNoTasks": "同步你的任务到滴答清单，解锁完整功能。",
+    "connectAndSync": "连接并同步任务",
+    "connectWithoutSync": "不同步直接连接",
+    "connectOnly": "连接滴答清单",
+    "syncNote": "同步的任务将添加到你的滴答清单收集箱"
+  }
+}

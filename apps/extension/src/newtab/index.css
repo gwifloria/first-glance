@@ -229,7 +229,7 @@ body {
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* 隐藏滚动条但保持滚动功能 */
@@ -240,4 +240,10 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* 防止 Ant Design Modal 打开时导致页面布局抖动 */
+body.ant-scrolling-effect {
+  width: 100% !important;
+  overflow: hidden !important;
 }

@@ -1,0 +1,48 @@
+{
+  "group": {
+    "pinned": "Pinned",
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "later": "Later",
+    "noDate": "No Date"
+  },
+  "filter": {
+    "all": "All Tasks",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "week": "Next 7 Days",
+    "overdue": "Overdue",
+    "noDate": "No Date",
+    "default": "Tasks"
+  },
+  "placeholder": {
+    "quickAdd": "+ Add task, press Enter to save...",
+    "search": "Search tasks..."
+  },
+  "editor": {
+    "titleNew": "New Task",
+    "titleEdit": "Edit Task",
+    "labelTitle": "Title",
+    "labelContent": "Description",
+    "labelProject": "Project",
+    "labelPriority": "Priority",
+    "placeholderTitle": "Task title",
+    "placeholderContent": "Task description (optional)"
+  },
+  "confirm": {
+    "delete": "Delete this task?"
+  },
+  "validation": {
+    "titleRequired": "Please enter a task title"
+  },
+  "priority": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "none": "None"
+  },
+  "empty": {
+    "noTasks": "Great, no pending tasks!"
+  }
+}

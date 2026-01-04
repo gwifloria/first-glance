@@ -24,14 +24,17 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: isRelease ? 'build' : 'dist',
       emptyOutDir: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-antd': ['antd'],
-          },
-        },
-      },
+      // manualChunks 只在生产构建时使用，dev 模式下 @crxjs/vite-plugin 与此配置不兼容
+      rollupOptions: isRelease
+        ? {
+            output: {
+              manualChunks: {
+                'vendor-react': ['react', 'react-dom'],
+                'vendor-antd': ['antd'],
+              },
+            },
+          }
+        : undefined,
     },
   }
 })

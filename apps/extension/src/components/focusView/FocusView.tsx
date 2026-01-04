@@ -40,22 +40,12 @@ export function FocusView({
   const { t } = useTranslation('focus')
   const { theme } = useTheme()
   const [quote] = useState<Quote>(() => getRandomQuote())
-  const [creating, setCreating] = useState(false)
 
   // 番茄时钟
   const pomodoro = usePomodoro()
 
   // 缓存问候语（避免每次渲染重新计算）
   const greeting = useMemo(() => getGreeting(), [])
-
-  const handleCreate = async (task: Partial<Task>) => {
-    setCreating(true)
-    try {
-      return await onCreate(task)
-    } finally {
-      setCreating(false)
-    }
-  }
 
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
@@ -122,8 +112,7 @@ export function FocusView({
             isGuestMode={isGuestMode}
             canAddMore={canAddMore}
             taskCount={focusTasks.length}
-            creating={creating}
-            onCreate={handleCreate}
+            onCreate={onCreate}
           />
         </div>
       </div>

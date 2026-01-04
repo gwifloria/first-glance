@@ -10,7 +10,7 @@ import {
   migrateLocalTasksToDidaList,
   clearLocalTasks,
 } from '@/services/taskMigration'
-import type { Task, LocalTask } from '@/types'
+import { isLocalTask, type Task, type LocalTask } from '@/types'
 
 type ViewMode = 'focus' | 'list'
 
@@ -101,10 +101,10 @@ function AppContent() {
   // Handle task completion (works for both local and remote)
   const handleComplete = useCallback(
     async (task: Task | LocalTask) => {
-      if ('isLocal' in task && task.isLocal) {
+      if (isLocalTask(task)) {
         await localTasks.completeTask(task)
       } else {
-        await completeTask(task as Task)
+        await completeTask(task)
       }
     },
     [localTasks, completeTask]

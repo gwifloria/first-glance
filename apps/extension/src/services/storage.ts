@@ -98,7 +98,11 @@ export const storage = {
       areaName: string
     ) => {
       if (areaName === 'local' && changes[STORAGE_KEYS.POMODORO]) {
-        callback(changes[STORAGE_KEYS.POMODORO].newValue || null)
+        try {
+          callback(changes[STORAGE_KEYS.POMODORO].newValue || null)
+        } catch (err) {
+          console.error('Error in pomodoro change callback:', err)
+        }
       }
     }
     chrome.storage.onChanged.addListener(listener)

@@ -60,3 +60,8 @@ export enum TaskStatus {
   Incomplete = 0,
   Completed = 2,
 }
+
+/** 类型守卫：判断是否为本地任务 */
+export function isLocalTask(task: Task | LocalTask): task is LocalTask {
+  return 'isLocal' in task && task.isLocal === true
+}

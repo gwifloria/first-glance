@@ -4,7 +4,7 @@
 
 // 任务相关
 export type { Task, LocalTask, ChecklistItem } from './task'
-export { TaskPriority, TaskStatus } from './task'
+export { TaskPriority, TaskStatus, isLocalTask } from './task'
 
 // 项目相关
 export type { Project } from './project'

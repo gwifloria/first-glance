@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Select } from 'antd'
+import { Modal, Form, Input, Select, message } from 'antd'
 import { FlagOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { getPriorityOptions } from '@/constants/task'
@@ -33,16 +33,24 @@ export function TaskEditor({
   const priorityOptions = getPriorityOptions(t)
 
   const handleOk = async () => {
-    const values = await form.validateFields()
-    const formattedValues: Partial<Task> = {
-      title: values.title,
-      content: values.content,
-      priority: values.priority,
-      projectId: values.projectId,
-      dueDate: task?.dueDate, // 保留原有日期，不提供编辑
+    try {
+      const values = await form.validateFields()
+      const formattedValues: Partial<Task> = {
+        title: values.title,
+        content: values.content,
+        priority: values.priority,
+        projectId: values.projectId,
+        dueDate: task?.dueDate, // 保留原有日期，不提供编辑
+      }
+      await onSave(task?.id || null, formattedValues)
+      form.resetFields()
+    } catch (err) {
+      if (err && typeof err === 'object' && 'errorFields' in err) {
+        // 表单验证错误，不需要提示
+        return
+      }
+      message.error(t('common:message.saveFailed'))
     }
-    onSave(task?.id || null, formattedValues)
-    form.resetFields()
   }
 
   const handleCancel = () => {

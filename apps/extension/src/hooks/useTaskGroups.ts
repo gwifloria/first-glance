@@ -17,7 +17,7 @@ export function useTaskGroups({
   searchQuery,
 }: UseTaskGroupsOptions): TaskGroup[] {
   const { t } = useTranslation('task')
-  const { todayStr, tomorrowStr, dayAfterStr } = useRelativeDates()
+  const { todayStr, tomorrowStr } = useRelativeDates()
 
   // 过滤任务
   const filteredTasks = useMemo(
@@ -104,7 +104,7 @@ export function useTaskGroups({
     }
 
     return result
-  }, [filteredTasks, todayStr, tomorrowStr, dayAfterStr, t])
+  }, [filteredTasks, todayStr, tomorrowStr, t])
 
   return groups
 }

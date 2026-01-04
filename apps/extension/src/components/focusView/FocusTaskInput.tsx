@@ -9,7 +9,6 @@ interface FocusTaskInputProps {
   isGuestMode: boolean
   canAddMore: boolean
   taskCount: number
-  creating: boolean
   onCreate: (task: Partial<Task>) => Promise<Task | LocalTask | null>
 }
 
@@ -17,17 +16,14 @@ export function FocusTaskInput({
   isGuestMode,
   canAddMore,
   taskCount,
-  creating: externalCreating,
   onCreate,
 }: FocusTaskInputProps) {
   const { t } = useTranslation('focus')
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [creating, setCreating] = useState(false)
 
-  const isCreating = creating || externalCreating
-
   const handleCreateTask = async () => {
-    if (!newTaskTitle.trim() || isCreating) return
+    if (!newTaskTitle.trim() || creating) return
 
     setCreating(true)
     try {
@@ -57,7 +53,7 @@ export function FocusTaskInput({
             ? t('placeholder.connectToAdd')
             : t('placeholder.addFocus')
         }
-        disabled={isCreating || (isGuestMode && !canAddMore)}
+        disabled={creating || (isGuestMode && !canAddMore)}
         className="w-full text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
       />
       <Button
@@ -65,7 +61,7 @@ export function FocusTaskInput({
         shape="circle"
         size="small"
         onClick={handleCreateTask}
-        disabled={isCreating || (isGuestMode && !canAddMore)}
+        disabled={creating || (isGuestMode && !canAddMore)}
         icon={<PlusOutlined />}
         className="!mx-auto !mt-2 !flex"
       />

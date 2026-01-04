@@ -27,6 +27,8 @@ export function useRelativeDates(): RelativeDates {
   }))
 
   useEffect(() => {
+    let intervalId: number | null = null
+
     const updateDates = () => {
       setDates({
         todayStr: getTodayStr(),
@@ -46,14 +48,16 @@ export function useRelativeDates(): RelativeDates {
     const msUntilMidnight = tomorrow.getTime() - now.getTime()
 
     // 在午夜时更新日期
-    const timeout = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       updateDates()
       // 之后每24小时更新一次
-      const interval = setInterval(updateDates, 24 * 60 * 60 * 1000)
-      return () => clearInterval(interval)
+      intervalId = window.setInterval(updateDates, 24 * 60 * 60 * 1000)
     }, msUntilMidnight)
 
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeoutId)
+      if (intervalId) clearInterval(intervalId)
+    }
   }, [])
 
   return dates

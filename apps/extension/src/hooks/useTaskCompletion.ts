@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { Task, LocalTask } from '@/types'
 
 type TaskType = Task | LocalTask
@@ -9,10 +9,15 @@ export function useTaskCompletion<T extends TaskType = Task>(
 ) {
   const { delay = 300, delayBefore = true } = options
   const [completing, setCompleting] = useState(false)
+  const pendingRef = useRef(false)
 
   const handleComplete = useCallback(
     async (task: T) => {
+      // 防止重复点击
+      if (pendingRef.current) return
+      pendingRef.current = true
       setCompleting(true)
+
       try {
         if (delayBefore) {
           // 先等待动画延迟再调用 onComplete（用于 TaskItem）
@@ -24,6 +29,7 @@ export function useTaskCompletion<T extends TaskType = Task>(
         }
       } finally {
         setCompleting(false)
+        pendingRef.current = false
       }
     },
     [onComplete, delay, delayBefore]

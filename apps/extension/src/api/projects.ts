@@ -6,6 +6,23 @@ import { endpoints } from './endpoints'
 import { storage } from '@/services/storage'
 import type { Task, Project } from '@/types'
 
+/** 简单重试函数 */
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 2,
+  delay = 500
+): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn()
+    } catch (err) {
+      if (i === retries) throw err
+      await new Promise((r) => setTimeout(r, delay * (i + 1)))
+    }
+  }
+  throw new Error('Retry exhausted')
+}
+
 export const projectsApi = {
   /** 获取所有项目 */
   async getAll(): Promise<Project[]> {
@@ -29,11 +46,11 @@ export const projectsApi = {
   async getAllTasks(): Promise<{ tasks: Task[]; projects: Project[] }> {
     const projects = await this.getAll()
 
-    // 并行获取所有项目的任务
+    // 并行获取所有项目的任务（带重试）
     const projectDataPromises = projects
       .filter((p) => !p.closed)
       .map((p) =>
-        this.getData(p.id)
+        withRetry(() => this.getData(p.id))
           .then((data) => data.tasks || [])
           .catch((err) => {
             const errorMsg = err instanceof Error ? err.message : '未知错误'
@@ -42,8 +59,8 @@ export const projectsApi = {
           })
       )
 
-    // 并行获取收集箱任务
-    const inboxPromise = this.getData('inbox')
+    // 并行获取收集箱任务（带重试）
+    const inboxPromise = withRetry(() => this.getData('inbox'))
       .then((data) => data.tasks || [])
       .catch((err) => {
         const errorMsg = err instanceof Error ? err.message : '未知错误'

@@ -30,12 +30,15 @@ export function FocusTaskInput({
       // 使用本地日期格式（避免 UTC 时区问题）
       const dueDate = formatDateStr(new Date()) + 'T00:00:00.000+0800'
 
-      await onCreate({
+      const result = await onCreate({
         title: newTaskTitle.trim(),
         dueDate,
         priority: 5, // 最高优先级
       })
-      setNewTaskTitle('')
+      // 只有创建成功才清空输入框
+      if (result) {
+        setNewTaskTitle('')
+      }
     } finally {
       setCreating(false)
     }

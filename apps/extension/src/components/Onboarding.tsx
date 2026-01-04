@@ -34,11 +34,15 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
   useEffect(() => {
     // 检查是否已完成引导
-    shouldShowOnboarding().then((shouldShow) => {
-      if (shouldShow) {
-        setVisible(true)
-      }
-    })
+    shouldShowOnboarding()
+      .then((shouldShow) => {
+        if (shouldShow) {
+          setVisible(true)
+        }
+      })
+      .catch(() => {
+        // 出错时默认不显示引导
+      })
   }, [])
 
   const handleNext = () => {

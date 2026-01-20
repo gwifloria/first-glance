@@ -8,8 +8,31 @@ const CLIENT_SECRET = import.meta.env.VITE_DIDA_CLIENT_SECRET || ''
 const TOKEN_URL = 'https://dida365.com/oauth/token'
 const SETTINGS_KEY = 'app_settings'
 
-chrome.runtime.onInstalled.addListener(async () => {
-  console.log('First Glance extension installed')
+chrome.runtime.onInstalled.addListener(async (details) => {
+  const currentVersion = chrome.runtime.getManifest().version
+
+  if (details.reason === 'install') {
+    console.log(`[Extension] 首次安装 v${currentVersion}`)
+    // 记录安装版本
+    await chrome.storage.local.set({
+      extension_version: currentVersion,
+      install_time: Date.now(),
+    })
+  } else if (details.reason === 'update') {
+    const previousVersion = details.previousVersion
+    console.log(`[Extension] 更新 v${previousVersion} -> v${currentVersion}`)
+    // 记录更新信息，供 UI 层判断是否显示更新提示
+    await chrome.storage.local.set({
+      extension_version: currentVersion,
+      last_update: {
+        from: previousVersion,
+        to: currentVersion,
+        time: Date.now(),
+        seen: false, // UI 层读取后设为 true
+      },
+    })
+  }
+
   // 初始化时加载屏蔽规则
   await loadAndApplyBlockingRules()
 })

@@ -9,6 +9,7 @@ export type { PomodoroMode, PomodoroConfig, PomodoroState } from './usePomodoro'
 
 // 应用状态
 export { useTheme } from './useTheme'
+export { useVersionUpdate, isMajorUpdate } from './useVersionUpdate'
 
 // 时间相关
 export { useCurrentTime } from './useCurrentTime'

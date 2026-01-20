@@ -18,13 +18,13 @@ import '@/styles/index.css'
 // Ant Design 配置包装器，响应主题变化
 function AntdConfigProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation()
-  const { theme, themeType } = useTheme()
+  const { theme } = useTheme()
   const [antdLocale, setAntdLocale] = useState(
     i18n.language.startsWith('zh') ? zhCN : enUS
   )
 
-  // 缓存 Antd 主题配置，仅当 themeType 变化时重新创建
-  const antdTheme = useMemo(() => createAntdTheme(theme), [themeType])
+  // 缓存 Antd 主题配置，仅当 theme 变化时重新创建
+  const antdTheme = useMemo(() => createAntdTheme(theme), [theme])
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {

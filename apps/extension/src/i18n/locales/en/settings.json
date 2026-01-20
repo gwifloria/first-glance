@@ -4,5 +4,13 @@
     "label": "Default list for new tasks",
     "inbox": "Inbox",
     "hint": "This list will be used when quickly adding tasks in smart lists"
+  },
+  "blocksite": {
+    "label": "Blocked Sites",
+    "placeholder": "Enter domain, e.g. reddit.com",
+    "hint": "Access to these sites will be blocked to help you stay focused",
+    "empty": "No blocked sites yet",
+    "invalidDomain": "Please enter a valid domain",
+    "duplicateDomain": "This domain is already added"
   }
 }

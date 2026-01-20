@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Input, Tag, Space, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useSettings } from '@/hooks/useSettings'
+import { getSettings, setSettings } from '@/services/settingsStorage'
 
 /**
  * 域名格式校验
@@ -30,12 +30,17 @@ function normalizeDomain(input: string): string {
 
 export function BlocksiteSettings() {
   const { t } = useTranslation('settings')
-  const { settings, updateSettings } = useSettings()
   const [inputValue, setInputValue] = useState('')
+  const [blockedSites, setBlockedSites] = useState<string[]>([])
 
-  const blockedSites = settings.blockedSites || []
+  // 加载已屏蔽网站列表
+  useEffect(() => {
+    getSettings().then((settings) => {
+      setBlockedSites(settings.blockedSites || [])
+    })
+  }, [])
 
-  const handleAdd = () => {
+  const handleAdd = useCallback(async () => {
     const domain = normalizeDomain(inputValue)
 
     if (!domain) {
@@ -53,17 +58,20 @@ export function BlocksiteSettings() {
       return
     }
 
-    updateSettings({
-      blockedSites: [...blockedSites, domain],
-    })
+    const newBlockedSites = [...blockedSites, domain]
+    await setSettings({ blockedSites: newBlockedSites })
+    setBlockedSites(newBlockedSites)
     setInputValue('')
-  }
+  }, [inputValue, blockedSites, t])
 
-  const handleRemove = (domain: string) => {
-    updateSettings({
-      blockedSites: blockedSites.filter((d) => d !== domain),
-    })
-  }
+  const handleRemove = useCallback(
+    async (domain: string) => {
+      const newBlockedSites = blockedSites.filter((d) => d !== domain)
+      await setSettings({ blockedSites: newBlockedSites })
+      setBlockedSites(newBlockedSites)
+    },
+    [blockedSites]
+  )
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

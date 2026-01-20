@@ -10,8 +10,6 @@ export { useTaskContext, type TaskContextValue } from './TaskContext'
 export { ConnectPromptProvider } from './ConnectPromptProvider'
 export { useConnectPrompt } from './useConnectPrompt'
 
-// Settings Context
-export { SettingsContext, SettingsProvider } from './SettingsContext'
-
 // Theme Context
-export { ThemeContext, ThemeProvider } from './ThemeContext'
+export { ThemeContext, type ThemeContextValue } from './ThemeContext'
+export { ThemeProvider } from './ThemeProvider'

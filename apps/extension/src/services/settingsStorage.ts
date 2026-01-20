@@ -2,19 +2,10 @@ import { defaultSettings, type AppSettings } from '@/types/settings'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
-const CURRENT_VERSION = 3
-
-// 旧主题名 -> 新主题名映射
-const THEME_MIGRATION: Record<string, string> = {
-  journal: 'beige',
-  ocean: 'blue',
-  tech: 'dark',
-  rose: 'milk',
-}
+const CURRENT_VERSION = 4
 
 // 旧版存储键（用于迁移）
 const LEGACY_SETTINGS_KEY = 'user_settings'
-const LEGACY_THEME_KEY = 'theme_preference'
 
 /**
  * 获取设置
@@ -36,28 +27,21 @@ async function migrateLegacySettings(): Promise<void> {
   const syncResult = await chrome.storage.sync.get(STORAGE_KEY)
   if (syncResult[STORAGE_KEY]) {
     // 已有新版数据，清理旧版
-    await chrome.storage.local.remove([LEGACY_SETTINGS_KEY, LEGACY_THEME_KEY])
+    await chrome.storage.local.remove([LEGACY_SETTINGS_KEY])
     return
   }
 
   // 读取旧版数据
-  const localResult = await chrome.storage.local.get([
-    LEGACY_SETTINGS_KEY,
-    LEGACY_THEME_KEY,
-  ])
+  const localResult = await chrome.storage.local.get([LEGACY_SETTINGS_KEY])
 
   const legacySettings = localResult[LEGACY_SETTINGS_KEY] as
     | { defaultProjectId?: string | null }
     | undefined
-  const legacyTheme = localResult[LEGACY_THEME_KEY] as string | undefined
 
   // 如果有旧版数据，迁移到新版
-  if (legacySettings || legacyTheme) {
-    const oldTheme = legacyTheme as string
-    const newTheme = THEME_MIGRATION[oldTheme] || oldTheme || 'pink'
+  if (legacySettings) {
     const migratedSettings: AppSettings = {
       defaultProjectId: legacySettings?.defaultProjectId ?? null,
-      theme: newTheme as AppSettings['theme'],
       blockedSites: [],
     }
 
@@ -67,7 +51,7 @@ async function migrateLegacySettings(): Promise<void> {
     })
 
     // 清理旧版数据
-    await chrome.storage.local.remove([LEGACY_SETTINGS_KEY, LEGACY_THEME_KEY])
+    await chrome.storage.local.remove([LEGACY_SETTINGS_KEY])
   }
 }
 
@@ -145,8 +129,14 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
   // v1 -> v2: 主题名迁移 (journal/ocean/tech/rose -> milk/beige/pink/blue/dark)
   2: (data) => {
     const d = (data || {}) as Record<string, unknown>
+    const themeMigration: Record<string, string> = {
+      journal: 'beige',
+      ocean: 'blue',
+      tech: 'dark',
+      rose: 'milk',
+    }
     const oldTheme = d.theme as string
-    const newTheme = THEME_MIGRATION[oldTheme] || oldTheme || 'pink'
+    const newTheme = themeMigration[oldTheme] || oldTheme || 'pink'
     return {
       ...d,
       theme: newTheme,
@@ -158,6 +148,15 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
     return {
       ...d,
       blockedSites: d.blockedSites ?? [],
+    }
+  },
+  // v3 -> v4: 移除 theme 字段（已迁移到独立存储）
+  4: (data) => {
+    const d = (data || {}) as Record<string, unknown>
+    const { theme: _, ...rest } = d
+    return {
+      defaultProjectId: rest.defaultProjectId ?? null,
+      blockedSites: rest.blockedSites ?? [],
     }
   },
 }

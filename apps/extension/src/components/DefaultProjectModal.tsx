@@ -1,40 +1,54 @@
+import { useState, useEffect } from 'react'
 import { Modal, Select, Form } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useSettings } from '@/hooks/useSettings'
+import { getSettings, setSettings } from '@/services/settingsStorage'
 import { filterActiveProjects } from '@/utils/project'
-import { BlocksiteSettings } from './BlocksiteSettings'
 import type { Project } from '@/types'
 
-interface SettingsModalProps {
+interface DefaultProjectModalProps {
   open: boolean
   onClose: () => void
   projects: Project[]
 }
 
-export function SettingsModal({ open, onClose, projects }: SettingsModalProps) {
+export function DefaultProjectModal({
+  open,
+  onClose,
+  projects,
+}: DefaultProjectModalProps) {
   const { t } = useTranslation('settings')
-  const { settings, updateSettings } = useSettings()
+  const [defaultProjectId, setDefaultProjectId] = useState<string | null>(null)
+
+  // 加载默认项目设置
+  useEffect(() => {
+    if (open) {
+      getSettings().then((settings) => {
+        setDefaultProjectId(settings.defaultProjectId)
+      })
+    }
+  }, [open])
 
   // 过滤出未关闭的项目
   const availableProjects = filterActiveProjects(projects)
 
-  const handleChange = (value: string) => {
-    updateSettings({ defaultProjectId: value })
+  const handleChange = async (value: string) => {
+    await setSettings({ defaultProjectId: value })
+    setDefaultProjectId(value)
   }
 
   // 当前值：使用设置的值，默认为收集箱
-  const currentValue = settings.defaultProjectId || 'inbox'
+  const currentValue = defaultProjectId || 'inbox'
 
   return (
     <Modal
-      title={t('title')}
+      title={t('defaultProject.label')}
       open={open}
       onCancel={onClose}
       footer={null}
       width={400}
     >
       <Form layout="vertical" className="mt-4">
-        <Form.Item label={t('defaultProject.label')}>
+        <Form.Item>
           <Select
             value={currentValue}
             onChange={handleChange}
@@ -64,13 +78,6 @@ export function SettingsModal({ open, onClose, projects }: SettingsModalProps) {
           </Select>
           <p className="text-xs text-[var(--text-secondary)] mt-2">
             {t('defaultProject.hint')}
-          </p>
-        </Form.Item>
-
-        <Form.Item label={t('blocksite.label')}>
-          <BlocksiteSettings />
-          <p className="text-xs text-[var(--text-secondary)] mt-2">
-            {t('blocksite.hint')}
           </p>
         </Form.Item>
       </Form>

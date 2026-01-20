@@ -16,6 +16,6 @@
   "action": {
     "expand": "展开侧边栏",
     "collapse": "折叠侧边栏",
-    "settings": "设置"
+    "defaultProject": "默认清单"
   }
 }

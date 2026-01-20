@@ -25,7 +25,9 @@
       "Bash(git -C /Users/guihuajiu/wonderland/first-glance diff HEAD -- apps/extension/vite.config.ts)",
       "WebFetch(domain:github.com)",
       "Bash(git mv:*)",
-      "Bash(git -C /Users/guihuajiu/wonderland/first-glance mv:*)"
+      "Bash(git -C /Users/guihuajiu/wonderland/first-glance mv:*)",
+      "Bash(find:*)",
+      "Bash(pnpm:*)"
     ]
   }
 }

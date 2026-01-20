@@ -37,5 +37,3 @@ npm-debug.log*
 .astro/
 .env.cws
 
-# Claude Code local settings
-.claude/

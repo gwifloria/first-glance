@@ -36,3 +36,6 @@ npm-debug.log*
 # Astro generated files
 .astro/
 .env.cws
+
+# Claude Code local settings
+.claude/

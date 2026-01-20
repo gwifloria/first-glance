@@ -6,11 +6,15 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 
 ## Features
 
-- **Focus Mode** - Clean clock + today's top tasks
-- **Smart Lists** - Today, Tomorrow, This Week, Overdue
-- **Full Task Management** - View, complete, edit, delete, create
-- **Multiple Themes** - Journal, Rose, Ocean, Dark
-- **Cross-device Sync** - Theme preferences synced
+- **Dual View Mode** - Focus view (minimal clock + top 3 tasks) and List view (full task management)
+- **Pomodoro Timer** - Built-in timer with work/break cycles, synced across tabs
+- **Smart Lists** - Today, Tomorrow, This Week, Overdue, Inbox
+- **Full Task Management** - View, complete, edit, delete, create tasks
+- **5 Themes** - Milk, Beige, Pink, Blue, Dark
+- **Guest Mode** - Works offline without account (up to 3 tasks)
+- **Internationalization** - Chinese and English support
+- **Site Blocking** - Block distracting websites to stay focused
+- **Cross-device Sync** - Theme preferences synced via Chrome
 
 ## Supported Platforms
 
@@ -27,72 +31,94 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 
 1. Clone the repository
 ```bash
-git clone https://github.com/gwifloria/chrome-dida-extension.git
-cd chrome-dida-extension
+git clone https://github.com/gwifloria/first-glance.git
+cd first-glance
 ```
 
 2. Install dependencies
 ```bash
-npm install
+pnpm install
 ```
 
 3. Configure environment variables
 ```bash
-cp .env.example .env
+cp apps/extension/.env.example apps/extension/.env
 # Edit .env and add your Dida365 API credentials
 ```
 
 4. Build
 ```bash
-npm run build
+pnpm build
 ```
 
 5. Load extension
    - Open Chrome and visit `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked extension"
-   - Select the `dist` directory
+   - Select `apps/extension/dist` directory
 
 ## Development
 
 ```bash
-# Development mode
-npm run dev
+# Development mode (watch)
+pnpm dev
 
-# Build
-npm run build
+# Build all apps
+pnpm build
 
 # Type check
-npm run typecheck
+pnpm typecheck
 
 # Lint
-npm run lint
+pnpm lint
+
+# Build extension only
+pnpm --filter @first-glance/extension build
+
+# Build web only
+pnpm --filter @first-glance/web build
 ```
 
 ## Tech Stack
 
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- Ant Design
-- Chrome Extension Manifest V3
+- **Framework**: React 19 + TypeScript 5.7
+- **Build**: Vite 6.4 + @crxjs/vite-plugin
+- **UI**: Ant Design 5.22 + Tailwind CSS 4.1
+- **i18n**: i18next
+- **Monorepo**: pnpm + Turbo
+- **Extension**: Chrome Manifest V3
 
 ## Project Structure
 
 ```
-src/
-├── newtab/          # New tab entry point
-├── background/      # Service Worker
-├── components/      # React components
-├── hooks/           # React Hooks
-├── services/        # API services
-├── contexts/        # React Context
-├── utils/           # Utility functions
-├── constants/       # Constants
-├── themes/          # Theme configurations
-└── types/           # TypeScript types
+apps/
+├── extension/               # Chrome extension
+│   └── src/
+│       ├── newtab/          # New tab entry point
+│       ├── background/      # Service Worker (OAuth, token refresh)
+│       ├── components/      # React components
+│       │   ├── FocusView/   # Focus mode components
+│       │   ├── Sidebar/     # List mode sidebar
+│       │   ├── TaskList/    # Task list components
+│       │   ├── Task/        # Task item components
+│       │   └── common/      # Shared components
+│       ├── contexts/        # React Context providers
+│       ├── hooks/           # Custom React hooks
+│       ├── api/adapters/    # Task data adapters
+│       ├── themes/          # Theme configurations
+│       ├── i18n/            # Internationalization
+│       ├── utils/           # Utility functions
+│       └── types/           # TypeScript types
+└── web/                     # Project website (Astro)
 ```
+
+## CI/CD
+
+This project uses GitHub Actions for automation:
+
+- **deploy-web.yml** - Deploys website to GitHub Pages on push to main
+- **bump-version.yml** - Manual workflow to bump version (patch/minor/major)
+- **release.yml** - Auto-publishes to Chrome Web Store when a version tag is created
 
 ## Dida365 API
 

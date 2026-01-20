@@ -8,7 +8,6 @@ export { usePomodoro, formatPomodoroTime } from './usePomodoro'
 export type { PomodoroMode, PomodoroConfig, PomodoroState } from './usePomodoro'
 
 // 应用状态
-export { useSettings } from './useSettings'
 export { useTheme } from './useTheme'
 
 // 时间相关

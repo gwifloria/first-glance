@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import {
   type Theme,
   type ThemeType,
@@ -8,7 +8,8 @@ import {
   blueTheme,
   darkTheme,
 } from '@/themes'
-import { useSettings } from '@/hooks/useSettings'
+import { getTheme, setTheme, subscribeTheme } from '@/services/themeStorage'
+import { ThemeContext } from './ThemeContext'
 
 const themes: Record<ThemeType, Theme> = {
   milk: milkTheme,
@@ -18,41 +19,22 @@ const themes: Record<ThemeType, Theme> = {
   dark: darkTheme,
 }
 
-// 旧主题名 -> 新主题名的映射
-const themeMigration: Record<string, ThemeType> = {
-  journal: 'beige',
-  ocean: 'blue',
-  tech: 'dark',
-  rose: 'milk',
-}
-
-interface ThemeContextValue {
-  theme: Theme
-  themeType: ThemeType
-  setThemeType: (type: ThemeType) => void
-  toggleTheme: () => void
-}
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null)
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { settings, updateSettings } = useSettings()
+  const [themeType, setThemeTypeState] = useState<ThemeType>('pink')
 
-  // 处理旧主题名迁移
-  const rawTheme = settings.theme as string
-  const themeType: ThemeType =
-    rawTheme in themeMigration
-      ? themeMigration[rawTheme]
-      : (rawTheme as ThemeType) in themes
-        ? (rawTheme as ThemeType)
-        : 'pink'
+  // 初始加载
+  useEffect(() => {
+    getTheme().then(setThemeTypeState)
+  }, [])
 
-  const setThemeType = useCallback(
-    (type: ThemeType) => {
-      updateSettings({ theme: type })
-    },
-    [updateSettings]
-  )
+  // 监听 storage 变化
+  useEffect(() => {
+    return subscribeTheme(setThemeTypeState)
+  }, [])
+
+  const setThemeType = useCallback((type: ThemeType) => {
+    setTheme(type)
+  }, [])
 
   const toggleTheme = useCallback(() => {
     setThemeType(themeType === 'milk' ? 'dark' : 'milk')

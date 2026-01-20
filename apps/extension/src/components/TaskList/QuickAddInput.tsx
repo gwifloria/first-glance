@@ -1,5 +1,5 @@
 import { FILTER_NAMES } from '@/constants/task'
-import { useSettings } from '@/hooks/useSettings'
+import { getSettings } from '@/services/settingsStorage'
 import type { Project, Task } from '@/types'
 import { formatDateTimeWithTimezone } from '@/utils/date'
 import { Input } from 'antd'
@@ -20,12 +20,12 @@ export const QuickAddInput = memo(function QuickAddInput({
   onOpenEditor,
 }: QuickAddInputProps) {
   const { t } = useTranslation('task')
-  const { settings } = useSettings()
   const [quickAddValue, setQuickAddValue] = useState('')
 
   const handleQuickAdd = async () => {
     if (!quickAddValue.trim()) return
 
+    const settings = await getSettings()
     let projectId: string | undefined
     let dueDate: string | undefined
 

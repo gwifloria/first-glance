@@ -16,6 +16,6 @@
   "action": {
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar",
-    "settings": "Settings"
+    "defaultProject": "Default List"
   }
 }

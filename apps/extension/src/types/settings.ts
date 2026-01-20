@@ -1,5 +1,3 @@
-import type { ThemeType } from '@/themes'
-
 /**
  * 应用设置
  * 存储在 chrome.storage.sync，支持跨设备同步
@@ -7,8 +5,6 @@ import type { ThemeType } from '@/themes'
 export interface AppSettings {
   /** 默认清单 ID，null 表示使用收集箱 */
   defaultProjectId: string | null
-  /** 主题类型 */
-  theme: ThemeType
   /** 被屏蔽的网站域名列表 */
   blockedSites: string[]
 }
@@ -18,6 +14,5 @@ export interface AppSettings {
  */
 export const defaultSettings: AppSettings = {
   defaultProjectId: null,
-  theme: 'pink',
   blockedSites: [],
 }

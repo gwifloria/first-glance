@@ -44,6 +44,14 @@
   --font-heading: 'ZCOOL XiaoWei', 'Ma Shan Zheng', cursive;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font-primary);
   background: var(--bg-primary);
@@ -53,10 +61,6 @@ body {
   transition:
     background 0.3s ease,
     color 0.3s ease;
-}
-
-#root {
-  min-height: 100vh;
 }
 
 /* 滚动条 */

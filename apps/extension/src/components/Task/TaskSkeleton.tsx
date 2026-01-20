@@ -37,6 +37,7 @@ export function TaskSkeleton({ count = 5 }: TaskSkeletonProps) {
 
 /**
  * 专注模式骨架屏
+ * 样式需与 FocusTaskItem 保持一致：py-4 px-5 gap-5
  */
 export function FocusSkeleton() {
   return (
@@ -44,10 +45,10 @@ export function FocusSkeleton() {
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}
-          className="flex items-center gap-4 py-3 px-4 bg-[var(--bg-card)] rounded-xl"
+          className="flex items-center gap-5 py-4 px-5 bg-[var(--bg-card)] rounded-xl shadow-sm"
         >
-          <div className="w-6 h-6 rounded border-2 border-[var(--border)]" />
-          <div className="flex-1 h-5 bg-[var(--border)] rounded" />
+          <div className="w-6 h-6 rounded-lg border-2 border-[var(--border)]" />
+          <div className="flex-1 h-7 bg-[var(--border)] rounded" />
         </div>
       ))}
     </div>

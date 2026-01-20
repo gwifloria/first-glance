@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react'
+import { useMemo, useCallback, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   computeTaskViews,
@@ -54,8 +54,21 @@ export function useTaskViews(tasks: Task[]) {
   const [sortBy, setSortBy] = useState<SortOption>('priority')
   const [groupBy, setGroupBy] = useState<GroupOption>('none')
 
+  // 分组结果缓存
+  const groupCacheRef = useRef<{
+    key: string
+    tasksHash: number
+    result: TaskGroup[]
+  } | null>(null)
+
   // ============ 核心计算（单次遍历）============
   const computed = useMemo(() => computeTaskViews(tasks), [tasks])
+
+  // 任务列表的简单哈希值（用于缓存失效判断）
+  const tasksHash = useMemo(
+    () => tasks.reduce((acc, t) => acc + t.id.charCodeAt(0), tasks.length),
+    [tasks]
+  )
 
   // ============ 派生视图 ============
   const todayFocusTasks = useMemo(() => getFocusTasks(computed, 3), [computed])
@@ -79,9 +92,16 @@ export function useTaskViews(tasks: Task[]) {
     [tasks, sortBy]
   )
 
-  // ============ 分组函数（基于 computed.byDate）============
+  // ============ 分组函数（基于 computed.byDate，带缓存）============
   const getTaskGroups = useCallback(
     (filter: string, searchQuery?: string): TaskGroup[] => {
+      // 检查缓存
+      const cacheKey = `${filter}-${searchQuery || ''}`
+      const cache = groupCacheRef.current
+      if (cache && cache.key === cacheKey && cache.tasksHash === tasksHash) {
+        return cache.result
+      }
+
       // 先筛选
       const filtered = filterTasks(tasks, filter, searchQuery)
 
@@ -130,15 +150,20 @@ export function useTaskViews(tasks: Task[]) {
         ]
 
       // 构建结果（已排序，因为 computed.byDate 中已排序）
-      return groupConfigs
+      const result = groupConfigs
         .filter((cfg) => categorized[cfg.id].length > 0)
         .map((cfg) => ({
           id: cfg.id,
           title: t(cfg.titleKey),
           tasks: categorized[cfg.id],
         }))
+
+      // 更新缓存
+      groupCacheRef.current = { key: cacheKey, tasksHash, result }
+
+      return result
     },
-    [tasks, computed, t]
+    [tasks, computed, tasksHash, t]
   )
 
   // ============ 结构化返回 ============

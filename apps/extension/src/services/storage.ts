@@ -75,6 +75,16 @@ export const storage = {
     return result[STORAGE_KEYS.LAST_SYNC] || null
   },
 
+  /**
+   * 检查缓存是否有效（未过期）
+   * @param maxAge 最大有效期（毫秒），默认 5 分钟
+   */
+  async isCacheValid(maxAge = 5 * 60 * 1000): Promise<boolean> {
+    const lastSync = await this.getLastSync()
+    if (!lastSync) return false
+    return Date.now() - lastSync < maxAge
+  },
+
   // 番茄时钟相关
   async getPomodoro(): Promise<PomodoroStorage | null> {
     const result = await chrome.storage.local.get(STORAGE_KEYS.POMODORO)

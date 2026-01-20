@@ -1,0 +1,17 @@
+{
+  "speechBubble": "No!",
+  "subtitle": "I'm blocking this for your own good",
+  "buttonDefault": "Fine, I'll focus",
+  "buttonHover": "Good choice!",
+  "hint": "Manage blocked sites in settings",
+  "messages": [
+    "Oh? Lost, are we?",
+    "I thought you were busy",
+    "Don't look at me, look at your task!",
+    "Seriously? This site? Now?",
+    "It's not like I care, but... go back",
+    "Nice try. Access denied",
+    "Focus, please!",
+    "Did you finish your work? Didn't think so"
+  ]
+}

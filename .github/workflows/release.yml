@@ -44,8 +44,26 @@ jobs:
       - name: Type check
         run: pnpm --filter @first-glance/extension typecheck
 
+      - name: Verify required secrets
+        run: |
+          if [ -z "$VITE_DIDA_CLIENT_ID" ]; then
+            echo "❌ Error: VITE_DIDA_CLIENT_ID secret is not configured"
+            exit 1
+          fi
+          if [ -z "$VITE_DIDA_CLIENT_SECRET" ]; then
+            echo "❌ Error: VITE_DIDA_CLIENT_SECRET secret is not configured"
+            exit 1
+          fi
+          echo "✅ All required secrets are configured"
+        env:
+          VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
+          VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
+
       - name: Build
         run: pnpm --filter @first-glance/extension build
+        env:
+          VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
+          VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
 
       - name: Create zip
         run: |

@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useTheme } from '@/hooks/useTheme'
-import { getRandomQuote, type Quote } from '@/data/quotes'
+import type { Quote } from '@/data/quotes'
 import { FocusTopBar } from './FocusTopBar'
 import { FocusClock } from './FocusClock'
 import { FocusTaskList } from './FocusTaskList'
@@ -8,12 +7,12 @@ import { FocusQuote } from './FocusQuote'
 import { FocusFloatButton } from './FocusFloatButton'
 
 interface FocusViewProps {
+  quote: Quote
   onSwitchView?: () => void
 }
 
-export function FocusView({ onSwitchView }: FocusViewProps) {
+export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   const { theme } = useTheme()
-  const [quote] = useState<Quote>(() => getRandomQuote())
 
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">

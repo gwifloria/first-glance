@@ -2,7 +2,7 @@ import { defaultSettings, type AppSettings } from '@/types/settings'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
-const CURRENT_VERSION = 2
+const CURRENT_VERSION = 3
 
 // 旧主题名 -> 新主题名映射
 const THEME_MIGRATION: Record<string, string> = {
@@ -58,6 +58,7 @@ async function migrateLegacySettings(): Promise<void> {
     const migratedSettings: AppSettings = {
       defaultProjectId: legacySettings?.defaultProjectId ?? null,
       theme: newTheme as AppSettings['theme'],
+      blockedSites: [],
     }
 
     await chrome.storage.sync.set({
@@ -149,6 +150,14 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
     return {
       ...d,
       theme: newTheme,
+    }
+  },
+  // v2 -> v3: 添加 blockedSites 字段
+  3: (data) => {
+    const d = (data || {}) as Record<string, unknown>
+    return {
+      ...d,
+      blockedSites: d.blockedSites ?? [],
     }
   },
 }

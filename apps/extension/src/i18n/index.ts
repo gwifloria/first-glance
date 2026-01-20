@@ -9,6 +9,7 @@ import zhCNTask from './locales/zh-CN/task.json'
 import zhCNSettings from './locales/zh-CN/settings.json'
 import zhCNOnboarding from './locales/zh-CN/onboarding.json'
 import zhCNFocus from './locales/zh-CN/focus.json'
+import zhCNBlocked from './locales/zh-CN/blocked.json'
 
 import enCommon from './locales/en/common.json'
 import enSidebar from './locales/en/sidebar.json'
@@ -16,6 +17,7 @@ import enTask from './locales/en/task.json'
 import enSettings from './locales/en/settings.json'
 import enOnboarding from './locales/en/onboarding.json'
 import enFocus from './locales/en/focus.json'
+import enBlocked from './locales/en/blocked.json'
 
 const resources = {
   'zh-CN': {
@@ -25,6 +27,7 @@ const resources = {
     settings: zhCNSettings,
     onboarding: zhCNOnboarding,
     focus: zhCNFocus,
+    blocked: zhCNBlocked,
   },
   en: {
     common: enCommon,
@@ -33,6 +36,7 @@ const resources = {
     settings: enSettings,
     onboarding: enOnboarding,
     focus: enFocus,
+    blocked: enBlocked,
   },
 }
 
@@ -51,7 +55,15 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'sidebar', 'task', 'settings', 'onboarding', 'focus'],
+    ns: [
+      'common',
+      'sidebar',
+      'task',
+      'settings',
+      'onboarding',
+      'focus',
+      'blocked',
+    ],
 
     interpolation: {
       escapeValue: false,

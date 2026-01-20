@@ -2,6 +2,7 @@ import { Modal, Select, Form } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useSettings } from '@/hooks/useSettings'
 import { filterActiveProjects } from '@/utils/project'
+import { BlocksiteSettings } from './BlocksiteSettings'
 import type { Project } from '@/types'
 
 interface SettingsModalProps {
@@ -63,6 +64,13 @@ export function SettingsModal({ open, onClose, projects }: SettingsModalProps) {
           </Select>
           <p className="text-xs text-[var(--text-secondary)] mt-2">
             {t('defaultProject.hint')}
+          </p>
+        </Form.Item>
+
+        <Form.Item label={t('blocksite.label')}>
+          <BlocksiteSettings />
+          <p className="text-xs text-[var(--text-secondary)] mt-2">
+            {t('blocksite.hint')}
           </p>
         </Form.Item>
       </Form>

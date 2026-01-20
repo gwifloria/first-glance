@@ -52,13 +52,15 @@ export function useTaskData(adapterType: AdapterType) {
       setTasks(data.tasks)
       setProjects(data.projects)
     } catch (err) {
-      // 远程模式尝试使用缓存
+      // 远程模式尝试使用缓存（需要检查缓存有效期）
       if (!isLocal) {
-        const cachedTasks = await storage.getCachedTasks<Task[]>()
-        const cachedProjects = await storage.getCachedProjects<Project[]>()
-        if (cachedTasks || cachedProjects) {
+        const isCacheValid = await storage.isCacheValid()
+        if (isCacheValid) {
+          const cachedTasks = await storage.getCachedTasks<Task[]>()
+          const cachedProjects = await storage.getCachedProjects<Project[]>()
           if (cachedTasks) setTasks(cachedTasks)
           if (cachedProjects) setProjects(cachedProjects)
+          console.warn('[useTaskData] 使用缓存数据（网络请求失败）')
         } else {
           setError(err instanceof Error ? err.message : '获取任务失败')
         }

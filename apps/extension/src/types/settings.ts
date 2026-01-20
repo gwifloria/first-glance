@@ -9,6 +9,8 @@ export interface AppSettings {
   defaultProjectId: string | null
   /** 主题类型 */
   theme: ThemeType
+  /** 被屏蔽的网站域名列表 */
+  blockedSites: string[]
 }
 
 /**
@@ -17,4 +19,5 @@ export interface AppSettings {
 export const defaultSettings: AppSettings = {
   defaultProjectId: null,
   theme: 'pink',
+  blockedSites: [],
 }

@@ -43,9 +43,9 @@ export function Clock({
   // 番茄模式颜色（使用主题色）
   const pomodoroColor =
     pomodoroMode === 'work'
-      ? 'text-[var(--pomodoro-work)]'
+      ? 'text-pomodoro-work'
       : pomodoroMode === 'break'
-        ? 'text-[var(--pomodoro-break)]'
+        ? 'text-pomodoro-break'
         : ''
 
   // 问候语

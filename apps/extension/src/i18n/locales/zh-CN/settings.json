@@ -4,5 +4,13 @@
     "label": "新任务默认清单",
     "inbox": "收集箱",
     "hint": "在智能清单中快速添加任务时，将使用此清单"
+  },
+  "blocksite": {
+    "label": "屏蔽网站",
+    "placeholder": "输入域名，如 reddit.com",
+    "hint": "访问这些网站时将被拦截，帮助你保持专注",
+    "empty": "暂无屏蔽网站",
+    "invalidDomain": "请输入有效的域名",
+    "duplicateDomain": "该域名已添加"
   }
 }

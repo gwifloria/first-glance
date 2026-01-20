@@ -1,4 +1,4 @@
-import { StrictMode, useState, useEffect, type ReactNode } from 'react'
+import { StrictMode, useState, useEffect, useMemo, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
@@ -23,6 +23,9 @@ function AntdConfigProvider({ children }: { children: ReactNode }) {
     i18n.language.startsWith('zh') ? zhCN : enUS
   )
 
+  // 缓存 Antd 主题配置，仅当 theme 变化时重新创建
+  const antdTheme = useMemo(() => createAntdTheme(theme), [theme])
+
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
       setAntdLocale(lng.startsWith('zh') ? zhCN : enUS)
@@ -35,7 +38,7 @@ function AntdConfigProvider({ children }: { children: ReactNode }) {
   }, [i18n])
 
   return (
-    <ConfigProvider locale={antdLocale} theme={createAntdTheme(theme)}>
+    <ConfigProvider locale={antdLocale} theme={antdTheme}>
       {children}
     </ConfigProvider>
   )

@@ -18,6 +18,8 @@ export default {
         'priority-high': 'var(--priority-high)',
         'priority-medium': 'var(--priority-medium)',
         'priority-low': 'var(--priority-low)',
+        'pomodoro-work': 'var(--pomodoro-work)',
+        'pomodoro-break': 'var(--pomodoro-break)',
       },
       borderRadius: {
         sm: 'var(--radius-small)',

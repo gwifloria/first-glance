@@ -153,10 +153,9 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
   // v3 -> v4: 移除 theme 字段（已迁移到独立存储）
   4: (data) => {
     const d = (data || {}) as Record<string, unknown>
-    const { theme: _, ...rest } = d
     return {
-      defaultProjectId: rest.defaultProjectId ?? null,
-      blockedSites: rest.blockedSites ?? [],
+      defaultProjectId: d.defaultProjectId ?? null,
+      blockedSites: d.blockedSites ?? [],
     }
   },
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Input, Tag, Space, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -32,22 +32,8 @@ export function BlocksiteSettings() {
   const { t } = useTranslation('settings')
   const { settings, updateSettings } = useSettings()
   const [inputValue, setInputValue] = useState('')
-  const [ruleCount, setRuleCount] = useState<number | null>(null)
 
   const blockedSites = settings.blockedSites || []
-
-  // 调试：检查当前规则数量
-  useEffect(() => {
-    chrome.declarativeNetRequest
-      .getDynamicRules()
-      .then((rules) => {
-        setRuleCount(rules.length)
-        console.log('[BlockSite] Current rules:', rules)
-      })
-      .catch((err) => {
-        console.error('[BlockSite] Failed to get rules:', err)
-      })
-  }, [blockedSites])
 
   const handleAdd = () => {
     const domain = normalizeDomain(inputValue)
@@ -121,14 +107,6 @@ export function BlocksiteSettings() {
       {blockedSites.length === 0 && (
         <p className="text-xs text-[var(--text-secondary)]">
           {t('blocksite.empty')}
-        </p>
-      )}
-
-      {/* 调试信息 */}
-      {ruleCount !== null && (
-        <p className="text-xs text-[var(--text-secondary)] mt-2">
-          [Debug] Active rules: {ruleCount}, Settings: {blockedSites.length}{' '}
-          domains
         </p>
       )}
     </div>

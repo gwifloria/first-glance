@@ -1,4 +1,4 @@
-import { StrictMode, useState, useEffect, type ReactNode } from 'react'
+import { StrictMode, useState, useEffect, useMemo, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
@@ -18,10 +18,13 @@ import '@/styles/index.css'
 // Ant Design 配置包装器，响应主题变化
 function AntdConfigProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation()
-  const { theme } = useTheme()
+  const { theme, themeType } = useTheme()
   const [antdLocale, setAntdLocale] = useState(
     i18n.language.startsWith('zh') ? zhCN : enUS
   )
+
+  // 缓存 Antd 主题配置，仅当 themeType 变化时重新创建
+  const antdTheme = useMemo(() => createAntdTheme(theme), [themeType])
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -35,7 +38,7 @@ function AntdConfigProvider({ children }: { children: ReactNode }) {
   }, [i18n])
 
   return (
-    <ConfigProvider locale={antdLocale} theme={createAntdTheme(theme)}>
+    <ConfigProvider locale={antdLocale} theme={antdTheme}>
       {children}
     </ConfigProvider>
   )

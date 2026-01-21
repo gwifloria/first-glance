@@ -1,8 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Input, Tag, Space, message } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Input, Tag, Space, message, Button } from 'antd'
+import { PlusOutlined, CoffeeOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { getSettings, setSettings } from '@/services/settingsStorage'
+
+interface ChillModeState {
+  active: boolean
+  expiresAt: number
+}
 
 /**
  * 域名格式校验
@@ -28,10 +33,22 @@ function normalizeDomain(input: string): string {
   return domain
 }
 
+/**
+ * 格式化剩余时间
+ */
+function formatRemainingTime(expiresAt: number): string {
+  const remaining = Math.max(0, expiresAt - Date.now())
+  const minutes = Math.floor(remaining / 60000)
+  const seconds = Math.floor((remaining % 60000) / 1000)
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
 export function BlocksiteSettings() {
   const { t } = useTranslation('settings')
   const [inputValue, setInputValue] = useState('')
   const [blockedSites, setBlockedSites] = useState<string[]>([])
+  const [chillMode, setChillMode] = useState<ChillModeState | null>(null)
+  const [tick, setTick] = useState(0)
 
   // 加载已屏蔽网站列表
   useEffect(() => {
@@ -39,6 +56,65 @@ export function BlocksiteSettings() {
       setBlockedSites(settings.blockedSites || [])
     })
   }, [])
+
+  // 监听 chill mode 状态
+  useEffect(() => {
+    // 初始加载
+    chrome.storage.local.get('chill_mode').then((result) => {
+      const state = result.chill_mode as ChillModeState | undefined
+      if (state?.active && Date.now() < state.expiresAt) {
+        setChillMode(state)
+      } else {
+        setChillMode(null)
+      }
+    })
+
+    // 监听变化
+    const handleChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string
+    ) => {
+      if (areaName === 'local' && changes.chill_mode) {
+        const state = changes.chill_mode.newValue as ChillModeState | undefined
+        if (state?.active && Date.now() < state.expiresAt) {
+          setChillMode(state)
+        } else {
+          setChillMode(null)
+        }
+      }
+    }
+
+    chrome.storage.onChanged.addListener(handleChange)
+    return () => chrome.storage.onChanged.removeListener(handleChange)
+  }, [])
+
+  // Tick every second to update countdown display
+  useEffect(() => {
+    if (!chillMode) return
+
+    const interval = setInterval(() => {
+      if (Date.now() >= chillMode.expiresAt) {
+        setChillMode(null)
+      } else {
+        setTick((t) => t + 1)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [chillMode])
+
+  // Derive remaining time from chillMode (tick forces recalculation)
+  const remainingTime = useMemo(() => {
+    void tick // Use tick to trigger recalculation
+    if (!chillMode) return ''
+    return formatRemainingTime(chillMode.expiresAt)
+  }, [chillMode, tick])
+
+  const handleEndChillMode = useCallback(async () => {
+    await chrome.storage.local.remove('chill_mode')
+    setChillMode(null)
+    message.success(t('blocksite.chillMode.ended'))
+  }, [t])
 
   const handleAdd = useCallback(async () => {
     const domain = normalizeDomain(inputValue)
@@ -73,7 +149,7 @@ export function BlocksiteSettings() {
     [blockedSites]
   )
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAdd()
     }
@@ -81,12 +157,27 @@ export function BlocksiteSettings() {
 
   return (
     <div className="space-y-3">
+      {/* Chill Mode 状态提示 */}
+      {chillMode && (
+        <div className="flex items-center justify-between p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <CoffeeOutlined />
+            <span className="text-sm">
+              {t('blocksite.chillMode.active', { time: remainingTime })}
+            </span>
+          </div>
+          <Button size="small" danger onClick={handleEndChillMode}>
+            {t('blocksite.chillMode.endNow')}
+          </Button>
+        </div>
+      )}
+
       <Space.Compact className="w-full">
         <Input
           placeholder={t('blocksite.placeholder')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
         />
         <button
           onClick={handleAdd}

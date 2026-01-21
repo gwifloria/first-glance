@@ -1,6 +1,21 @@
+export interface BlockedPageStyles {
+  text: string
+  textSecondary: string
+  bubbleBg: string
+  bubbleTail: string
+  buttonBase: string
+  buttonFill: string
+  buttonHoverText: string
+  pulseBg: string
+  warningBg: string
+  chillButtonDefault: string
+  chillButtonHolding: string
+}
+
 export interface Theme {
   name: string
   type: 'journal' | 'modern'
+  blockedPage: BlockedPageStyles
   colors: {
     bgPrimary: string
     bgSecondary: string

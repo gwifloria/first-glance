@@ -3,6 +3,21 @@ import type { Theme } from './index'
 export const beigeTheme: Theme = {
   name: '经典米',
   type: 'journal',
+  blockedPage: {
+    text: 'text-[var(--text-primary)]',
+    textSecondary: 'text-[var(--text-secondary)]',
+    bubbleBg: 'bg-[var(--text-primary)] text-[var(--bg-primary)]',
+    bubbleTail: 'border-t-[var(--text-primary)]',
+    buttonBase:
+      'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:shadow-lg',
+    buttonFill: 'bg-[var(--accent)]',
+    buttonHoverText: 'text-[var(--bg-primary)]',
+    pulseBg: 'bg-[var(--accent)]/10',
+    warningBg: 'bg-red-500',
+    chillButtonDefault:
+      'bg-[var(--text-primary)]/10 text-[var(--text-secondary)] hover:bg-[var(--text-primary)]/20',
+    chillButtonHolding: 'bg-red-100 text-red-700',
+  },
   colors: {
     bgPrimary: '#e3e0d6',
     bgSecondary: '#F5EDE4',

@@ -3,6 +3,19 @@ import type { Theme } from './index'
 export const darkTheme: Theme = {
   name: '暗黑',
   type: 'modern',
+  blockedPage: {
+    text: 'text-white',
+    textSecondary: 'text-gray-400',
+    bubbleBg: 'bg-white text-black',
+    bubbleTail: 'border-t-white',
+    buttonBase: 'bg-white text-black hover:shadow-lg hover:shadow-white/20',
+    buttonFill: 'bg-rose-200',
+    buttonHoverText: 'text-black',
+    pulseBg: 'bg-rose-900/10',
+    warningBg: 'bg-red-900',
+    chillButtonDefault: 'bg-white/10 text-white/70 hover:bg-white/20',
+    chillButtonHolding: 'bg-red-900/50 text-white',
+  },
   colors: {
     bgPrimary: '#09090b',
     bgSecondary: '#18181b',

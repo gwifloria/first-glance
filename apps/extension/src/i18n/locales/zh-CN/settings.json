@@ -11,6 +11,11 @@
     "hint": "访问这些网站时将被拦截，帮助你保持专注",
     "empty": "暂无屏蔽网站",
     "invalidDomain": "请输入有效的域名",
-    "duplicateDomain": "该域名已添加"
+    "duplicateDomain": "该域名已添加",
+    "chillMode": {
+      "active": "休息模式中，剩余 {{time}}",
+      "endNow": "立即结束",
+      "ended": "休息模式已结束"
+    }
   }
 }

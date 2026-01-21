@@ -3,6 +3,11 @@
 
 import type { AppSettings } from '@/types/settings'
 
+interface ChillModeState {
+  active: boolean
+  expiresAt: number
+}
+
 const CLIENT_ID = import.meta.env.VITE_DIDA_CLIENT_ID || ''
 const CLIENT_SECRET = import.meta.env.VITE_DIDA_CLIENT_SECRET || ''
 const TOKEN_URL = 'https://dida365.com/oauth/token'
@@ -40,6 +45,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 // 浏览器启动时也加载规则
 chrome.runtime.onStartup.addListener(async () => {
   console.log('First Glance extension startup')
+  await checkChillModeExpiry()
   await loadAndApplyBlockingRules()
 })
 
@@ -52,6 +58,10 @@ chrome.alarms.create('refreshToken', { periodInMinutes: 30 })
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'refreshToken') {
     await refreshTokenIfNeeded()
+  } else if (alarm.name === 'chillModeExpire') {
+    await chrome.storage.local.remove('chill_mode')
+    await loadAndApplyBlockingRules()
+    console.log('[ChillMode] 休息模式自动过期')
   }
 })
 
@@ -132,6 +142,11 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       updateBlockingRules(newSettings.blockedSites || [])
     }
   }
+
+  // 监听 chill_mode 变化
+  if (areaName === 'local' && changes.chill_mode) {
+    handleChillModeChange(changes.chill_mode.newValue)
+  }
 })
 
 /**
@@ -139,6 +154,14 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
  */
 async function loadAndApplyBlockingRules(): Promise<void> {
   try {
+    // 如果处于休息模式，不应用屏蔽规则
+    const chillResult = await chrome.storage.local.get('chill_mode')
+    const chillState = chillResult.chill_mode as ChillModeState | undefined
+    if (chillState?.active && Date.now() < chillState.expiresAt) {
+      console.log('[Background] 休息模式中，跳过屏蔽规则')
+      return
+    }
+
     const result = await chrome.storage.sync.get(SETTINGS_KEY)
     const settings = result[SETTINGS_KEY] as AppSettings | undefined
     const blockedSites = settings?.blockedSites || []
@@ -207,5 +230,44 @@ async function updateBlockingRules(blockedSites: string[]): Promise<void> {
     console.log('[Blocksite] Rules after update:', newRules)
   } catch (err) {
     console.error('[Blocksite] Failed to update rules:', err)
+  }
+}
+
+// ==================== Chill Mode 功能 ====================
+
+/**
+ * 检查 chill mode 是否过期
+ */
+async function checkChillModeExpiry(): Promise<void> {
+  const result = await chrome.storage.local.get('chill_mode')
+  const state = result.chill_mode as ChillModeState | undefined
+  if (state?.active && Date.now() >= state.expiresAt) {
+    await chrome.storage.local.remove('chill_mode')
+    console.log('[ChillMode] 休息模式已过期，已清除')
+  }
+}
+
+/**
+ * 处理 chill mode 状态变化
+ */
+async function handleChillModeChange(
+  state: ChillModeState | undefined
+): Promise<void> {
+  if (state?.active && Date.now() < state.expiresAt) {
+    // 进入休息模式：清除所有屏蔽规则
+    const existingRules = await chrome.declarativeNetRequest.getDynamicRules()
+    const removeRuleIds = existingRules.map((r) => r.id)
+    if (removeRuleIds.length > 0) {
+      await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds })
+    }
+    console.log('[ChillMode] 已进入休息模式，屏蔽规则已暂停')
+
+    // 设置定时器在过期时恢复
+    chrome.alarms.create('chillModeExpire', { when: state.expiresAt })
+  } else {
+    // 退出休息模式：恢复屏蔽规则
+    await chrome.alarms.clear('chillModeExpire')
+    await loadAndApplyBlockingRules()
+    console.log('[ChillMode] 休息模式结束，屏蔽规则已恢复')
   }
 }

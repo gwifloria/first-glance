@@ -7,21 +7,8 @@ import type { AppSettings } from '@/types/settings'
 import { isChillModeActive } from './chillMode'
 
 const SETTINGS_KEY = 'app_settings'
-
-/**
- * 将域名哈希为稳定的规则 ID
- * 使用简单的哈希算法，确保同一域名始终生成相同 ID
- */
-function hashDomainToId(domain: string): number {
-  let hash = 0
-  for (let i = 0; i < domain.length; i++) {
-    const char = domain.charCodeAt(i)
-    hash = (hash << 5) - hash + char
-    hash = hash & hash // Convert to 32bit integer
-  }
-  // 确保 ID 为正数且在合理范围内（1 到 2^30）
-  return Math.abs(hash % 1073741823) + 1
-}
+// 规则 ID 基础偏移量，避免与其他可能的规则冲突
+const RULE_ID_BASE = 1000
 
 /**
  * 加载设置并应用屏蔽规则
@@ -75,9 +62,9 @@ export async function updateBlockingRules(
     // - https://www.xiaohongshu.com/explore
     // - https://m.xiaohongshu.com
     const addRules: chrome.declarativeNetRequest.Rule[] = blockedSites.map(
-      (domain) => ({
-        // 使用域名哈希生成稳定 ID，避免频繁增删时的 ID 冲突
-        id: hashDomainToId(domain),
+      (domain, index) => ({
+        // 全量更新模式下使用简单递增 ID，加基础偏移避免与其他规则冲突
+        id: RULE_ID_BASE + index,
         priority: 1,
         action: {
           type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,

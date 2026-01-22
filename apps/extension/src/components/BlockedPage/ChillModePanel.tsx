@@ -85,8 +85,8 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
     onStateChange?.({ isHolding: false, stageIndex: -1, stageMessage: '' })
   }, [onStateChange])
 
-  // Calculate remaining seconds for display
-  const remainingSeconds = Math.ceil(
+  // Calculate remaining seconds for display (使用 floor 避免显示延迟感)
+  const remainingSeconds = Math.floor(
     ((CHILL_MODE_HOLD_STEPS - holdProgress) * CHILL_MODE_HOLD_INTERVAL_MS) /
       1000
   )
@@ -148,6 +148,8 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
             onMouseLeave={handleHoldEnd}
             onTouchStart={handleHoldStart}
             onTouchEnd={handleHoldEnd}
+            onTouchCancel={handleHoldEnd}
+            onContextMenu={(e) => e.preventDefault()}
             className={`blocked-chill-btn ${isHolding ? 'holding' : ''}`}
           >
             <CoffeeOutlined />

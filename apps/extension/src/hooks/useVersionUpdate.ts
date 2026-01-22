@@ -48,10 +48,24 @@ export function useVersionUpdate(): VersionUpdateState {
 }
 
 /**
+ * 解析版本号，支持 major.minor.patch 格式
+ * 返回 [major, minor, patch]，无法解析的部分返回 0
+ */
+function parseVersion(version: string): [number, number, number] {
+  // 移除可能的前缀（如 v1.0.0）和后缀（如 1.0.0-beta）
+  const cleaned = version.replace(/^v/, '').split('-')[0]
+  const parts = cleaned.split('.').map((p) => {
+    const num = parseInt(p, 10)
+    return isNaN(num) ? 0 : num
+  })
+  return [parts[0] || 0, parts[1] || 0, parts[2] || 0]
+}
+
+/**
  * 判断是否为重要更新（主版本或次版本变化）
  */
 export function isMajorUpdate(from: string, to: string): boolean {
-  const [fromMajor, fromMinor] = from.split('.').map(Number)
-  const [toMajor, toMinor] = to.split('.').map(Number)
-  return toMajor > fromMajor || toMinor > fromMinor
+  const [fromMajor, fromMinor] = parseVersion(from)
+  const [toMajor, toMinor] = parseVersion(to)
+  return toMajor > fromMajor || (toMajor === fromMajor && toMinor > fromMinor)
 }

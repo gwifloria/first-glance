@@ -9,7 +9,6 @@ import {
   loadAndApplyBlockingRules,
   updateBlockingRules,
   checkChillModeExpiry,
-  handleChillModeExpireAlarm,
   createSettingsChangeHandler,
   createChillModeChangeHandler,
 } from './services'
@@ -58,11 +57,19 @@ loadAndApplyBlockingRules()
 // 初始化 Token 刷新定时器
 initTokenRefreshAlarm()
 
+// 初始化 Chill Mode 定期检查（每分钟检查一次，作为 alarm 的备份）
+chrome.alarms.create('chillModeCheck', { periodInMinutes: 1 })
+
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'refreshToken') {
     await refreshTokenIfNeeded()
-  } else if (alarm.name === 'chillModeExpire') {
-    await handleChillModeExpireAlarm()
+  } else if (
+    alarm.name === 'chillModeExpire' ||
+    alarm.name === 'chillModeCheck'
+  ) {
+    // 两个 alarm 都触发过期检查，确保可靠性
+    await checkChillModeExpiry()
+    await loadAndApplyBlockingRules()
   }
 })
 

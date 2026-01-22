@@ -63,14 +63,25 @@ export async function handleChillModeExpireAlarm(): Promise<void> {
 
 /**
  * 创建 storage 变化监听器
+ * 注意：返回的处理函数会立即执行异步操作，Chrome 会等待 Promise 完成
  */
 export function createChillModeChangeHandler(): (
   changes: { [key: string]: chrome.storage.StorageChange },
   areaName: string
 ) => void {
+  let isProcessing = false
+
   return (changes, areaName) => {
     if (areaName === 'local' && changes.chill_mode) {
+      // 防止并发处理
+      if (isProcessing) return
+      isProcessing = true
+
       handleChillModeChange(changes.chill_mode.newValue)
+        .catch((err) => console.error('[ChillMode] 状态变化处理失败:', err))
+        .finally(() => {
+          isProcessing = false
+        })
     }
   }
 }

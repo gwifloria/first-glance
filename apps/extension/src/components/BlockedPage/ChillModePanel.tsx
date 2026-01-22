@@ -1,8 +1,12 @@
 import { useState, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CoffeeOutlined } from '@ant-design/icons'
-import { useBlockedPageStyles } from './useBlockedPageStyles'
 import { getChillStage } from './constants'
+import {
+  CHILL_MODE_DURATION_MS,
+  CHILL_MODE_HOLD_INTERVAL_MS,
+  CHILL_MODE_HOLD_STEPS,
+} from '@/constants'
 
 interface ChillModePanelProps {
   onStateChange?: (state: {
@@ -14,7 +18,6 @@ interface ChillModePanelProps {
 
 export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
   const { t } = useTranslation('blocked')
-  const styles = useBlockedPageStyles()
 
   const [showUnlockOption, setShowUnlockOption] = useState(false)
   const [holdProgress, setHoldProgress] = useState(0)
@@ -33,11 +36,12 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
   )
 
   const enterChillMode = useCallback(async () => {
-    const expiresAt = Date.now() + 15 * 60 * 1000 // 15 minutes
+    const expiresAt = Date.now() + CHILL_MODE_DURATION_MS
     await chrome.storage.local.set({
       chill_mode: { active: true, expiresAt },
     })
-    // Go back to the blocked site
+    // 等待 background 清除屏蔽规则后再导航
+    await new Promise((resolve) => setTimeout(resolve, 100))
     window.history.back()
   }, [])
 
@@ -61,14 +65,14 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
         stageMessage: getStageMessage(stage.stageIndex),
       })
 
-      if (progress >= 100) {
+      if (progress >= CHILL_MODE_HOLD_STEPS) {
         if (intervalRef.current) {
           clearInterval(intervalRef.current)
           intervalRef.current = null
         }
         enterChillMode()
       }
-    }, 100) // 10 seconds = 100 intervals of 100ms
+    }, CHILL_MODE_HOLD_INTERVAL_MS)
   }, [enterChillMode, getStageMessage, onStateChange])
 
   const handleHoldEnd = useCallback(() => {
@@ -82,14 +86,17 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
   }, [onStateChange])
 
   // Calculate remaining seconds for display
-  const remainingSeconds = Math.ceil((100 - holdProgress) / 10)
+  const remainingSeconds = Math.ceil(
+    ((CHILL_MODE_HOLD_STEPS - holdProgress) * CHILL_MODE_HOLD_INTERVAL_MS) /
+      1000
+  )
 
   return (
     <div className="mt-8">
       {!showUnlockOption && !isHolding ? (
         <button
           onClick={() => setShowUnlockOption(true)}
-          className={`text-xs opacity-30 hover:opacity-60 underline decoration-dashed cursor-pointer ${styles.textSecondary}`}
+          className="text-xs opacity-30 hover:opacity-60 underline decoration-dashed cursor-pointer text-[var(--text-secondary)]"
         >
           {t('chillMode.trigger')}
         </button>
@@ -118,7 +125,9 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeDasharray={2 * Math.PI * 28}
-                strokeDashoffset={2 * Math.PI * 28 * (1 - holdProgress / 100)}
+                strokeDashoffset={
+                  2 * Math.PI * 28 * (1 - holdProgress / CHILL_MODE_HOLD_STEPS)
+                }
                 className={`transition-all duration-100 ${
                   isHolding ? 'opacity-60' : 'opacity-30'
                 }`}
@@ -145,7 +154,11 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
               transition-all duration-300 cursor-pointer
               flex items-center gap-2
               select-none
-              ${isHolding ? styles.chillButtonHolding : styles.chillButtonDefault}
+              ${
+                isHolding
+                  ? 'bg-[var(--blocked-chill-hold-bg)] text-[var(--blocked-chill-hold-text)]'
+                  : 'bg-[var(--blocked-chill-bg)] text-[var(--blocked-chill-text)] hover:opacity-80'
+              }
             `}
           >
             <CoffeeOutlined />

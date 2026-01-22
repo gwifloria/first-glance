@@ -1,3 +1,5 @@
+import { CHILL_MODE_HOLD_STEPS } from '@/constants'
+
 export const KAOMOJI = {
   STERN: '( ￣^￣ )',
   SHY: '( ///_/// )',
@@ -12,11 +14,12 @@ export function getChillStage(progress: number): {
   kaomoji: string
   stageIndex: number
 } {
-  // 2 stages: 0-50% (first 5s), 50-100% (last 5s)
-  if (progress < 50) return { kaomoji: KAOMOJI.SUSPICIOUS, stageIndex: 0 }
-  return { kaomoji: KAOMOJI.RESIGNED, stageIndex: 1 }
-}
-
-export function getRandomMessage(messages: string[]): string {
-  return messages[Math.floor(Math.random() * messages.length)]
+  // 4 stages: ~2.5s each (progress 0-100 for 10s total)
+  const stageSize = CHILL_MODE_HOLD_STEPS / 4
+  if (progress < stageSize)
+    return { kaomoji: KAOMOJI.SUSPICIOUS, stageIndex: 0 }
+  if (progress < stageSize * 2) return { kaomoji: KAOMOJI.PANIC, stageIndex: 1 }
+  if (progress < stageSize * 3)
+    return { kaomoji: KAOMOJI.CRYING, stageIndex: 2 }
+  return { kaomoji: KAOMOJI.RESIGNED, stageIndex: 3 }
 }

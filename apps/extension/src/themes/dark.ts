@@ -3,19 +3,6 @@ import type { Theme } from './index'
 export const darkTheme: Theme = {
   name: '暗黑',
   type: 'modern',
-  blockedPage: {
-    text: 'text-white',
-    textSecondary: 'text-gray-400',
-    bubbleBg: 'bg-white text-black',
-    bubbleTail: 'border-t-white',
-    buttonBase: 'bg-white text-black hover:shadow-lg hover:shadow-white/20',
-    buttonFill: 'bg-rose-200',
-    buttonHoverText: 'text-black',
-    pulseBg: 'bg-rose-900/10',
-    warningBg: 'bg-red-900',
-    chillButtonDefault: 'bg-white/10 text-white/70 hover:bg-white/20',
-    chillButtonHolding: 'bg-red-900/50 text-white',
-  },
   colors: {
     bgPrimary: '#09090b',
     bgSecondary: '#18181b',
@@ -41,6 +28,15 @@ export const darkTheme: Theme = {
     priorityLow: '#71717a',
     pomodoroWork: '#e8a07a',
     pomodoroBreak: '#7ae8a0',
+    // BlockedPage
+    blockedBubbleBg: '#ffffff',
+    blockedBubbleText: '#000000',
+    blockedPulseBg: 'rgba(136, 19, 55, 0.1)',
+    blockedWarningBg: '#7f1d1d',
+    blockedChillBg: 'rgba(255, 255, 255, 0.1)',
+    blockedChillText: 'rgba(255, 255, 255, 0.7)',
+    blockedChillHoldBg: 'rgba(127, 29, 29, 0.5)',
+    blockedChillHoldText: '#ffffff',
   },
   borderRadius: {
     small: '8px',

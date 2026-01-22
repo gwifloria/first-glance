@@ -1,21 +1,6 @@
-export interface BlockedPageStyles {
-  text: string
-  textSecondary: string
-  bubbleBg: string
-  bubbleTail: string
-  buttonBase: string
-  buttonFill: string
-  buttonHoverText: string
-  pulseBg: string
-  warningBg: string
-  chillButtonDefault: string
-  chillButtonHolding: string
-}
-
 export interface Theme {
   name: string
   type: 'journal' | 'modern'
-  blockedPage: BlockedPageStyles
   colors: {
     bgPrimary: string
     bgSecondary: string
@@ -45,6 +30,15 @@ export interface Theme {
     // 番茄时钟颜色
     pomodoroWork: string
     pomodoroBreak: string
+    // BlockedPage 颜色
+    blockedBubbleBg: string
+    blockedBubbleText: string
+    blockedPulseBg: string
+    blockedWarningBg: string
+    blockedChillBg: string
+    blockedChillText: string
+    blockedChillHoldBg: string
+    blockedChillHoldText: string
   }
   borderRadius: {
     small: string

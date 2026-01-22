@@ -3,21 +3,6 @@ import type { Theme } from './index'
 export const pinkTheme: Theme = {
   name: '莫兰迪粉',
   type: 'journal',
-  blockedPage: {
-    text: 'text-[var(--text-primary)]',
-    textSecondary: 'text-[var(--text-secondary)]',
-    bubbleBg: 'bg-[var(--text-primary)] text-[var(--bg-primary)]',
-    bubbleTail: 'border-t-[var(--text-primary)]',
-    buttonBase:
-      'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:shadow-lg',
-    buttonFill: 'bg-[var(--accent)]',
-    buttonHoverText: 'text-[var(--bg-primary)]',
-    pulseBg: 'bg-[var(--accent)]/10',
-    warningBg: 'bg-red-500',
-    chillButtonDefault:
-      'bg-[var(--text-primary)]/10 text-[var(--text-secondary)] hover:bg-[var(--text-primary)]/20',
-    chillButtonHolding: 'bg-red-100 text-red-700',
-  },
   colors: {
     bgPrimary: '#f2efee',
     bgSecondary: '#fbf8f8',
@@ -43,6 +28,15 @@ export const pinkTheme: Theme = {
     priorityLow: '#7EC699',
     pomodoroWork: '#c9a89a',
     pomodoroBreak: '#9eb0a2',
+    // BlockedPage
+    blockedBubbleBg: '#5d5555',
+    blockedBubbleText: '#f2efee',
+    blockedPulseBg: 'rgba(212, 165, 165, 0.1)',
+    blockedWarningBg: '#ef4444',
+    blockedChillBg: 'rgba(93, 85, 85, 0.1)',
+    blockedChillText: '#9c9492',
+    blockedChillHoldBg: '#fee2e2',
+    blockedChillHoldText: '#b91c1c',
   },
   borderRadius: {
     small: '8px',

@@ -23,6 +23,14 @@ export function usePersistedState<T>(
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [value, setValue] = useState<T>(defaultValue)
   const pendingSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // 保存待持久化的值，用于组件卸载时立即保存
+  const pendingValueRef = useRef<T | null>(null)
+  const serializerRef = useRef(serializer)
+
+  // 更新 serializer ref（在 effect 中更新以避免 render 期间修改 ref）
+  useEffect(() => {
+    serializerRef.current = serializer
+  }, [serializer])
 
   // 初始化时从 storage 读取
   useEffect(() => {
@@ -30,8 +38,8 @@ export function usePersistedState<T>(
       .get(storageKey)
       .then((result) => {
         if (result[storageKey] !== undefined) {
-          const storedValue = serializer
-            ? serializer.deserialize(result[storageKey])
+          const storedValue = serializerRef.current
+            ? serializerRef.current.deserialize(result[storageKey])
             : result[storageKey]
           setValue(storedValue)
         }
@@ -39,16 +47,26 @@ export function usePersistedState<T>(
       .catch(() => {
         // storage 读取失败时保持默认值
       })
-  }, [storageKey, serializer])
+  }, [storageKey])
 
-  // 清理未完成的保存
+  // 组件卸载时立即保存待持久化的数据
   useEffect(() => {
     return () => {
       if (pendingSaveRef.current) {
         clearTimeout(pendingSaveRef.current)
+        pendingSaveRef.current = null
+      }
+      // 如果有待保存的数据，立即保存
+      if (pendingValueRef.current !== null) {
+        const valueToStore = serializerRef.current
+          ? serializerRef.current.serialize(pendingValueRef.current)
+          : pendingValueRef.current
+        chrome.storage.local.set({ [storageKey]: valueToStore }).catch(() => {
+          // 忽略卸载时的保存错误
+        })
       }
     }
-  }, [])
+  }, [storageKey])
 
   const updateValue = useCallback(
     (newValue: T | ((prev: T) => T)) => {
@@ -58,12 +76,17 @@ export function usePersistedState<T>(
             ? (newValue as (prev: T) => T)(prev)
             : newValue
 
+        // 记录待保存的值
+        pendingValueRef.current = next
+
         // 防抖保存：200ms 内的多次更新合并为一次写入
         if (pendingSaveRef.current) {
           clearTimeout(pendingSaveRef.current)
         }
         pendingSaveRef.current = setTimeout(() => {
-          const valueToStore = serializer ? serializer.serialize(next) : next
+          const valueToStore = serializerRef.current
+            ? serializerRef.current.serialize(next)
+            : next
           chrome.storage.local
             .set({ [storageKey]: valueToStore })
             .catch((err) => {
@@ -73,12 +96,13 @@ export function usePersistedState<T>(
               )
             })
           pendingSaveRef.current = null
+          pendingValueRef.current = null
         }, 200)
 
         return next
       })
     },
-    [storageKey, serializer]
+    [storageKey]
   )
 
   return [value, updateValue]

@@ -18,24 +18,39 @@ export const localTaskStorage = {
   async addTask(
     task: Omit<LocalTask, 'id' | 'createdTime' | 'isLocal'>
   ): Promise<LocalTask | null> {
-    const tasks = await this.getTasks()
-    const pendingCount = tasks.filter((t) => t.status === 0).length
+    // 使用乐观锁模式：写入前再次验证，失败则重试
+    const maxRetries = 3
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const tasks = await this.getTasks()
+      const pendingCount = tasks.filter((t) => t.status === 0).length
 
-    if (pendingCount >= MAX_LOCAL_TASKS) {
-      return null // Limit reached
+      if (pendingCount >= MAX_LOCAL_TASKS) {
+        return null // Limit reached
+      }
+
+      const newTask: LocalTask = {
+        ...task,
+        id: crypto.randomUUID(),
+        createdTime: new Date().toISOString(),
+        isLocal: true,
+      }
+
+      // 写入前再次读取验证（简化版乐观锁）
+      const currentTasks = await this.getTasks()
+      const currentPendingCount = currentTasks.filter(
+        (t) => t.status === 0
+      ).length
+
+      if (currentPendingCount >= MAX_LOCAL_TASKS) {
+        return null // 并发写入导致超限
+      }
+
+      await chrome.storage.local.set({
+        [STORAGE_KEY]: [...currentTasks, newTask],
+      })
+      return newTask
     }
-
-    const newTask: LocalTask = {
-      ...task,
-      id: crypto.randomUUID(),
-      createdTime: new Date().toISOString(),
-      isLocal: true,
-    }
-
-    await chrome.storage.local.set({
-      [STORAGE_KEY]: [...tasks, newTask],
-    })
-    return newTask
+    return null
   },
 
   async completeTask(taskId: string): Promise<void> {

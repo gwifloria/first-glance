@@ -121,3 +121,119 @@ body.ant-scrolling-effect {
   width: 100% !important;
   overflow: hidden !important;
 }
+
+/* ==================== BlockedPage 组件 ==================== */
+
+/* 页面容器 */
+.blocked-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+}
+
+/* 气泡 */
+.blocked-bubble {
+  position: absolute;
+  top: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  background: var(--blocked-bubble-bg);
+  color: var(--blocked-bubble-text);
+}
+
+/* 气泡尾巴 */
+.blocked-bubble-tail {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--blocked-bubble-bg);
+}
+
+/* 颜文字 */
+.blocked-kaomoji {
+  font-size: 3rem;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+  color: var(--text-primary);
+}
+@media (min-width: 640px) {
+  .blocked-kaomoji {
+    font-size: 3.75rem;
+  }
+}
+
+/* 返回首页按钮 */
+.blocked-home-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1.125rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+.blocked-home-btn:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* 按钮填充动画层 */
+.blocked-home-btn-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transition: transform 0.5s;
+  background: var(--accent);
+}
+
+/* 按钮悬浮文字 */
+.blocked-home-btn-hover-text {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s;
+  color: var(--bg-primary);
+}
+
+/* Chill Mode 按钮 */
+.blocked-chill-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  background: var(--blocked-chill-bg);
+  color: var(--blocked-chill-text);
+}
+.blocked-chill-btn:hover {
+  opacity: 0.8;
+}
+.blocked-chill-btn.holding {
+  background: var(--blocked-chill-hold-bg);
+  color: var(--blocked-chill-hold-text);
+}

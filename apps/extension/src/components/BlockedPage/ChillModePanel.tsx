@@ -148,18 +148,7 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
             onMouseLeave={handleHoldEnd}
             onTouchStart={handleHoldStart}
             onTouchEnd={handleHoldEnd}
-            className={`
-              px-4 py-2 rounded-xl
-              font-medium text-sm
-              transition-all duration-300 cursor-pointer
-              flex items-center gap-2
-              select-none
-              ${
-                isHolding
-                  ? 'bg-[var(--blocked-chill-hold-bg)] text-[var(--blocked-chill-hold-text)]'
-                  : 'bg-[var(--blocked-chill-bg)] text-[var(--blocked-chill-text)] hover:opacity-80'
-              }
-            `}
+            className={`blocked-chill-btn ${isHolding ? 'holding' : ''}`}
           >
             <CoffeeOutlined />
             {isHolding ? t('chillMode.holding') : t('chillMode.button')}

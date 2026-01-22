@@ -1,15 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useBlockedPageStyles } from './useBlockedPageStyles'
-import { KaomojiDisplay } from './KaomojiDisplay'
 import { ChillModePanel } from './ChillModePanel'
 import { GoHomeButton } from './GoHomeButton'
-import { KAOMOJI, getChillStage, getRandomMessage } from './constants'
+import { KaomojiDisplay } from './KaomojiDisplay'
 import './animations.css'
+import { KAOMOJI, getChillStage } from './constants'
 
 export function BlockedPage() {
   const { t } = useTranslation('blocked')
-  const styles = useBlockedPageStyles()
 
   const [isHovering, setIsHovering] = useState(false)
   const [chillState, setChillState] = useState({
@@ -18,11 +16,12 @@ export function BlockedPage() {
     stageMessage: '',
   })
 
+  // 固定随机索引，避免 hold 过程中消息频繁变化
+  const [randomIndex] = useState(() => Math.floor(Math.random() * 100))
   const messages = t('messages', { returnObjects: true }) as string[]
-  const message = useMemo(
-    () => (Array.isArray(messages) ? getRandomMessage(messages) : ''),
-    [messages]
-  )
+  const message = Array.isArray(messages)
+    ? messages[randomIndex % messages.length]
+    : ''
 
   // Determine expression based on chill state or hover
   const expression = useMemo(() => {
@@ -43,31 +42,18 @@ export function BlockedPage() {
     : undefined
 
   return (
-    <div
-      className={`
-        relative min-h-screen overflow-hidden
-        flex items-center justify-center
-        bg-[var(--bg-primary)]
-      `}
-    >
+    <div className="blocked-page">
       {/* Background pulse layer - changes to warning pulse when holding */}
       <div
         className={`absolute inset-0 ${
           chillState.isHolding
-            ? `${styles.warningBg} animate-warning-pulse`
-            : `${styles.pulseBg} animate-pulse-slow`
+            ? 'bg-[var(--blocked-warning-bg)] animate-warning-pulse'
+            : 'bg-[var(--blocked-pulse-bg)] animate-pulse-slow'
         }`}
       />
 
-      {/* Paper texture for journal themes */}
-      {styles.showTexture && (
-        <div
-          className="absolute inset-0 opacity-30 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
-      )}
+      {/* Paper texture - 通过 CSS 类控制显示 */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none paper-texture" />
 
       {/* Content */}
       <div className="relative z-10 text-center px-8 animate-fade-in-up">
@@ -80,15 +66,10 @@ export function BlockedPage() {
         />
 
         {/* Message */}
-        <h1
-          className={`
-            text-2xl sm:text-3xl font-semibold mb-3
-            ${styles.text}
-          `}
-        >
+        <h1 className="text-2xl sm:text-3xl font-semibold mb-3 text-[var(--text-primary)]">
           {message}
         </h1>
-        <p className={`text-base mb-10 ${styles.textSecondary}`}>
+        <p className="text-base mb-10 text-[var(--text-secondary)]">
           {t('subtitle')}
         </p>
 
@@ -96,7 +77,7 @@ export function BlockedPage() {
         <GoHomeButton onHoverChange={setIsHovering} />
 
         {/* Hint */}
-        <p className={`text-xs mt-8 opacity-50 ${styles.textSecondary}`}>
+        <p className="text-xs mt-8 opacity-50 text-[var(--text-secondary)]">
           {t('hint')}
         </p>
 

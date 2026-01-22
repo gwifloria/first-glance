@@ -10,11 +10,14 @@ export type { PomodoroMode, PomodoroConfig, PomodoroState } from './usePomodoro'
 // 应用状态
 export { useTheme } from './useTheme'
 export { useVersionUpdate, isMajorUpdate } from './useVersionUpdate'
+export { useChillMode } from './useChillMode'
+export type { ChillModeState } from './useChillMode'
 
 // 时间相关
 export { useCurrentTime } from './useCurrentTime'
 
 // 持久化
+export { usePersistedState, setSerializer } from './usePersistedState'
 export { usePersistedBoolean } from './usePersistedBoolean'
 export { usePersistedSet } from './usePersistedSet'
 

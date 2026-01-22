@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
+import { usePersistedState, setSerializer } from './usePersistedState'
 
 /**
  * 持久化 Set 状态的 Hook
@@ -7,21 +8,11 @@ import { useState, useCallback, useEffect } from 'react'
 export function usePersistedSet(
   storageKey: string
 ): [Set<string>, (id: string) => void] {
-  const [items, setItems] = useState<Set<string>>(new Set())
-
-  // 初始化时从 storage 读取
-  useEffect(() => {
-    chrome.storage.local
-      .get(storageKey)
-      .then((result) => {
-        if (result[storageKey]) {
-          setItems(new Set(result[storageKey]))
-        }
-      })
-      .catch(() => {
-        // storage 读取失败时保持空集合
-      })
-  }, [storageKey])
+  const [items, setItems] = usePersistedState(
+    storageKey,
+    new Set<string>(),
+    setSerializer
+  )
 
   const toggle = useCallback(
     (id: string) => {
@@ -32,13 +23,10 @@ export function usePersistedSet(
         } else {
           next.add(id)
         }
-        chrome.storage.local.set({ [storageKey]: [...next] }).catch((err) => {
-          console.error(`[usePersistedSet] 保存失败 (${storageKey}):`, err)
-        })
         return next
       })
     },
-    [storageKey]
+    [setItems]
   )
 
   return [items, toggle]

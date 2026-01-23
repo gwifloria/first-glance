@@ -1,4 +1,5 @@
 export { Clock } from './Clock'
+export { ConnectButton } from './ConnectButton'
 export { ErrorBoundary } from './ErrorBoundary'
 export { RefreshButton } from './RefreshButton'
 export { TaskCheckbox } from './TaskCheckbox'

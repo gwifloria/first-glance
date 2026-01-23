@@ -1,17 +1,39 @@
 @import 'tailwindcss';
 
-/* Custom colors matching the app's beige theme */
+/* Custom colors - Warm pink palette (wonderland-nexus style) */
 @theme {
-  --color-cream: #e3e0d6;
-  --color-cream-light: #f5ede4;
-  --color-cream-dark: #d6d3c9;
-  --color-stone: #44403c;
-  --color-stone-light: #78716c;
-  --color-stone-dark: #292524;
-  --color-sage: #dce3dd;
-  --color-sage-dark: #c6cfc8;
-  --color-accent: #57534e;
-  --color-card: #fdfbf7;
+  /* Background tones */
+  --color-background: #fcfaf9;
+  --color-background-alt: #fdfcfc;
+  --color-card: #ffffff;
+  /* Border tones */
+  --color-border: #ebdcd9;
+  --color-border-light: #f2efee;
+  --color-border-pink: #faeaea;
+  /* Text tones */
+  --color-text: #5d5555;
+  --color-text-muted: #8a807e;
+  --color-text-light: #9c9492;
+  /* Pink accent (primary) */
+  --color-pink: #d4a5a5;
+  --color-pink-light: #ffeaea;
+  --color-pink-bg: #fff0f0;
+  /* Secondary accents */
+  --color-mint: #a2c1c0;
+  --color-gold: #e9ca89;
+  --color-beige: #f7f1e4;
+  --color-beige-border: #e2ddd3;
+  /* Legacy mappings for compatibility */
+  --color-cream: #f7f1e4;
+  --color-cream-light: #fcfaf9;
+  --color-cream-dark: #ebdcd9;
+  --color-stone: #5d5555;
+  --color-stone-light: #8a807e;
+  --color-stone-dark: #3d3535;
+  --color-sage: #a2c1c0;
+  --color-accent: #5d5555;
+  --color-accent-warm: #d4a5a5;
+  --color-accent-blue: #a2c1c0;
 }
 
 /* Font families */
@@ -27,9 +49,17 @@
   font-family: 'ZCOOL XiaoWei', 'Ma Shan Zheng', cursive;
 }
 
-/* Smooth scroll */
+/* Smooth scroll with snap */
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+/* Full-height sections with snap */
+.snap-section {
+  scroll-snap-align: start;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Paper texture */
@@ -73,4 +103,85 @@ html {
 .focus-ring:focus {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Float delayed animation */
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite 1s;
+}
+
+/* Pulse soft animation */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Fade in up animation */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* Glass panel effect */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Journal/notebook style */
+.notebook-shadow {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.01),
+    inset 0 0 0 1px rgba(68, 64, 60, 0.05);
+}
+
+/* Tape decoration */
+.tape {
+  background: linear-gradient(
+    135deg,
+    rgba(233, 202, 137, 0.7) 0%,
+    rgba(233, 202, 137, 0.5) 100%
+  );
+  transform: rotate(-2deg);
+}
+
+.tape-right {
+  transform: rotate(2deg);
+}
+
+/* Dashed border style */
+.border-dashed-custom {
+  border: 2px dashed var(--color-stone-light);
+  border-radius: 12px;
 }

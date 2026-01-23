@@ -9,4 +9,11 @@ export default defineConfig({
   },
   site: 'https://gwifloria.github.io',
   base: '/first-glance/',
+  i18n: {
+    defaultLocale: 'zh',
+    locales: ['zh', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
 })

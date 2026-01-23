@@ -1,14 +1,7 @@
 import { useState, type ReactNode } from 'react'
-import { Popover, Button, Popconfirm, Divider } from 'antd'
-import {
-  SettingOutlined,
-  StopOutlined,
-  DisconnectOutlined,
-  LinkOutlined,
-} from '@ant-design/icons'
+import { Popover, Button, Divider } from 'antd'
+import { SettingOutlined, StopOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useAppMode } from '@/contexts/useAppMode'
-import { useConnectPrompt } from '@/contexts/useConnectPrompt'
 import { BlocksiteModal } from '../BlocksiteModal'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -54,10 +47,7 @@ interface SettingsPanelProps {
  * 包含：主题选择、屏蔽网站、连接/断开
  */
 export function SettingsPanel({ className }: SettingsPanelProps) {
-  const { t } = useTranslation('common')
   const { t: tSettings } = useTranslation('settings')
-  const { isGuest, disconnect } = useAppMode()
-  const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -82,38 +72,6 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           setBlocksiteOpen(true)
         }}
       />
-
-      {/* 游客模式：显示连接按钮 */}
-      {isGuest && (
-        <MenuItem
-          icon={<LinkOutlined />}
-          label={t('button.connect')}
-          onClick={() => {
-            setOpen(false)
-            openConnectPrompt()
-          }}
-          accent
-        />
-      )}
-
-      {/* 登录状态：显示断开连接 */}
-      {!isGuest && (
-        <Popconfirm
-          title={t('disconnectConfirm.title')}
-          description={t('disconnectConfirm.description')}
-          onConfirm={() => {
-            setOpen(false)
-            disconnect()
-          }}
-          okText={t('button.confirm')}
-          cancelText={t('button.cancel')}
-        >
-          <MenuItem
-            icon={<DisconnectOutlined />}
-            label={t('button.disconnect')}
-          />
-        </Popconfirm>
-      )}
     </div>
   )
 

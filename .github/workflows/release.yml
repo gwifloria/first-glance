@@ -60,7 +60,7 @@ jobs:
           VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
 
       - name: Build
-        run: pnpm --filter @first-glance/extension build
+        run: pnpm --filter @first-glance/extension build:release
         env:
           VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
           VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}

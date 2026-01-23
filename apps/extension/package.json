@@ -8,6 +8,7 @@
     "dev:server": "vite",
     "build": "tsc -b && vite build",
     "build:dev": "tsc -b && vite build --mode development",
+    "build:release": "tsc -b && vite build && node scripts/strip-manifest-key.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "zip": "cd build && zip -r ../first-glance.zip . -x '.vite/*'",

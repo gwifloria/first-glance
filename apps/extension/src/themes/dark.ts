@@ -28,6 +28,15 @@ export const darkTheme: Theme = {
     priorityLow: '#71717a',
     pomodoroWork: '#e8a07a',
     pomodoroBreak: '#7ae8a0',
+    // BlockedPage
+    blockedBubbleBg: '#ffffff',
+    blockedBubbleText: '#000000',
+    blockedPulseBg: 'rgba(136, 19, 55, 0.1)',
+    blockedWarningBg: '#7f1d1d',
+    blockedChillBg: 'rgba(255, 255, 255, 0.1)',
+    blockedChillText: 'rgba(255, 255, 255, 0.7)',
+    blockedChillHoldBg: 'rgba(127, 29, 29, 0.5)',
+    blockedChillHoldText: '#ffffff',
   },
   borderRadius: {
     small: '8px',

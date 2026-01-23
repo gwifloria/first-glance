@@ -1,0 +1,93 @@
+import { useState, useEffect, useCallback, useMemo } from 'react'
+
+export interface ChillModeState {
+  active: boolean
+  expiresAt: number
+}
+
+/**
+ * 格式化剩余时间为 MM:SS 格式
+ */
+function formatRemainingTime(expiresAt: number, now: number): string {
+  const remaining = Math.max(0, expiresAt - now)
+  const minutes = Math.floor(remaining / 60000)
+  const seconds = Math.floor((remaining % 60000) / 1000)
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
+/**
+ * Chill Mode 状态管理 Hook
+ * 监听 chrome.storage 中的 chill_mode 状态，提供倒计时和结束功能
+ */
+export function useChillMode() {
+  const [chillMode, setChillMode] = useState<ChillModeState | null>(null)
+  const [now, setNow] = useState(() => Date.now())
+
+  // 监听 chill mode 状态
+  useEffect(() => {
+    // 初始加载
+    const currentTime = Date.now()
+    chrome.storage.local.get('chill_mode').then((result) => {
+      const state = result.chill_mode as ChillModeState | undefined
+      if (state?.active && currentTime < state.expiresAt) {
+        setChillMode(state)
+      } else {
+        setChillMode(null)
+      }
+    })
+
+    // 监听变化
+    const handleChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string
+    ) => {
+      if (areaName === 'local' && changes.chill_mode) {
+        const state = changes.chill_mode.newValue as ChillModeState | undefined
+        const time = Date.now()
+        if (state?.active && time < state.expiresAt) {
+          setChillMode(state)
+        } else {
+          setChillMode(null)
+        }
+      }
+    }
+
+    chrome.storage.onChanged.addListener(handleChange)
+    return () => chrome.storage.onChanged.removeListener(handleChange)
+  }, [])
+
+  // 每秒更新当前时间
+  useEffect(() => {
+    if (!chillMode) return
+
+    const interval = setInterval(() => {
+      const currentTime = Date.now()
+      if (currentTime >= chillMode.expiresAt) {
+        setChillMode(null)
+      } else {
+        setNow(currentTime)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [chillMode])
+
+  // 计算是否激活状态
+  const isActive = useMemo(() => {
+    return !!chillMode && now < chillMode.expiresAt
+  }, [chillMode, now])
+
+  // 计算剩余时间
+  const remainingTime = useMemo(() => {
+    if (!chillMode) return ''
+    return formatRemainingTime(chillMode.expiresAt, now)
+  }, [chillMode, now])
+
+  // 结束 chill mode
+  const endChillMode = useCallback(async () => {
+    await chrome.storage.local.remove('chill_mode')
+    setChillMode(null)
+  }, [])
+
+  return { isActive, remainingTime, endChillMode }
+}

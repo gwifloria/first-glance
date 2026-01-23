@@ -40,7 +40,7 @@ export function Clock({
     ? formatPomodoroTime(pomodoroTimeLeft)
     : formattedTime
 
-  // 番茄模式颜色（使用主题色）
+  // 番茄模式颜色
   const pomodoroColor =
     pomodoroMode === 'work'
       ? 'text-pomodoro-work'

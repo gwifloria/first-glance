@@ -3,7 +3,13 @@ import { THEME_OPTIONS } from '@/constants/theme'
 
 interface ThemeToggleProps {
   variant?: 'default' | 'minimal'
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const SIZE_CONFIG = {
+  sm: { size: 'w-3 h-3', scale: 'scale-110', gap: 'gap-1.5' },
+  md: { size: 'w-4 h-4', scale: 'scale-125', gap: 'gap-1.5' },
+  lg: { size: 'w-6 h-6', scale: 'scale-110', gap: 'gap-2' },
 }
 
 export function ThemeToggle({
@@ -12,15 +18,18 @@ export function ThemeToggle({
 }: ThemeToggleProps) {
   const { themeType, setThemeType } = useTheme()
 
-  const sizeClass = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
-  const activeScale = size === 'sm' ? 'scale-110' : 'scale-125'
+  const {
+    size: sizeClass,
+    scale: activeScale,
+    gap: gapClass,
+  } = SIZE_CONFIG[size]
   const borderClass =
     variant === 'minimal' ? 'border border-black/5' : 'border-0'
   const ringClass = variant === 'minimal' ? 'ring-1' : 'ring-2'
   const opacityClass = variant === 'minimal' ? 'opacity-60' : 'opacity-70'
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className={`flex items-center ${gapClass}`}>
       {THEME_OPTIONS.map((option) => (
         <button
           key={option.type}

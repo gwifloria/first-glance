@@ -82,7 +82,9 @@ export function FocusTaskList() {
         <h2 className="text-xs font-medium tracking-[3px] text-center text-[var(--text-secondary)]">
           {t('title')}
         </h2>
-        <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
+        {!isGuest && (
+          <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
+        )}
       </div>
 
       <div className="min-h-[200px]">

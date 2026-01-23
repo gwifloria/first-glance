@@ -28,6 +28,15 @@ export const milkTheme: Theme = {
     priorityLow: '#a8a29e',
     pomodoroWork: '#a09080',
     pomodoroBreak: '#8a9a8a',
+    // BlockedPage
+    blockedBubbleBg: '#292524',
+    blockedBubbleText: '#eeeeee',
+    blockedPulseBg: 'rgba(87, 83, 78, 0.1)',
+    blockedWarningBg: '#ef4444',
+    blockedChillBg: 'rgba(41, 37, 36, 0.1)',
+    blockedChillText: '#a8a29e',
+    blockedChillHoldBg: '#fee2e2',
+    blockedChillHoldText: '#b91c1c',
   },
   borderRadius: {
     small: '8px',

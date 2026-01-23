@@ -28,6 +28,15 @@ export const blueTheme: Theme = {
     priorityLow: '#64748b',
     pomodoroWork: '#9a8a7a',
     pomodoroBreak: '#7a9a8a',
+    // BlockedPage
+    blockedBubbleBg: '#334155',
+    blockedBubbleText: '#d0dbe2',
+    blockedPulseBg: 'rgba(71, 85, 105, 0.1)',
+    blockedWarningBg: '#ef4444',
+    blockedChillBg: 'rgba(51, 65, 85, 0.1)',
+    blockedChillText: '#64748b',
+    blockedChillHoldBg: '#fee2e2',
+    blockedChillHoldText: '#b91c1c',
   },
   borderRadius: {
     small: '8px',

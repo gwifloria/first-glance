@@ -33,7 +33,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actions.refresh])
 
-  const value: TaskContextValue = { data, actions, views, filters }
+  // 使用 useMemo 包装 context value，避免每次渲染都创建新对象导致的全局重渲染
+  const value = useMemo<TaskContextValue>(
+    () => ({ data, actions, views, filters }),
+    [data, actions, views, filters]
+  )
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>
 }

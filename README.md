@@ -14,6 +14,7 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 - **Guest Mode** - Works offline without account (up to 3 tasks)
 - **Internationalization** - Chinese and English support
 - **Site Blocking** - Block distracting websites to stay focused
+- **Chill Mode** - Need a break? Hold for 10 seconds to temporarily disable blocking for 15 minutes
 - **Cross-device Sync** - Theme preferences synced via Chrome
 
 ## Supported Platforms
@@ -25,7 +26,7 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 
 ### From Chrome Web Store
 
-<!-- TODO: Add link after publishing -->
+Coming soon! The extension is currently under review.
 
 ### Local Development
 

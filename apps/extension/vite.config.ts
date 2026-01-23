@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { resolve } from 'path'
 import manifestJson from './manifest.json'
 
@@ -13,8 +14,20 @@ export default defineConfig(({ command, mode }) => {
   const isRelease = command === 'build' && mode === 'production'
   const manifest = isRelease ? prodManifest : manifestJson
 
+  // 只在 ANALYZE=true 时启用 bundle 分析
+  const enableAnalyzer = process.env.ANALYZE === 'true'
+
   return {
-    plugins: [react(), crx({ manifest })],
+    plugins: [
+      react(),
+      crx({ manifest }),
+      enableAnalyzer &&
+        visualizer({
+          filename: 'stats.html',
+          open: true,
+          gzipSize: true,
+        }),
+    ].filter(Boolean),
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),

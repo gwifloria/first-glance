@@ -28,6 +28,15 @@ export const beigeTheme: Theme = {
     priorityLow: '#a8a29e',
     pomodoroWork: '#b5a08a',
     pomodoroBreak: '#8ab5a0',
+    // BlockedPage
+    blockedBubbleBg: '#44403c',
+    blockedBubbleText: '#e3e0d6',
+    blockedPulseBg: 'rgba(87, 83, 78, 0.1)',
+    blockedWarningBg: '#ef4444',
+    blockedChillBg: 'rgba(68, 64, 60, 0.1)',
+    blockedChillText: '#78716c',
+    blockedChillHoldBg: '#fee2e2',
+    blockedChillHoldText: '#b91c1c',
   },
   borderRadius: {
     small: '8px',

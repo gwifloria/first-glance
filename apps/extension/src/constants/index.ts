@@ -23,3 +23,11 @@ export {
 
 // 主题常量
 export { THEME_OPTIONS } from './theme'
+
+// Chill Mode 常量
+export {
+  CHILL_MODE_DURATION_MS,
+  CHILL_MODE_HOLD_TOTAL_MS,
+  CHILL_MODE_HOLD_INTERVAL_MS,
+  CHILL_MODE_HOLD_STEPS,
+} from './chillMode'

@@ -79,6 +79,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // 番茄时钟色
     root.style.setProperty('--pomodoro-work', theme.colors.pomodoroWork)
     root.style.setProperty('--pomodoro-break', theme.colors.pomodoroBreak)
+    // BlockedPage
+    root.style.setProperty('--blocked-bubble-bg', theme.colors.blockedBubbleBg)
+    root.style.setProperty(
+      '--blocked-bubble-text',
+      theme.colors.blockedBubbleText
+    )
+    root.style.setProperty('--blocked-pulse-bg', theme.colors.blockedPulseBg)
+    root.style.setProperty(
+      '--blocked-warning-bg',
+      theme.colors.blockedWarningBg
+    )
+    root.style.setProperty('--blocked-chill-bg', theme.colors.blockedChillBg)
+    root.style.setProperty(
+      '--blocked-chill-text',
+      theme.colors.blockedChillText
+    )
+    root.style.setProperty(
+      '--blocked-chill-hold-bg',
+      theme.colors.blockedChillHoldBg
+    )
+    root.style.setProperty(
+      '--blocked-chill-hold-text',
+      theme.colors.blockedChillHoldText
+    )
     // 圆角
     root.style.setProperty('--radius-small', theme.borderRadius.small)
     root.style.setProperty('--radius-medium', theme.borderRadius.medium)
@@ -91,6 +115,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--font-primary', theme.font.primary)
     root.style.setProperty('--font-secondary', theme.font.secondary)
     root.style.setProperty('--font-heading', theme.font.heading)
+
+    // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme
+    root.classList.toggle('theme-with-texture', theme.showTexture)
   }, [theme])
 
   return (

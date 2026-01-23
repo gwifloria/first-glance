@@ -11,6 +11,11 @@
     "hint": "Access to these sites will be blocked to help you stay focused",
     "empty": "No blocked sites yet",
     "invalidDomain": "Please enter a valid domain",
-    "duplicateDomain": "This domain is already added"
+    "duplicateDomain": "This domain is already added",
+    "chillMode": {
+      "active": "Chill mode active, {{time}} remaining",
+      "endNow": "End Now",
+      "ended": "Chill mode ended"
+    }
   }
 }

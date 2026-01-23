@@ -37,3 +37,6 @@ npm-debug.log*
 .astro/
 .env.cws
 
+# Bundle analyzer
+stats.html
+

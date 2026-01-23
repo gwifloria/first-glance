@@ -30,6 +30,15 @@ export interface Theme {
     // 番茄时钟颜色
     pomodoroWork: string
     pomodoroBreak: string
+    // BlockedPage 颜色
+    blockedBubbleBg: string
+    blockedBubbleText: string
+    blockedPulseBg: string
+    blockedWarningBg: string
+    blockedChillBg: string
+    blockedChillText: string
+    blockedChillHoldBg: string
+    blockedChillHoldText: string
   }
   borderRadius: {
     small: string

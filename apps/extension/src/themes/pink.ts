@@ -28,6 +28,15 @@ export const pinkTheme: Theme = {
     priorityLow: '#7EC699',
     pomodoroWork: '#c9a89a',
     pomodoroBreak: '#9eb0a2',
+    // BlockedPage
+    blockedBubbleBg: '#5d5555',
+    blockedBubbleText: '#f2efee',
+    blockedPulseBg: 'rgba(212, 165, 165, 0.1)',
+    blockedWarningBg: '#ef4444',
+    blockedChillBg: 'rgba(93, 85, 85, 0.1)',
+    blockedChillText: '#9c9492',
+    blockedChillHoldBg: '#fee2e2',
+    blockedChillHoldText: '#b91c1c',
   },
   borderRadius: {
     small: '8px',

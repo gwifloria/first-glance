@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { resolve } from 'path'
 import manifestJson from './manifest.json'
 
@@ -14,7 +15,15 @@ export default defineConfig(({ command, mode }) => {
   const manifest = isRelease ? prodManifest : manifestJson
 
   return {
-    plugins: [react(), crx({ manifest })],
+    plugins: [
+      react(),
+      crx({ manifest }),
+      visualizer({
+        filename: 'stats.html',
+        open: true,
+        gzipSize: true,
+      }),
+    ],
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),

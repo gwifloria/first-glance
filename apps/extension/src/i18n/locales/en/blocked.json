@@ -13,5 +13,16 @@
     "Nice try. Access denied",
     "Focus, please!",
     "Did you finish your work? Didn't think so"
-  ]
+  ],
+  "chillMode": {
+    "trigger": "I really need a break...",
+    "button": "Hold to Chill",
+    "holding": "Don't let go...",
+    "stages": [
+      "Wait... what are you doing?",
+      "Are you sure about this...",
+      "I can't hold on much longer...",
+      "Fine... do what you want..."
+    ]
+  }
 }

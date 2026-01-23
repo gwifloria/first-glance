@@ -1,0 +1,58 @@
+name: Build Extension
+
+on:
+  push:
+    branches:
+      - staging
+  pull_request:
+    branches:
+      - staging
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter @first-glance/extension lint
+
+      - name: Type check
+        run: pnpm --filter @first-glance/extension typecheck
+
+      - name: Build
+        run: pnpm --filter @first-glance/extension build
+        env:
+          VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
+          VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
+
+      - name: Create zip
+        run: |
+          cd apps/extension/build
+          zip -r ../extension.zip . -x '.vite/*'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-${{ github.ref_name }}-${{ github.sha }}
+          path: apps/extension/extension.zip
+          retention-days: 14

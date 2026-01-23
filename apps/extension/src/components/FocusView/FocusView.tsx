@@ -1,10 +1,10 @@
-import { useTheme } from '@/hooks/useTheme'
 import type { Quote } from '@/data/quotes'
 import { FocusTopBar } from './FocusTopBar'
 import { FocusClock } from './FocusClock'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusQuote } from './FocusQuote'
 import { FocusFloatButton } from './FocusFloatButton'
+import { ChillModeIndicator } from '../common/ChillModeIndicator'
 
 interface FocusViewProps {
   quote: Quote
@@ -12,14 +12,10 @@ interface FocusViewProps {
 }
 
 export function FocusView({ quote, onSwitchView }: FocusViewProps) {
-  const { theme } = useTheme()
-
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
-      {/* 背景纹理层 */}
-      {theme.showTexture && (
-        <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
-      )}
+      {/* 背景纹理层 - 通过 CSS 类控制显示 */}
+      <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
 
       <FocusTopBar />
 
@@ -31,6 +27,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
 
       <FocusQuote quote={quote} />
       <FocusFloatButton onSwitchView={onSwitchView} />
+      <ChillModeIndicator />
     </div>
   )
 }

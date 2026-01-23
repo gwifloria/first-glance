@@ -49,13 +49,18 @@ apps/
 │       │   ├── App.tsx        # 顶层路由（Focus/List 切换）
 │       │   └── main.tsx       # React 初始化
 │       ├── background/        # Service Worker
-│       │   └── index.ts       # OAuth 回调、Token 刷新、网站屏蔽
+│       │   ├── index.ts       # 主入口，事件监听
+│       │   └── services/      # 后台服务
+│       │       ├── tokenRefresh.ts    # Token 刷新逻辑
+│       │       ├── blockingRules.ts   # 网站屏蔽规则管理
+│       │       └── chillMode.ts       # Chill Mode 后台逻辑
 │       ├── components/        # React 组件
 │       │   ├── FocusView/     # Focus 模式（时钟、任务、番茄钟）
 │       │   ├── Sidebar/       # List 模式侧边栏（筛选、项目树）
 │       │   ├── TaskList/      # 任务列表（分组、快速添加）
 │       │   ├── Task/          # 任务卡片（编辑、完成）
-│       │   └── common/        # 共用组件（Clock、Checkbox）
+│       │   ├── BlockedPage/   # 被屏蔽页面（ChillMode 入口）
+│       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator）
 │       ├── contexts/          # React Context
 │       │   ├── AppModeContext # 连接/游客模式
 │       │   ├── TaskContext    # 任务数据统一源
@@ -94,11 +99,27 @@ apps/
 - `usePomodoro`: 番茄计时器，使用 Chrome Storage 实现跨标签页同步
 - `useTaskData`: 任务数据加载，带错误恢复和缓存策略
 - `useTaskViews`: 单次遍历计算所有派生数据（日期分组、计数）
+- `useChillMode`: Chill Mode 状态管理，监听休息模式状态和倒计时
+- `useVersionUpdate`: 版本更新检测，判断是否需要显示更新提示
+- `usePersistedState<T>`: 通用持久化状态 Hook，封装 chrome.storage 读写
 
 ### 主题系统
 - 5 种主题：milk、beige、pink、blue、dark
 - CSS 变量动态注入
 - 支持纹理和贴纸装饰（Journal 风格）
+
+### 网站屏蔽机制
+- 使用 Chrome `declarativeNetRequest` API 实现网站屏蔽
+- 屏蔽规则动态更新，存储在 `chrome.storage.sync`
+- 被屏蔽时重定向到 `BlockedPage` 组件
+- 支持 Chill Mode（休息模式）：长按 10 秒触发，暂停屏蔽 15 分钟
+
+### BlockedPage 组件
+- `BlockedPage/index.tsx`: 被屏蔽页面主入口
+- `ChillModePanel.tsx`: 休息模式触发面板（长按解锁）
+- `KaomojiDisplay.tsx`: 随状态变化的颜文字显示
+- `GoHomeButton.tsx`: 返回首页按钮
+- `constants.ts`: Kaomoji 表情和阶段配置
 
 ## CI/CD
 

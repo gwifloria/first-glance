@@ -40,14 +40,14 @@ jobs:
         run: pnpm --filter @first-glance/extension typecheck
 
       - name: Build
-        run: pnpm --filter @first-glance/extension build
+        run: pnpm --filter @first-glance/extension build:dev
         env:
           VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
           VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
 
       - name: Create zip
         run: |
-          cd apps/extension/build
+          cd apps/extension/dist
           zip -r ../extension.zip . -x '.vite/*'
 
       - name: Upload artifact

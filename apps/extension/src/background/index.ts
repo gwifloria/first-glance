@@ -24,6 +24,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       extension_version: currentVersion,
       install_time: Date.now(),
     })
+    // 打开欢迎页面
+    chrome.tabs.create({ url: 'https://first-glance.app/welcome' })
   } else if (details.reason === 'update') {
     const previousVersion = details.previousVersion
     console.log(`[Extension] 更新 v${previousVersion} -> v${currentVersion}`)

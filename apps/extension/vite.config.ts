@@ -20,7 +20,7 @@ export default defineConfig(({ command, mode }) => {
       crx({ manifest }),
       visualizer({
         filename: 'stats.html',
-        open: true,
+        open: false,
         gzipSize: true,
       }),
     ],

@@ -25,7 +25,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       install_time: Date.now(),
     })
     // 打开介绍页面
-    chrome.tabs.create({ url: 'https://first-glance.app/introduction' })
+    chrome.tabs.create({
+      url: 'https://gwifloria.github.io/first-glance/introduction',
+    })
   } else if (details.reason === 'update') {
     const previousVersion = details.previousVersion
     console.log(`[Extension] 更新 v${previousVersion} -> v${currentVersion}`)

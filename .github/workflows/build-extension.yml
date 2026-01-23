@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - staging
+      - main
   pull_request:
     branches:
       - staging
@@ -39,20 +40,35 @@ jobs:
       - name: Type check
         run: pnpm --filter @first-glance/extension typecheck
 
-      - name: Build
+      # staging: 保留 key，ID 固定，方便测试 OAuth
+      # main: 移除 key，和发布到 Chrome Web Store 一致
+      - name: Build (staging)
+        if: github.ref == 'refs/heads/staging' || (github.event_name == 'pull_request' && github.base_ref == 'staging')
         run: pnpm --filter @first-glance/extension build:dev
+        env:
+          VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
+          VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
+
+      - name: Build (main)
+        if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+        run: pnpm --filter @first-glance/extension build:release
         env:
           VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
           VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
 
       - name: Create zip
         run: |
-          cd apps/extension/dist
+          # build:dev 输出到 dist，build:release 输出到 build
+          if [ -d "apps/extension/dist" ]; then
+            cd apps/extension/dist
+          else
+            cd apps/extension/build
+          fi
           zip -r ../extension.zip . -x '.vite/*'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: extension-${{ github.run_number }}-${{ github.sha }}
+          name: extension-${{ github.ref_name }}-${{ github.run_number }}
           path: apps/extension/extension.zip
           retention-days: 14

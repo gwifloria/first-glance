@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Modal, Form, Input, Select, message } from 'antd'
-import { FlagOutlined } from '@ant-design/icons'
+import { Modal, Form, Input, Select, Radio, message } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { getPriorityOptions } from '@/constants/task'
+import { getPriorityOptions, FILTER_NAMES } from '@/constants/task'
+import { getSettings } from '@/services/settingsStorage'
+import { formatDateTimeWithTimezone } from '@/utils/date'
+import { isInboxProject } from '@/utils/project'
 import {
   FORM_INPUT_STYLE,
   FORM_SELECT_STYLE,
@@ -16,6 +18,7 @@ import type { Task, Project } from '@/types'
 interface TaskEditorProps {
   task: Task | null
   projects: Project[]
+  filter?: string
   open: boolean
   onCancel: () => void
   onSave: (taskId: string | null, values: Partial<Task>) => void
@@ -24,56 +27,84 @@ interface TaskEditorProps {
 export function TaskEditor({
   task,
   projects,
+  filter,
   open,
   onCancel,
   onSave,
 }: TaskEditorProps) {
   const { t } = useTranslation('task')
+  const { t: tSettings } = useTranslation('settings')
   const [form] = Form.useForm()
   const [saving, setSaving] = useState(false)
   const isNew = !task
   const priorityOptions = getPriorityOptions(t)
 
-  // 弹窗打开时同步表单值
+  const inboxProject = projects.find(isInboxProject)
+
+  // 弹窗打开时初始化表单
   useEffect(() => {
-    if (open) {
+    if (!open) return
+
+    const initForm = async () => {
+      let projectId = task?.projectId
+
+      // 新建任务时计算默认 projectId
+      if (isNew) {
+        if (filter === 'inbox') {
+          projectId = inboxProject?.id
+        } else if (filter?.startsWith('project:')) {
+          projectId = filter.replace('project:', '')
+        } else {
+          const settings = await getSettings()
+          const isDefaultInbox =
+            !settings.defaultProjectId ||
+            settings.defaultProjectId.startsWith('inbox')
+          projectId = isDefaultInbox
+            ? inboxProject?.id
+            : (settings.defaultProjectId ?? undefined)
+        }
+      }
+
       form.setFieldsValue({
         title: task?.title || '',
-        content: task?.content || '',
         priority: task?.priority || 0,
-        projectId: task?.projectId || projects[0]?.id,
+        projectId,
       })
     }
-  }, [open, task, form, projects])
+
+    initForm()
+  }, [open, task, isNew, filter, inboxProject?.id, form])
 
   const handleOk = async () => {
     if (saving) return
     setSaving(true)
     try {
       const values = await form.validateFields()
-      const formattedValues: Partial<Task> = {
+
+      // 新建任务时根据 filter 设置 dueDate
+      let dueDate = task?.dueDate
+      if (isNew) {
+        if (filter === FILTER_NAMES.TODAY) {
+          dueDate = formatDateTimeWithTimezone(new Date())
+        } else if (filter === FILTER_NAMES.TOMORROW) {
+          const tomorrow = new Date()
+          tomorrow.setDate(tomorrow.getDate() + 1)
+          dueDate = formatDateTimeWithTimezone(tomorrow)
+        }
+      }
+
+      await onSave(task?.id || null, {
         title: values.title?.trim(),
-        content: values.content?.trim(),
         priority: values.priority,
         projectId: values.projectId,
-        dueDate: task?.dueDate, // 保留原有日期，不提供编辑
-      }
-      await onSave(task?.id || null, formattedValues)
-      form.resetFields()
+        dueDate,
+      })
     } catch (err) {
-      if (err && typeof err === 'object' && 'errorFields' in err) {
-        // 表单验证错误，不需要提示
-        return
-      }
+      if (err && typeof err === 'object' && 'errorFields' in err) return
       message.error(t('common:message.saveFailed'))
     } finally {
       setSaving(false)
     }
-  }
-
-  const handleCancel = () => {
-    form.resetFields()
-    onCancel()
   }
 
   return (
@@ -85,26 +116,16 @@ export function TaskEditor({
       }
       open={open}
       onOk={handleOk}
-      onCancel={handleCancel}
+      onCancel={onCancel}
       okText={t('common:button.save')}
       cancelText={t('common:button.cancel')}
       destroyOnClose
-      width={480}
+      width={400}
       className={MODAL_STYLE}
       okButtonProps={{ className: MODAL_OK_BUTTON_STYLE, loading: saving }}
       cancelButtonProps={{ className: MODAL_CANCEL_BUTTON_STYLE }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        className={FORM_LAYOUT_STYLE}
-        initialValues={{
-          title: task?.title || '',
-          content: task?.content || '',
-          priority: task?.priority || 0,
-          projectId: task?.projectId || projects[0]?.id,
-        }}
-      >
+      <Form form={form} layout="vertical" className={FORM_LAYOUT_STYLE}>
         <Form.Item
           name="title"
           label={t('editor.labelTitle')}
@@ -119,15 +140,6 @@ export function TaskEditor({
           />
         </Form.Item>
 
-        <Form.Item name="content" label={t('editor.labelContent')}>
-          <Input.TextArea
-            rows={3}
-            placeholder={t('editor.placeholderContent')}
-            className={`${FORM_INPUT_STYLE} !py-3 [&_.ant-input]:!min-h-[72px]`}
-          />
-        </Form.Item>
-
-        {/* 所属项目 */}
         <Form.Item
           name="projectId"
           label={t('editor.labelProject')}
@@ -136,17 +148,26 @@ export function TaskEditor({
           <Select className={FORM_SELECT_STYLE}>
             {projects
               .filter((p) => !p.closed)
-              .map((project) => (
-                <Select.Option key={project.id} value={project.id}>
-                  <span className="flex items-center gap-2">
-                    <span
-                      className="w-2 h-2 rounded-full"
-                      style={{ background: project.color || 'var(--accent)' }}
-                    />
-                    {project.name}
-                  </span>
-                </Select.Option>
-              ))}
+              .map((project) => {
+                const isInbox = isInboxProject(project)
+                return (
+                  <Select.Option key={project.id} value={project.id}>
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{
+                          background:
+                            project.color ||
+                            (isInbox ? '#888' : 'var(--accent)'),
+                        }}
+                      />
+                      {isInbox
+                        ? tSettings('defaultProject.inbox')
+                        : project.name}
+                    </span>
+                  </Select.Option>
+                )
+              })}
           </Select>
         </Form.Item>
 
@@ -155,19 +176,13 @@ export function TaskEditor({
           label={t('editor.labelPriority')}
           className="!mb-0"
         >
-          <Select
-            className={FORM_SELECT_STYLE}
-            optionLabelProp="label"
-            options={priorityOptions.map((opt) => ({
-              value: opt.value,
-              label: (
-                <span className="flex items-center gap-2">
-                  <FlagOutlined style={{ color: opt.color }} />
-                  {opt.label}
-                </span>
-              ),
-            }))}
-          />
+          <Radio.Group className="flex gap-4">
+            {priorityOptions.map((opt) => (
+              <Radio key={opt.value} value={opt.value}>
+                <span style={{ color: opt.color }}>{opt.label}</span>
+              </Radio>
+            ))}
+          </Radio.Group>
         </Form.Item>
       </Form>
     </Modal>

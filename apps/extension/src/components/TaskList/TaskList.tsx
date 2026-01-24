@@ -7,8 +7,16 @@ import { TaskListHeader } from './TaskListHeader'
 import { QuickAddInput } from './QuickAddInput'
 import { TaskDateGroup } from './TaskDateGroup'
 import { usePersistedSet } from '@/hooks/usePersistedSet'
+import { FILTER_NAMES } from '@/constants/task'
 import type { Task, Project } from '@/types'
 import type { TaskGroup } from '@/utils/taskFilters'
+
+// 不显示快速添加的 filter（逻辑不明确，避免混淆）
+const FILTERS_WITHOUT_QUICK_ADD: string[] = [
+  FILTER_NAMES.WEEK,
+  FILTER_NAMES.OVERDUE,
+  FILTER_NAMES.NODATE,
+]
 
 interface TaskListProps {
   projects: Project[]
@@ -87,12 +95,13 @@ export const TaskList = memo(function TaskList({
         onFocus={onFocus}
       />
 
-      <QuickAddInput
-        filter={filter}
-        projects={projects}
-        onCreate={onCreate}
-        onOpenEditor={handleNew}
-      />
+      {!FILTERS_WITHOUT_QUICK_ADD.includes(filter) && (
+        <QuickAddInput
+          filter={filter}
+          onCreate={onCreate}
+          onOpenEditor={handleNew}
+        />
+      )}
 
       {error && (
         <Alert
@@ -137,6 +146,7 @@ export const TaskList = memo(function TaskList({
       <TaskEditor
         task={editingTask}
         projects={projects}
+        filter={filter}
         open={isEditorOpen}
         onCancel={handleCloseEditor}
         onSave={handleSave}

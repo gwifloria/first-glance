@@ -14,8 +14,11 @@ export function formatDateStr(date: Date): string {
 }
 
 /**
- * 从 ISO 日期字符串中提取本地日期的 YYYY-MM-DD 部分
- * 处理时区问题：将 UTC 时间转换为本地时间后再提取日期
+ * 从日期字符串中提取本地日期的 YYYY-MM-DD 部分
+ * 始终通过 Date 对象转换，确保时区正确处理
+ *
+ * 滴答清单 API 返回 UTC 时间（如 2026-01-23T16:00:00.000+0000）
+ * 需要转换为本地时间（如 UTC+8 时区变成 2026-01-24）
  */
 export function extractDateStr(dueDate: string): string {
   const date = new Date(dueDate)
@@ -45,10 +48,12 @@ export function formatTime(date: Date): string {
 }
 
 /**
- * 格式化简短日期（如：12/25）
+ * 格式化简短日期（如：1/25）
+ * 先转换为本地日期再格式化，避免时区问题
  */
 export function formatShortDate(dateStr: string): string {
-  const [, month, day] = dateStr.slice(0, 10).split('-')
+  const localDateStr = extractDateStr(dateStr)
+  const [, month, day] = localDateStr.split('-')
   return `${parseInt(month)}/${parseInt(day)}`
 }
 

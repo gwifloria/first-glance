@@ -3,7 +3,7 @@ import { Button } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
-import { ThemeToggle, ConnectButton } from '../common'
+import { ThemeToggle } from '../common'
 import { SearchInput } from '../SearchInput'
 import { SmartFilterList } from './SmartFilterList'
 import { ProjectList } from './ProjectList'
@@ -35,12 +35,7 @@ function SidebarHeader({
       <div
         className={`flex items-center gap-2 mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}
       >
-        {!collapsed && (
-          <div className="flex items-center gap-1">
-            <ConnectButton />
-            <ThemeToggle />
-          </div>
-        )}
+        {!collapsed && <ThemeToggle />}
         <Button
           type="text"
           size="small"

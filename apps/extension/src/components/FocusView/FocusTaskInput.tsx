@@ -3,6 +3,7 @@ import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { formatDateTimeWithTimezone } from '@/utils/date'
+import { getSettings } from '@/services/settingsStorage'
 import type { Task } from '@/types'
 
 interface FocusTaskInputProps {
@@ -27,11 +28,25 @@ export function FocusTaskInput({
 
     setCreating(true)
     try {
+      // 获取 defaultProjectId
+      const settings = await getSettings()
+      let projectId: string | undefined
+
+      // Focus View 始终使用 defaultProjectId
+      // 如果 defaultProjectId 是 inbox 或未设置，不传 projectId（API 默认放到 inbox）
+      const isInbox =
+        !settings.defaultProjectId ||
+        settings.defaultProjectId.startsWith('inbox')
+      if (!isInbox && settings.defaultProjectId) {
+        projectId = settings.defaultProjectId
+      }
+
       // 使用本地日期格式（自动处理时区）
       const dueDate = formatDateTimeWithTimezone(new Date())
 
       const result = await onCreate({
         title: newTaskTitle.trim(),
+        projectId,
         dueDate,
         priority: 5, // 最高优先级
       })

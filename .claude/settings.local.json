@@ -27,7 +27,13 @@
       "Bash(git mv:*)",
       "Bash(git -C /Users/guihuajiu/wonderland/first-glance mv:*)",
       "Bash(find:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(git fetch:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(git stash:*)",
+      "Bash(gh pr view:*)",
+      "Bash(ls:*)"
     ]
   }
 }

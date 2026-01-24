@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     })
     // 打开介绍页面
     chrome.tabs.create({
-      url: 'https://gwifloria.github.io/first-glance/introduction',
+      url: 'https://gwifloria.github.io/first-glance/',
     })
   } else if (details.reason === 'update') {
     const previousVersion = details.previousVersion

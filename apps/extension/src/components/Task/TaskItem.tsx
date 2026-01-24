@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { formatShortDate } from '@/utils/date'
 import { isOverdue } from '@/utils/taskFilters'
 import { getPriorityColor } from '@/constants/task'
+import { isInboxProject } from '@/utils/project'
 import { ProjectColorDot } from '../ProjectColorDot'
 import { TaskCheckbox } from '../common/TaskCheckbox'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
@@ -28,6 +29,11 @@ export const TaskItem = memo(function TaskItem({
   const { t } = useTranslation()
   const { completing, handleComplete } = useTaskCompletion(onComplete)
   const priorityColor = getPriorityColor(task.priority)
+
+  const isInbox = isInboxProject(project)
+  const projectName = isInbox
+    ? t('settings:defaultProject.inbox')
+    : project?.name
 
   return (
     <div
@@ -57,9 +63,12 @@ export const TaskItem = memo(function TaskItem({
           <div className="flex items-center gap-3 flex-wrap">
             {project && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--bg-secondary)] rounded text-xs">
-                <ProjectColorDot color={project.color} size="xs" />
+                <ProjectColorDot
+                  color={isInbox ? '#888' : project.color}
+                  size="xs"
+                />
                 <span className="text-[var(--text-secondary)]">
-                  #{project.name}
+                  #{projectName}
                 </span>
               </span>
             )}

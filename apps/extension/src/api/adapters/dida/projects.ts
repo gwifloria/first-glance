@@ -98,6 +98,19 @@ export const projectsApi = {
         return [] as Task[]
       })
 
+    // 从 inbox 任务中提取真实的 inboxProjectId
+    let inboxProject: Project | null = null
+    if (inboxTasks.length > 0) {
+      const realInboxId = inboxTasks[0].projectId
+      // 创建 inbox project 对象
+      inboxProject = {
+        id: realInboxId,
+        name: '收集箱', // Inbox 名称会在 UI 层通过 i18n 处理
+        sortOrder: -1, // 确保排在最前面
+        kind: 'INBOX',
+      }
+    }
+
     // 使用并发限制获取项目任务
     const projectTaskArrays = await withConcurrencyLimit(
       activeProjects,
@@ -112,6 +125,10 @@ export const projectsApi = {
     const incompleteTasks = allTasks.filter((task) => task.status === 0)
     await storage.setCachedTasks(incompleteTasks)
 
-    return { tasks: incompleteTasks, projects }
+    // 将 inbox 添加到 projects 列表最前面
+    const allProjects = inboxProject ? [inboxProject, ...projects] : projects
+    await storage.setCachedProjects(allProjects)
+
+    return { tasks: incompleteTasks, projects: allProjects }
   },
 }

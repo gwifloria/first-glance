@@ -128,10 +128,17 @@ apps/
 - `bump-version.yml`: 手动触发版本更新（patch/minor/major），同步更新 manifest.json
 - `release.yml`: 创建 v* tag 时自动发布到 Chrome Web Store
 
+### 分支策略
+- `dev`: 开发分支，日常开发在此进行
+- `staging`: 预发布分支，用于测试验证
+- `main`: 生产分支，发布到 Chrome Web Store
+
 ### 发布流程
-1. 运行 bump-version workflow 选择版本类型
-2. 自动创建 tag，触发 release workflow
-3. 自动构建、打包、上传 Chrome Web Store
+1. dev → staging: 创建 PR 合并到 staging，进行测试验证
+2. staging → main: 测试通过后，创建 PR 合并到 main
+3. 在 main 分支运行 bump-version workflow 选择版本类型
+4. 自动创建 tag，触发 release workflow
+5. 自动构建、打包、上传 Chrome Web Store
 
 ## 滴答清单 API
 

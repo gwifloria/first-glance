@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Modal, Select, Form } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { getSettings, setSettings } from '@/services/settingsStorage'
-import { filterActiveProjects } from '@/utils/project'
+import { filterActiveProjects, isInboxProject } from '@/utils/project'
 import type { Project } from '@/types'
 
 interface DefaultProjectModalProps {
@@ -28,16 +28,18 @@ export function DefaultProjectModal({
     }
   }, [open])
 
-  // 过滤出未关闭的项目
+  // 过滤出未关闭的项目（包含 inbox）
   const availableProjects = filterActiveProjects(projects)
+
+  const inboxProject = availableProjects.find(isInboxProject)
 
   const handleChange = async (value: string) => {
     await setSettings({ defaultProjectId: value })
     setDefaultProjectId(value)
   }
 
-  // 当前值：使用设置的值，默认为收集箱
-  const currentValue = defaultProjectId || 'inbox'
+  // 当前值：使用设置的值，默认为 inbox project
+  const currentValue = defaultProjectId || inboxProject?.id
 
   return (
     <Modal
@@ -54,27 +56,25 @@ export function DefaultProjectModal({
             onChange={handleChange}
             className="w-full"
           >
-            {/* 收集箱选项 */}
-            <Select.Option key="inbox" value="inbox">
-              <div className="flex items-center gap-2">
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: '#888' }}
-                />
-                <span>{t('defaultProject.inbox')}</span>
-              </div>
-            </Select.Option>
-            {availableProjects.map((project) => (
-              <Select.Option key={project.id} value={project.id}>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: project.color || 'var(--accent)' }}
-                  />
-                  <span>{project.name}</span>
-                </div>
-              </Select.Option>
-            ))}
+            {availableProjects.map((project) => {
+              const isInbox = isInboxProject(project)
+              return (
+                <Select.Option key={project.id} value={project.id}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        background:
+                          project.color || (isInbox ? '#888' : 'var(--accent)'),
+                      }}
+                    />
+                    <span>
+                      {isInbox ? t('defaultProject.inbox') : project.name}
+                    </span>
+                  </div>
+                </Select.Option>
+              )
+            })}
           </Select>
           <p className="text-xs text-[var(--text-secondary)] mt-2">
             {t('defaultProject.hint')}

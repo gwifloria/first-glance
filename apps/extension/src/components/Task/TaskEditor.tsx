@@ -176,19 +176,11 @@ export function TaskEditor({
           label={t('editor.labelPriority')}
           className="!mb-0"
         >
-          <Radio.Group className="!flex !flex-row !flex-nowrap gap-2">
+          <Radio.Group className="flex gap-4">
             {priorityOptions.map((opt) => (
-              <Radio.Button
-                key={opt.value}
-                value={opt.value}
-                className="!flex !items-center !justify-center !px-3 !gap-1.5"
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: opt.color }}
-                />
-                <span className="text-xs">{opt.label}</span>
-              </Radio.Button>
+              <Radio key={opt.value} value={opt.value}>
+                <span style={{ color: opt.color }}>{opt.label}</span>
+              </Radio>
             ))}
           </Radio.Group>
         </Form.Item>

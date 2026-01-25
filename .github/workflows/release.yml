@@ -78,8 +78,172 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
 
+      - name: Generate Changelog
+        id: changelog
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 获取所有 tags
+            const { data: tags } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 10
+            });
+
+            // 找到当前 tag 和上一个 tag
+            const currentTag = context.ref.replace('refs/tags/', '');
+            const currentIndex = tags.findIndex(t => t.name === currentTag);
+            const previousTag = currentIndex >= 0 && tags[currentIndex + 1] ? tags[currentIndex + 1].name : '';
+
+            console.log(`Current tag: ${currentTag}, Previous tag: ${previousTag || '(none)'}`);
+
+            // 获取两个 tag 之间的 commits
+            let commits = [];
+            if (previousTag) {
+              const { data: comparison } = await github.rest.repos.compareCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: previousTag,
+                head: currentTag
+              });
+              commits = comparison.commits;
+            } else {
+              // 如果没有上一个 tag，获取所有 commits
+              const { data: allCommits } = await github.rest.repos.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: currentTag,
+                per_page: 100
+              });
+              commits = allCommits;
+            }
+
+            console.log(`Found ${commits.length} commits`);
+
+            // 从 commits 中提取关联的 PRs
+            const prNumbers = new Set();
+            for (const commit of commits) {
+              const match = commit.commit.message.match(/\(#(\d+)\)/);
+              if (match) prNumbers.add(parseInt(match[1]));
+            }
+
+            console.log(`Found ${prNumbers.size} PRs: ${[...prNumbers].join(', ')}`);
+
+            // 获取 PR 详情并提取 release notes
+            const features = { zh: [], en: [] };
+            const fixes = { zh: [], en: [] };
+            const improvements = { zh: [], en: [] };
+
+            for (const prNumber of prNumbers) {
+              try {
+                const { data: pr } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber
+                });
+
+                // 跳过标记为 skip-changelog 的 PR
+                if (pr.labels.some(l => l.name === 'skip-changelog')) {
+                  console.log(`Skipping PR #${prNumber} (skip-changelog)`);
+                  continue;
+                }
+
+                // 从 PR body 提取更新说明
+                const body = pr.body || '';
+                const zhMatch = body.match(/### 中文\s*\n([^#]*?)(?=###|##|$)/s);
+                const enMatch = body.match(/### English\s*\n([^#]*?)(?=###|##|$)/s);
+
+                let zhNote = zhMatch ? zhMatch[1].trim() : '';
+                let enNote = enMatch ? enMatch[1].trim() : '';
+
+                // 过滤掉注释内容
+                zhNote = zhNote.replace(/<!--[\s\S]*?-->/g, '').trim();
+                enNote = enNote.replace(/<!--[\s\S]*?-->/g, '').trim();
+
+                // 如果没有填写更新说明，跳过
+                if (!zhNote && !enNote) {
+                  console.log(`Skipping PR #${prNumber} (no release notes)`);
+                  continue;
+                }
+
+                console.log(`PR #${prNumber}: zh="${zhNote}", en="${enNote}"`);
+
+                // 按 label 分类
+                const labels = pr.labels.map(l => l.name);
+                if (labels.includes('feature')) {
+                  if (zhNote) features.zh.push(zhNote);
+                  if (enNote) features.en.push(enNote);
+                } else if (labels.includes('bug')) {
+                  if (zhNote) fixes.zh.push(zhNote);
+                  if (enNote) fixes.en.push(enNote);
+                } else {
+                  if (zhNote) improvements.zh.push(zhNote);
+                  if (enNote) improvements.en.push(enNote);
+                }
+              } catch (err) {
+                console.log(`Error fetching PR #${prNumber}: ${err.message}`);
+              }
+            }
+
+            // 生成 changelog
+            let changelog = '';
+            const hasZhContent = features.zh.length || fixes.zh.length || improvements.zh.length;
+            const hasEnContent = features.en.length || fixes.en.length || improvements.en.length;
+
+            // 中文版
+            if (hasZhContent) {
+              changelog += '## 更新内容\n\n';
+              if (features.zh.length) {
+                changelog += '### ✨ 新功能\n';
+                features.zh.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+              if (fixes.zh.length) {
+                changelog += '### 🐛 Bug 修复\n';
+                fixes.zh.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+              if (improvements.zh.length) {
+                changelog += '### 💄 优化\n';
+                improvements.zh.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+            }
+
+            if (hasZhContent && hasEnContent) {
+              changelog += '---\n\n';
+            }
+
+            // 英文版
+            if (hasEnContent) {
+              changelog += '## What\'s Changed\n\n';
+              if (features.en.length) {
+                changelog += '### ✨ New Features\n';
+                features.en.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+              if (fixes.en.length) {
+                changelog += '### 🐛 Bug Fixes\n';
+                fixes.en.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+              if (improvements.en.length) {
+                changelog += '### 💄 Improvements\n';
+                improvements.en.forEach(n => changelog += `- ${n}\n`);
+                changelog += '\n';
+              }
+            }
+
+            // 如果没有任何内容，使用默认消息
+            if (!changelog) {
+              changelog = 'No user-facing changes in this release.\n';
+            }
+
+            console.log('Generated changelog:\n' + changelog);
+            core.setOutput('changelog', changelog);
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: first-glance-${{ github.ref_name }}.zip
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.changelog }}

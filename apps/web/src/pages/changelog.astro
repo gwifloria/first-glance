@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+// Fetch GitHub Releases at build time
+let releases: any[] = []
+try {
+  const response = await fetch(
+    'https://api.github.com/repos/gwifloria/first-glance/releases',
+    {
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'first-glance-website'
+      }
+    }
+  )
+  if (response.ok) {
+    releases = await response.json()
+  }
+} catch (e) {
+  console.error('Failed to fetch releases:', e)
+}
+
+// Format date
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+---
+
+<Layout title="更新日志 - First Glance">
+  <!-- Background Texture -->
+  <div class="fixed inset-0 paper-texture pointer-events-none z-0"></div>
+
+  <!-- Pink decorative blob -->
+  <div class="fixed top-[-100px] right-[-100px] w-[500px] h-[500px] bg-pink-light rounded-full mix-blend-multiply filter blur-3xl opacity-40 pointer-events-none z-0"></div>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/first-glance/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 relative flex items-center justify-center bg-white rounded-xl shadow-sm border border-border group-hover:rotate-3 transition-transform">
+          <div class="absolute inset-2 border-2 border-pink rounded-full border-dashed animate-spin-slow opacity-60"></div>
+          <div class="w-2.5 h-2.5 bg-pink rounded-full"></div>
+        </div>
+        <span class="font-serif font-bold text-lg tracking-tight text-text">First Glance</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="/first-glance/" class="text-sm font-bold text-text-muted hover:text-text transition-colors">首页</a>
+        <a href="/first-glance/changelog" class="text-sm font-bold text-pink transition-colors">更新日志</a>
+        <a href="/first-glance/en/changelog" class="text-sm font-bold text-text-muted hover:text-text transition-colors">EN</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="pt-24 pb-20 px-6 min-h-screen">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-16">
+        <h1 class="text-3xl md:text-4xl font-serif font-medium text-text mb-4">更新日志</h1>
+        <p class="text-text-muted text-lg">First Glance 的版本更新记录</p>
+      </div>
+
+      {releases.length === 0 ? (
+        <div class="text-center py-12">
+          <div class="text-4xl mb-4">( ´_ゝ`)</div>
+          <p class="text-text-muted">暂无更新记录</p>
+        </div>
+      ) : (
+        <div class="space-y-8">
+          {releases.map((release: any, index: number) => (
+            <article class="relative pl-8 border-l-2 border-border pb-8 last:pb-0">
+              <!-- Timeline dot -->
+              <div class={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 ${index === 0 ? 'bg-pink border-pink' : 'bg-background border-border'}`}></div>
+
+              <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                  <h2 class="text-xl font-bold font-serif text-text">{release.name || release.tag_name}</h2>
+                  {release.prerelease && (
+                    <span class="px-2 py-0.5 text-xs font-bold bg-pink-bg text-pink rounded-full border border-border-pink">
+                      预览版
+                    </span>
+                  )}
+                </div>
+
+                <time class="text-sm text-text-muted block mb-4">
+                  {formatDate(release.published_at)}
+                </time>
+
+                {release.body && (
+                  <div class="prose prose-sm max-w-none text-text-muted" set:html={
+                    release.body
+                      .replace(/\r\n/g, '\n')
+                      .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-text mt-4 mb-2">$1</h3>')
+                      .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-text mt-4 mb-2">$1</h2>')
+                      .replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
+                      .replace(/\n\n/g, '<br/><br/>')
+                  } />
+                )}
+
+                <a
+                  href={release.html_url}
+                  target="_blank"
+                  class="inline-flex items-center gap-2 mt-4 text-sm font-bold text-pink hover:underline"
+                >
+                  在 GitHub 查看
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-border py-12 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2 opacity-50">
+        <div class="w-5 h-5 rounded-full border border-current flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-current rounded-full"></div>
+        </div>
+        <span class="font-serif font-bold text-sm text-text">First Glance</span>
+      </div>
+
+      <div class="flex gap-6 text-sm font-medium opacity-60">
+        <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="hover:opacity-100 transition-opacity">反馈</a>
+        <a href="https://github.com/gwifloria/first-glance" target="_blank" class="hover:opacity-100 transition-opacity">GitHub</a>
+        <a href="/first-glance/privacy" class="hover:opacity-100 transition-opacity">隐私政策</a>
+      </div>
+
+      <div class="text-xs font-bold uppercase tracking-widest text-text/40">
+        &copy; 2025 Wonderland
+      </div>
+    </div>
+  </footer>
+</Layout>

@@ -4,6 +4,9 @@
 
 Turn your new tab into a focus dashboard. See your high-priority tasks instantly, stay on track, and avoid distractions.
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/lbcklgfmlcjjiclnlhbpmpeaeopjkeop)](https://chromewebstore.google.com/detail/first-glance/lbcklgfmlcjjiclnlhbpmpeaeopjkeop)
+[![Website](https://img.shields.io/badge/website-first--glance-pink)](https://gwifloria.github.io/first-glance/)
+
 ## Features
 
 - **Dual View Mode** - Focus view (minimal clock + top 3 tasks) and List view (full task management)
@@ -26,7 +29,7 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 
 ### From Chrome Web Store
 
-Coming soon! The extension is currently under review.
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/first-glance/lbcklgfmlcjjiclnlhbpmpeaeopjkeop)
 
 ### Local Development
 
@@ -119,7 +122,7 @@ This project uses GitHub Actions for automation:
 
 - **deploy-web.yml** - Deploys website to GitHub Pages on push to main
 - **bump-version.yml** - Manual workflow to bump version (patch/minor/major)
-- **release.yml** - Auto-publishes to Chrome Web Store when a version tag is created
+- **release.yml** - Auto-publishes to Chrome Web Store when a version tag is created, generates bilingual changelog from merged PRs
 
 ## Dida365 API
 

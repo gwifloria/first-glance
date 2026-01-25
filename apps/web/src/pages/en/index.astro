@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import { roadmap } from '../../data/roadmap'
 
 const chromeStoreUrl = 'https://chromewebstore.google.com/detail/first-glance/lbcklgfmlcjjiclnlhbpmpeaeopjkeop'
 
@@ -32,9 +33,11 @@ const themes = [
       </a>
 
       <div class="hidden md:flex items-center gap-8">
+        <a href="#story" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Story</a>
         <a href="#features" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Features</a>
         <a href="#chill-mode" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Chill Mode</a>
         <a href="#themes" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Themes</a>
+        <a href="/first-glance/en/changelog" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Changelog</a>
         <a href="/first-glance/" class="text-sm font-bold text-text-muted hover:text-text transition-colors">中文</a>
       </div>
 
@@ -158,6 +161,39 @@ const themes = [
     </div>
   </header>
 
+  <!-- Section: Why First Glance -->
+  <section id="story" class="snap-section py-20 px-6 bg-white flex items-center">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-12 text-center">
+        Why First Glance?
+      </h2>
+
+      <div class="space-y-6 text-lg text-text-muted leading-relaxed">
+        <p>
+          I use <span class="text-pink font-medium">TickTick</span> for all my tasks.
+        </p>
+
+        <p>
+          I also like <span class="text-text font-medium">Momentum</span>-style new tab pages—open a tab, see a clock and today's task. Clean.
+        </p>
+
+        <p>
+          But it has its own task system. Using it means <span class="text-pink font-medium">maintaining two sets of data</span>, or messing with sync.
+        </p>
+
+        <blockquote class="border-l-4 border-pink pl-6 py-2 my-8 bg-pink-bg/30 rounded-r-xl">
+          <p class="font-serif text-text">
+            I just want to manage tasks in one place.
+          </p>
+        </blockquote>
+
+        <p>
+          So I built First Glance: <span class="text-text font-medium">reads directly from TickTick, no copying, no syncing.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Section 2: Features -->
   <section id="features" class="snap-section py-20 px-6 bg-white flex items-center">
     <div class="max-w-6xl mx-auto w-full">
@@ -244,6 +280,41 @@ const themes = [
             Milk, Beige, Pink, Blue, and Dark—each carefully designed. Find the style that fits you.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Coming Soon / Roadmap -->
+  <section id="roadmap" class="snap-section py-20 px-6 bg-background flex items-center">
+    <div class="max-w-6xl mx-auto w-full">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-border mb-6">
+          <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
+          <span class="text-text-muted text-xs font-bold tracking-widest uppercase">Coming Soon</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-4">More Task Sources</h2>
+        <p class="text-text-muted text-lg">We're working on supporting more task management tools</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {roadmap.map((item) => (
+          <div class="bg-white p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+            <div class="flex items-start justify-between mb-4">
+              <div class="text-3xl">{item.icon}</div>
+              <span class={`px-3 py-1 text-xs font-bold rounded-full ${
+                item.status === 'coming-soon'
+                  ? 'bg-pink-bg text-pink border border-border-pink'
+                  : item.status === 'in-progress'
+                  ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                  : 'bg-border-light text-text-muted border border-border'
+              }`}>
+                {item.status === 'coming-soon' ? 'Coming Soon' : item.status === 'in-progress' ? 'In Progress' : 'Planned'}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold font-serif mb-2 text-text">{item.title.en}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{item.description.en}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>

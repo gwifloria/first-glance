@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { roadmap } from '../data/roadmap'
 
 const chromeStoreUrl = 'https://chromewebstore.google.com/detail/first-glance/lbcklgfmlcjjiclnlhbpmpeaeopjkeop'
 
@@ -32,9 +33,11 @@ const themes = [
       </a>
 
       <div class="hidden md:flex items-center gap-8">
+        <a href="#story" class="text-sm font-bold text-text-muted hover:text-text transition-colors">故事</a>
         <a href="#features" class="text-sm font-bold text-text-muted hover:text-text transition-colors">功能</a>
         <a href="#chill-mode" class="text-sm font-bold text-text-muted hover:text-text transition-colors">专注模式</a>
         <a href="#themes" class="text-sm font-bold text-text-muted hover:text-text transition-colors">主题</a>
+        <a href="/first-glance/changelog" class="text-sm font-bold text-text-muted hover:text-text transition-colors">更新日志</a>
         <a href="/first-glance/en" class="text-sm font-bold text-text-muted hover:text-text transition-colors">EN</a>
       </div>
 
@@ -159,6 +162,39 @@ const themes = [
     </div>
   </header>
 
+  <!-- Section: Why First Glance -->
+  <section id="story" class="snap-section py-20 px-6 bg-white flex items-center">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-12 text-center">
+        为什么做 First Glance？
+      </h2>
+
+      <div class="space-y-6 text-lg text-text-muted leading-relaxed">
+        <p>
+          我用<span class="text-pink font-medium">滴答清单</span>管理所有任务。
+        </p>
+
+        <p>
+          我也喜欢 <span class="text-text font-medium">Momentum</span> 那种新标签页——打开就是时钟和今日任务，很清爽。
+        </p>
+
+        <p>
+          但它有自己的任务系统。用它就得<span class="text-pink font-medium">维护两份数据</span>，或者折腾同步。
+        </p>
+
+        <blockquote class="border-l-4 border-pink pl-6 py-2 my-8 bg-pink-bg/30 rounded-r-xl">
+          <p class="font-serif text-text">
+            我只想在一个地方管任务。
+          </p>
+        </blockquote>
+
+        <p>
+          所以做了 First Glance：<span class="text-text font-medium">直接读滴答清单的数据，不复制，不同步。</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Section 2: Features -->
   <section id="features" class="snap-section py-20 px-6 bg-white flex items-center">
     <div class="max-w-6xl mx-auto w-full">
@@ -245,6 +281,41 @@ const themes = [
             Milk、Beige、Pink、Blue、Dark，每种都经过精心设计，总有适合你的风格。
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Coming Soon / Roadmap -->
+  <section id="roadmap" class="snap-section py-20 px-6 bg-background flex items-center">
+    <div class="max-w-6xl mx-auto w-full">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-border mb-6">
+          <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
+          <span class="text-text-muted text-xs font-bold tracking-widest uppercase">Coming Soon</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-4">更多任务源支持</h2>
+        <p class="text-text-muted text-lg">我们正在努力支持更多任务管理工具</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {roadmap.map((item) => (
+          <div class="bg-white p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+            <div class="flex items-start justify-between mb-4">
+              <div class="text-3xl">{item.icon}</div>
+              <span class={`px-3 py-1 text-xs font-bold rounded-full ${
+                item.status === 'coming-soon'
+                  ? 'bg-pink-bg text-pink border border-border-pink'
+                  : item.status === 'in-progress'
+                  ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                  : 'bg-border-light text-text-muted border border-border'
+              }`}>
+                {item.status === 'coming-soon' ? '即将推出' : item.status === 'in-progress' ? '开发中' : '计划中'}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold font-serif mb-2 text-text">{item.title.zh}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{item.description.zh}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>

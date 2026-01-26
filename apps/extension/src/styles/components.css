@@ -101,11 +101,11 @@
   padding: 8px !important;
 }
 
-/* Todo 浮动按钮 */
+/* Todo 浮动按钮 - 左上角 */
 .todo-float-btn {
   position: absolute !important;
-  bottom: 24px !important;
-  right: 24px !important;
+  top: 24px !important;
+  left: 24px !important;
   z-index: 50 !important;
   display: flex !important;
   align-items: center !important;
@@ -114,6 +114,14 @@
 }
 .todo-float-btn:hover {
   box-shadow: var(--shadow-medium) !important;
+}
+
+/* Help 浮动按钮 - 右下角 */
+.help-float-btn {
+  position: absolute !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 50 !important;
 }
 
 /* Ant Design Modal 防抖动 */

@@ -17,5 +17,10 @@
       "endNow": "End Now",
       "ended": "Chill mode ended"
     }
+  },
+  "help": {
+    "feedback": "Send Feedback",
+    "changelog": "Changelog",
+    "privacy": "Privacy Policy"
   }
 }

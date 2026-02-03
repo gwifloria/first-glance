@@ -6,7 +6,7 @@ import {
   FileTextOutlined,
   GithubOutlined,
   LockOutlined,
-  // CoffeeOutlined, // TODO: 待注册完成后启用
+  CoffeeOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
@@ -77,13 +77,11 @@ export function HelpPanel({ className }: HelpPanelProps) {
         href={LINKS.changelog}
       />
       <LinkItem icon={<GithubOutlined />} label="GitHub" href={LINKS.github} />
-      {/* TODO: 待注册完成后启用
       <LinkItem
         icon={<CoffeeOutlined />}
         label={t('help.buymeacoffee')}
         href={LINKS.buymeacoffee}
       />
-      */}
       <LinkItem
         icon={<LockOutlined />}
         label={t('help.privacy')}

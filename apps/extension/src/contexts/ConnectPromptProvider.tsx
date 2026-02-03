@@ -14,7 +14,8 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
   const { connect } = useAppMode()
 
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [connectingProvider, setConnectingProvider] =
+    useState<ServiceProvider | null>(null)
 
   const mountedRef = useRef(true)
   useEffect(() => {
@@ -29,7 +30,7 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
 
   const handleConnect = useCallback(
     async (provider: ServiceProvider) => {
-      setLoading(true)
+      setConnectingProvider(provider)
       try {
         await connect(provider)
         if (!mountedRef.current) return
@@ -40,7 +41,7 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
         message.error(t('message.failedToConnect'))
       } finally {
         if (mountedRef.current) {
-          setLoading(false)
+          setConnectingProvider(null)
         }
       }
     },
@@ -56,7 +57,7 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
       {children}
       <ConnectPrompt
         open={open}
-        loading={loading}
+        connectingProvider={connectingProvider}
         onConnect={handleConnect}
         onCancel={handleCancel}
       />

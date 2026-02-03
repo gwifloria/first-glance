@@ -7,7 +7,8 @@ import { getAvailableProviders } from '@/services/authManager'
 
 interface ConnectPromptProps {
   open: boolean
-  loading?: boolean
+  /** 当前正在连接的 provider，用于显示对应按钮的 loading 状态 */
+  connectingProvider?: ServiceProvider | null
   onConnect: (provider: ServiceProvider) => void
   onCancel: () => void
 }
@@ -73,12 +74,13 @@ const SERVICE_CONFIG: Record<
 
 export const ConnectPrompt = memo(function ConnectPrompt({
   open,
-  loading = false,
+  connectingProvider = null,
   onConnect,
   onCancel,
 }: ConnectPromptProps) {
   const { t } = useTranslation('common')
   const availableProviders = getAvailableProviders()
+  const isConnecting = connectingProvider !== null
 
   return (
     <Modal
@@ -114,7 +116,8 @@ export const ConnectPrompt = memo(function ConnectPrompt({
                 size="large"
                 block
                 onClick={() => onConnect(provider)}
-                loading={loading}
+                loading={connectingProvider === provider}
+                disabled={isConnecting && connectingProvider !== provider}
                 className="!h-14 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
               >
                 <div className="mr-3 flex-shrink-0">
@@ -143,7 +146,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
             size="large"
             block
             onClick={onCancel}
-            disabled={loading}
+            disabled={isConnecting}
             icon={<CloseOutlined />}
             className="!h-12 !text-[var(--text-secondary)] hover:!text-[var(--text-primary)]"
           >

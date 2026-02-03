@@ -43,6 +43,8 @@ jobs:
         env:
           VITE_DIDA_CLIENT_ID: ${{ secrets.VITE_DIDA_CLIENT_ID }}
           VITE_DIDA_CLIENT_SECRET: ${{ secrets.VITE_DIDA_CLIENT_SECRET }}
+          VITE_TODOIST_CLIENT_ID: ${{ secrets.VITE_TODOIST_CLIENT_ID }}
+          VITE_TODOIST_CLIENT_SECRET: ${{ secrets.VITE_TODOIST_CLIENT_SECRET }}
 
       - name: Create zip
         run: |

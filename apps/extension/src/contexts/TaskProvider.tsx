@@ -7,10 +7,18 @@ import { useAppMode } from './useAppMode'
 import { useTaskData } from '@/hooks/useTaskData'
 import { useTaskViews } from '@/hooks/useTaskViews'
 import { TaskContext, type TaskContextValue } from './TaskContext'
+import type { AdapterType } from '@/types'
 
 export function TaskProvider({ children }: { children: ReactNode }) {
-  const { isConnected, isGuest } = useAppMode()
-  const adapterType = isConnected ? 'didaList' : 'local'
+  const { isConnected, isGuest, currentProvider } = useAppMode()
+
+  // 根据连接状态和服务商确定适配器类型
+  const adapterType: AdapterType = useMemo(() => {
+    if (!isConnected || !currentProvider) {
+      return 'local'
+    }
+    return currentProvider
+  }, [isConnected, currentProvider])
 
   const { data, actions } = useTaskData(adapterType)
   const { views: baseViews, filters } = useTaskViews(data.tasks)

@@ -1,0 +1,76 @@
+/**
+ * Todoist 任务 API
+ */
+import { request } from './client'
+import { endpoints } from './endpoints'
+import type {
+  TodoistTask,
+  TodoistCreateTaskRequest,
+  TodoistUpdateTaskRequest,
+} from './transforms'
+
+export const tasksApi = {
+  /**
+   * 获取所有活跃任务
+   */
+  async getAll(): Promise<TodoistTask[]> {
+    return request<TodoistTask[]>(endpoints.tasks)
+  },
+
+  /**
+   * 获取指定项目的任务
+   */
+  async getByProject(projectId: string): Promise<TodoistTask[]> {
+    return request<TodoistTask[]>(`${endpoints.tasks}?project_id=${projectId}`)
+  },
+
+  /**
+   * 创建任务
+   */
+  async create(input: TodoistCreateTaskRequest): Promise<TodoistTask> {
+    return request<TodoistTask>(endpoints.tasks, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    })
+  },
+
+  /**
+   * 更新任务
+   */
+  async update(
+    taskId: string,
+    input: TodoistUpdateTaskRequest
+  ): Promise<TodoistTask> {
+    return request<TodoistTask>(endpoints.taskById(taskId), {
+      method: 'POST',
+      body: JSON.stringify(input),
+    })
+  },
+
+  /**
+   * 完成任务
+   */
+  async close(taskId: string): Promise<void> {
+    return request(endpoints.closeTask(taskId), {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 重新打开任务
+   */
+  async reopen(taskId: string): Promise<void> {
+    return request(endpoints.reopenTask(taskId), {
+      method: 'POST',
+    })
+  },
+
+  /**
+   * 删除任务
+   */
+  async delete(taskId: string): Promise<void> {
+    return request(endpoints.taskById(taskId), {
+      method: 'DELETE',
+    })
+  },
+}

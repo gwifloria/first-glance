@@ -10,7 +10,8 @@
     "start": "开始使用",
     "connect": "连接",
     "disconnect": "断开连接",
-    "maybeLater": "以后再说"
+    "maybeLater": "以后再说",
+    "back": "返回"
   },
   "action": {
     "refresh": "刷新"
@@ -28,12 +29,21 @@
     "updateSettingsFailed": "更新设置失败"
   },
   "connectPrompt": {
-    "title": "连接滴答清单",
-    "description": "连接滴答清单，同步你的任务",
+    "title": "连接任务服务",
+    "description": "连接任务服务，同步你的任务",
     "connect": "连接"
+  },
+  "serviceSelector": {
+    "title": "选择服务",
+    "description": "选择要连接的任务服务",
+    "didaList": "滴答清单",
+    "didaListDesc": "与滴答清单同步",
+    "todoist": "Todoist",
+    "todoistDesc": "与 Todoist 同步",
+    "noProviders": "没有可用服务，请配置 API 凭证"
   },
   "disconnectConfirm": {
     "title": "断开连接",
-    "description": "确定要断开与滴答清单的连接吗？"
+    "description": "确定要断开连接吗？"
   }
 }

@@ -6,6 +6,7 @@ import {
   FileTextOutlined,
   GithubOutlined,
   LockOutlined,
+  // CoffeeOutlined, // TODO: 待注册完成后启用
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 
@@ -14,6 +15,7 @@ const LINKS = {
   changelog: 'https://gwifloria.github.io/first-glance/changelog',
   github: 'https://github.com/gwifloria/first-glance',
   privacy: 'https://gwifloria.github.io/first-glance/privacy',
+  buymeacoffee: 'https://buymeacoffee.com/gwifloria',
 }
 
 /** 链接项组件 */
@@ -75,6 +77,13 @@ export function HelpPanel({ className }: HelpPanelProps) {
         href={LINKS.changelog}
       />
       <LinkItem icon={<GithubOutlined />} label="GitHub" href={LINKS.github} />
+      {/* TODO: 待注册完成后启用
+      <LinkItem
+        icon={<CoffeeOutlined />}
+        label={t('help.buymeacoffee')}
+        href={LINKS.buymeacoffee}
+      />
+      */}
       <LinkItem
         icon={<LockOutlined />}
         label={t('help.privacy')}

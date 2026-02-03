@@ -3,13 +3,17 @@
  */
 import { createContext } from 'react'
 import type { AppMode } from '@/types'
+import type { ServiceProvider } from '@/services/authManager'
 
 export interface AppModeContextValue {
   mode: AppMode
   loading: boolean
   isGuest: boolean
   isConnected: boolean
-  connect: () => Promise<void>
+  /** 当前连接的服务商 */
+  currentProvider: ServiceProvider | null
+  /** 连接到指定服务商 */
+  connect: (provider: ServiceProvider) => Promise<void>
   disconnect: () => Promise<void>
 }
 

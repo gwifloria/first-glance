@@ -2,6 +2,7 @@
  * 适配器工厂
  */
 import { DidaListAdapter } from './dida'
+import { TodoistAdapter } from './todoist'
 import { LocalAdapter } from './LocalAdapter'
 import type { ITaskAdapter, AdapterType } from './types'
 
@@ -22,13 +23,14 @@ export function createTaskAdapter(type: AdapterType): ITaskAdapter {
     case 'didaList':
       adapter = new DidaListAdapter()
       break
+    case 'todoist':
+      adapter = new TodoistAdapter()
+      break
     case 'local':
       adapter = new LocalAdapter()
       break
     case 'notion':
       throw new Error('Notion adapter not implemented yet')
-    case 'todoist':
-      throw new Error('Todoist adapter not implemented yet')
     default:
       throw new Error(`Unknown adapter type: ${type}`)
   }

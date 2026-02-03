@@ -50,16 +50,12 @@ class AuthManagerImpl implements AuthManager {
   }
 
   async connect(provider: ServiceProvider): Promise<void> {
-    console.log('[AuthManager] 开始连接:', provider)
     if (provider === 'didaList') {
       await didaAuth.login()
-      await storage.setAdapterType('didaList')
     } else if (provider === 'todoist') {
-      console.log('[AuthManager] 调用 todoistAuth.login()')
       await todoistAuth.login()
-      console.log('[AuthManager] todoistAuth.login() 完成')
-      // todoistAuth.login 已经设置了 adapter_type
     }
+    await storage.setAdapterType(provider)
   }
 
   async disconnect(): Promise<void> {

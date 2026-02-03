@@ -41,13 +41,7 @@ export async function request<T = void>(
 
   try {
     return JSON.parse(text) as T
-  } catch (err) {
-    console.error(
-      '[Todoist API] JSON 解析失败:',
-      err,
-      'response:',
-      text.slice(0, 200)
-    )
+  } catch {
     throw new Error('服务器返回了无效的响应格式')
   }
 }

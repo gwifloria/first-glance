@@ -21,35 +21,13 @@ if (import.meta.env.DEV && (!CLIENT_ID || !CLIENT_SECRET)) {
   )
 }
 
-export type TodoistAuthEventType = 'logged_in' | 'logged_out'
-type TodoistAuthEventListener = (event: TodoistAuthEventType) => void
-
 class TodoistAuthService {
-  private listeners: Set<TodoistAuthEventListener> = new Set()
-
-  /** 订阅认证事件 */
-  onAuthEvent(listener: TodoistAuthEventListener): () => void {
-    this.listeners.add(listener)
-    return () => this.listeners.delete(listener)
-  }
-
-  private emit(event: TodoistAuthEventType): void {
-    this.listeners.forEach((listener) => listener(event))
-  }
-
   /** 检查是否已配置 Todoist 凭证 */
   isConfigured(): boolean {
     return Boolean(CLIENT_ID && CLIENT_SECRET)
   }
 
   async login(): Promise<string> {
-    console.log('[TodoistAuth] login() 开始')
-    console.log('[TodoistAuth] CLIENT_ID:', CLIENT_ID ? '已配置' : '未配置')
-    console.log(
-      '[TodoistAuth] CLIENT_SECRET:',
-      CLIENT_SECRET ? '已配置' : '未配置'
-    )
-
     if (!CLIENT_ID || !CLIENT_SECRET) {
       throw new Error('Todoist 认证配置缺失，请检查环境变量')
     }
@@ -59,18 +37,12 @@ class TodoistAuthService {
 
     // Chrome 扩展的 redirect URI
     const redirectUri = chrome.identity.getRedirectURL()
-    console.log('[TodoistAuth] redirectUri:', redirectUri)
 
     const authUrl = new URL(AUTH_URL)
     authUrl.searchParams.set('client_id', CLIENT_ID)
     authUrl.searchParams.set('scope', 'data:read_write,data:delete')
     authUrl.searchParams.set('state', state)
     authUrl.searchParams.set('redirect_uri', redirectUri)
-
-    console.log(
-      '[TodoistAuth] 调用 launchWebAuthFlow, URL:',
-      authUrl.toString()
-    )
 
     return new Promise((resolve, reject) => {
       chrome.identity.launchWebAuthFlow(
@@ -79,12 +51,7 @@ class TodoistAuthService {
           interactive: true,
         },
         async (responseUrl) => {
-          console.log(
-            '[TodoistAuth] launchWebAuthFlow 回调, responseUrl:',
-            responseUrl
-          )
           if (chrome.runtime.lastError) {
-            console.error('[TodoistAuth] lastError:', chrome.runtime.lastError)
             reject(new Error(chrome.runtime.lastError.message))
             return
           }
@@ -117,8 +84,6 @@ class TodoistAuthService {
 
             const token = await this.exchangeCodeForToken(code)
             await storage.setTodoistToken(token)
-            await storage.setAdapterType('todoist')
-            this.emit('logged_in')
             resolve(token)
           } catch (error) {
             reject(error)
@@ -153,7 +118,6 @@ class TodoistAuthService {
 
   async logout(): Promise<void> {
     await storage.clearTodoistToken()
-    this.emit('logged_out')
   }
 
   async isLoggedIn(): Promise<boolean> {

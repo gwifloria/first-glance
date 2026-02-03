@@ -15,3 +15,6 @@ export type { AuthToken, ApiError, AppMode } from './auth'
 // 设置相关
 export type { AppSettings } from './settings'
 export { defaultSettings } from './settings'
+
+// 适配器相关
+export type { AdapterType } from '@/api/adapters/types'

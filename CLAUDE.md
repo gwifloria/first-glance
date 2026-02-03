@@ -150,8 +150,41 @@ apps/
   - `skip-changelog`: 跳过 changelog（纯技术性变更）
 - 发布时 release.yml 会自动从已合并 PR 中提取更新说明，生成双语 GitHub Release Notes
 
-## 滴答清单 API
+## 环境变量管理
 
+### 新增 VITE 环境变量检查清单
+
+新增 `VITE_*` 环境变量时，必须同步更新以下文件：
+
+1. **`.env.example`** - 添加示例配置
+2. **`src/vite-env.d.ts`** - TypeScript 类型声明
+3. **`.github/workflows/release.yml`** - 发布流程
+   - `Verify required secrets` 步骤添加校验
+   - `Build` 步骤的 `env` 添加变量传递
+4. **`.github/workflows/build-extension.yml`** - staging 构建
+   - `Build` 步骤的 `env` 添加变量传递
+
+### GitHub Secrets 配置
+
+发布前需在 GitHub repo **Settings > Secrets and variables > Actions** 中配置对应的 secrets。
+
+### 当前环境变量
+
+| 变量名 | 用途 |
+|--------|------|
+| `VITE_DIDA_CLIENT_ID` | 滴答清单 OAuth Client ID |
+| `VITE_DIDA_CLIENT_SECRET` | 滴答清单 OAuth Client Secret |
+| `VITE_TODOIST_CLIENT_ID` | Todoist OAuth Client ID |
+| `VITE_TODOIST_CLIENT_SECRET` | Todoist OAuth Client Secret |
+
+## 外部 API
+
+### 滴答清单
 - Base URL: `https://api.dida365.com/open/v1`
 - OAuth: `https://dida365.com/oauth/authorize`
 - 文档: https://developer.dida365.com/docs
+
+### Todoist
+- Base URL: `https://api.todoist.com/rest/v2`
+- OAuth: `https://todoist.com/oauth/authorize`
+- 文档: https://developer.todoist.com/rest/v2/

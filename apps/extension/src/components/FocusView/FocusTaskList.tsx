@@ -1,13 +1,13 @@
 import { useAppMode } from '@/contexts/useAppMode'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
+import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
-import { message } from 'antd'
+import { message, Spin } from 'antd'
 import { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
 import { RefreshButton } from '../common/RefreshButton'
-import { FocusSkeleton } from '../Task/TaskSkeleton'
 import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
@@ -42,7 +42,7 @@ const FocusTaskItem = memo(function FocusTaskItem({
       <span
         className={`flex-1 text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
       >
-        {task.title}
+        {renderMarkdownLinks(task.title)}
       </span>
     </div>
   )
@@ -89,7 +89,9 @@ export function FocusTaskList() {
 
       <div className="min-h-[200px]">
         {loading ? (
-          <FocusSkeleton />
+          <div className="flex items-center justify-center h-[200px]">
+            <Spin />
+          </div>
         ) : focusTasks.length === 0 ? (
           <div className="text-center text-[var(--text-secondary)] text-lg">
             {t('empty')}

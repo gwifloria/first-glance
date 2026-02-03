@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppMode } from './useAppMode'
 import { ConnectPromptContext } from './ConnectPromptContext'
+import type { ServiceProvider } from '@/services/authManager'
 
 export function ConnectPromptProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation('common')
@@ -26,21 +27,25 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
     setOpen(true)
   }, [])
 
-  const handleConnect = useCallback(async () => {
-    setLoading(true)
-    try {
-      await connect()
-      if (!mountedRef.current) return
-      setOpen(false)
-    } catch {
-      if (!mountedRef.current) return
-      message.error(t('message.failedToConnect'))
-    } finally {
-      if (mountedRef.current) {
-        setLoading(false)
+  const handleConnect = useCallback(
+    async (provider: ServiceProvider) => {
+      setLoading(true)
+      try {
+        await connect(provider)
+        if (!mountedRef.current) return
+        setOpen(false)
+      } catch (error) {
+        console.error('[ConnectPrompt] 连接失败:', error)
+        if (!mountedRef.current) return
+        message.error(t('message.failedToConnect'))
+      } finally {
+        if (mountedRef.current) {
+          setLoading(false)
+        }
       }
-    }
-  }, [connect, t])
+    },
+    [connect, t]
+  )
 
   const handleCancel = useCallback(() => {
     setOpen(false)

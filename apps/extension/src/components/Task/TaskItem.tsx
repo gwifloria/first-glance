@@ -6,6 +6,7 @@ import { formatShortDate } from '@/utils/date'
 import { isOverdue } from '@/utils/taskFilters'
 import { getPriorityColor } from '@/constants/task'
 import { isInboxProject } from '@/utils/project'
+import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import { ProjectColorDot } from '../ProjectColorDot'
 import { TaskCheckbox } from '../common/TaskCheckbox'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
@@ -58,7 +59,7 @@ export const TaskItem = memo(function TaskItem({
               ${completing ? 'line-through text-[var(--text-secondary)]' : ''}
             `}
           >
-            {task.title}
+            {renderMarkdownLinks(task.title)}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             {project && (

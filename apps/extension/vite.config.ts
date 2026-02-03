@@ -37,6 +37,7 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: isRelease ? 'build' : 'dist',
       emptyOutDir: true,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         // manualChunks 只在生产构建时使用，dev 模式下 @crxjs/vite-plugin 与此配置不兼容
         output: isRelease

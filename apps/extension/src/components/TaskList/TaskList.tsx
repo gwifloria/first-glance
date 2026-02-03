@@ -1,8 +1,7 @@
 import { useState, useCallback, memo, useMemo } from 'react'
-import { Empty, Alert } from 'antd'
+import { Empty, Alert, Spin } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { TaskEditor } from '../Task/TaskEditor'
-import { TaskSkeleton } from '../Task/TaskSkeleton'
 import { TaskListHeader } from './TaskListHeader'
 import { QuickAddInput } from './QuickAddInput'
 import { TaskDateGroup } from './TaskDateGroup'
@@ -114,7 +113,9 @@ export const TaskList = memo(function TaskList({
 
       <div className="flex-1 overflow-y-auto -mx-5 px-5">
         {loading ? (
-          <TaskSkeleton count={6} />
+          <div className="flex items-center justify-center py-20">
+            <Spin />
+          </div>
         ) : groups.length === 0 ? (
           <Empty
             description={t('empty.noTasks')}

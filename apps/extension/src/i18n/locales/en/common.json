@@ -10,7 +10,8 @@
     "start": "Get Started",
     "connect": "Connect",
     "disconnect": "Disconnect",
-    "maybeLater": "Maybe Later"
+    "maybeLater": "Maybe Later",
+    "back": "Back"
   },
   "action": {
     "refresh": "Refresh"
@@ -28,12 +29,21 @@
     "updateSettingsFailed": "Failed to update settings"
   },
   "connectPrompt": {
-    "title": "Connect to TickTick",
-    "description": "Connect to TickTick to sync your tasks",
+    "title": "Connect Task Service",
+    "description": "Connect to your task service to sync tasks",
     "connect": "Connect"
+  },
+  "serviceSelector": {
+    "title": "Choose Service",
+    "description": "Select which task service to connect",
+    "didaList": "TickTick",
+    "didaListDesc": "Sync with TickTick",
+    "todoist": "Todoist",
+    "todoistDesc": "Sync with Todoist",
+    "noProviders": "No service available. Please configure API credentials."
   },
   "disconnectConfirm": {
     "title": "Disconnect",
-    "description": "Are you sure you want to disconnect from TickTick?"
+    "description": "Are you sure you want to disconnect?"
   }
 }

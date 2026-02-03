@@ -1,7 +1,9 @@
-import type { AuthToken } from '@/types'
+import type { AuthToken, AdapterType } from '@/types'
 
 const STORAGE_KEYS = {
   AUTH_TOKEN: 'auth_token',
+  TODOIST_TOKEN: 'todoist_auth_token',
+  ADAPTER_TYPE: 'adapter_type',
   CACHED_TASKS: 'cached_tasks',
   CACHED_PROJECTS: 'cached_projects',
   LAST_SYNC: 'last_sync',
@@ -117,5 +119,45 @@ export const storage = {
     }
     chrome.storage.onChanged.addListener(listener)
     return () => chrome.storage.onChanged.removeListener(listener)
+  },
+
+  // Todoist Token 管理
+  async getTodoistToken(): Promise<string | null> {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.TODOIST_TOKEN)
+    return result[STORAGE_KEYS.TODOIST_TOKEN] || null
+  },
+
+  async setTodoistToken(token: string): Promise<void> {
+    await chrome.storage.local.set({ [STORAGE_KEYS.TODOIST_TOKEN]: token })
+  },
+
+  async clearTodoistToken(): Promise<void> {
+    await chrome.storage.local.remove(STORAGE_KEYS.TODOIST_TOKEN)
+  },
+
+  // 适配器类型管理
+  async getAdapterType(): Promise<AdapterType | null> {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.ADAPTER_TYPE)
+    return result[STORAGE_KEYS.ADAPTER_TYPE] || null
+  },
+
+  async setAdapterType(type: AdapterType): Promise<void> {
+    await chrome.storage.local.set({ [STORAGE_KEYS.ADAPTER_TYPE]: type })
+  },
+
+  async clearAdapterType(): Promise<void> {
+    await chrome.storage.local.remove(STORAGE_KEYS.ADAPTER_TYPE)
+  },
+
+  // 清除所有认证相关数据
+  async clearAllAuth(): Promise<void> {
+    await chrome.storage.local.remove([
+      STORAGE_KEYS.AUTH_TOKEN,
+      STORAGE_KEYS.TODOIST_TOKEN,
+      STORAGE_KEYS.ADAPTER_TYPE,
+      STORAGE_KEYS.CACHED_TASKS,
+      STORAGE_KEYS.CACHED_PROJECTS,
+      STORAGE_KEYS.LAST_SYNC,
+    ])
   },
 }

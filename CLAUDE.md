@@ -60,7 +60,7 @@ apps/
 │       │   ├── TaskList/      # 任务列表（分组、快速添加）
 │       │   ├── Task/          # 任务卡片（编辑、完成）
 │       │   ├── BlockedPage/   # 被屏蔽页面（ChillMode 入口）
-│       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator）
+│       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator、HelpPanel）
 │       ├── contexts/          # React Context
 │       │   ├── AppModeContext # 连接/游客模式
 │       │   ├── TaskContext    # 任务数据统一源
@@ -72,6 +72,7 @@ apps/
 │       │   └── useTaskViews   # 任务视图计算（分组、计数）
 │       ├── api/adapters/      # 数据适配器
 │       │   ├── DidaListAdapter  # 滴答清单 API
+│       │   ├── TodoistAdapter   # Todoist API
 │       │   └── LocalAdapter     # 本地存储（游客模式）
 │       ├── themes/            # 5 种主题定义
 │       ├── i18n/              # 国际化（zh-CN、en）
@@ -92,8 +93,9 @@ apps/
 ### 适配器模式
 - `ITaskAdapter` 接口定义统一的任务操作
 - `DidaListAdapter`: 连接滴答清单 API
+- `TodoistAdapter`: 连接 Todoist API
 - `LocalAdapter`: 完全本地存储（游客模式，限 3 个任务）
-- 工厂模式创建适配器实例
+- 工厂模式创建适配器实例，根据 `adapter_type` 选择适配器
 
 ### 关键 Hooks
 - `usePomodoro`: 番茄计时器，使用 Chrome Storage 实现跨标签页同步
@@ -150,8 +152,41 @@ apps/
   - `skip-changelog`: 跳过 changelog（纯技术性变更）
 - 发布时 release.yml 会自动从已合并 PR 中提取更新说明，生成双语 GitHub Release Notes
 
-## 滴答清单 API
+## 环境变量管理
 
+### 新增 VITE 环境变量检查清单
+
+新增 `VITE_*` 环境变量时，必须同步更新以下文件：
+
+1. **`.env.example`** - 添加示例配置
+2. **`src/vite-env.d.ts`** - TypeScript 类型声明
+3. **`.github/workflows/release.yml`** - 发布流程
+   - `Verify required secrets` 步骤添加校验
+   - `Build` 步骤的 `env` 添加变量传递
+4. **`.github/workflows/build-extension.yml`** - staging 构建
+   - `Build` 步骤的 `env` 添加变量传递
+
+### GitHub Secrets 配置
+
+发布前需在 GitHub repo **Settings > Secrets and variables > Actions** 中配置对应的 secrets。
+
+### 当前环境变量
+
+| 变量名 | 用途 |
+|--------|------|
+| `VITE_DIDA_CLIENT_ID` | 滴答清单 OAuth Client ID |
+| `VITE_DIDA_CLIENT_SECRET` | 滴答清单 OAuth Client Secret |
+| `VITE_TODOIST_CLIENT_ID` | Todoist OAuth Client ID |
+| `VITE_TODOIST_CLIENT_SECRET` | Todoist OAuth Client Secret |
+
+## 外部 API
+
+### 滴答清单
 - Base URL: `https://api.dida365.com/open/v1`
 - OAuth: `https://dida365.com/oauth/authorize`
 - 文档: https://developer.dida365.com/docs
+
+### Todoist
+- Base URL: `https://api.todoist.com/rest/v2`
+- OAuth: `https://todoist.com/oauth/authorize`
+- 文档: https://developer.todoist.com/rest/v2/

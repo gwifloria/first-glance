@@ -60,7 +60,7 @@ apps/
 │       │   ├── TaskList/      # 任务列表（分组、快速添加）
 │       │   ├── Task/          # 任务卡片（编辑、完成）
 │       │   ├── BlockedPage/   # 被屏蔽页面（ChillMode 入口）
-│       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator）
+│       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator、HelpPanel）
 │       ├── contexts/          # React Context
 │       │   ├── AppModeContext # 连接/游客模式
 │       │   ├── TaskContext    # 任务数据统一源
@@ -72,6 +72,7 @@ apps/
 │       │   └── useTaskViews   # 任务视图计算（分组、计数）
 │       ├── api/adapters/      # 数据适配器
 │       │   ├── DidaListAdapter  # 滴答清单 API
+│       │   ├── TodoistAdapter   # Todoist API
 │       │   └── LocalAdapter     # 本地存储（游客模式）
 │       ├── themes/            # 5 种主题定义
 │       ├── i18n/              # 国际化（zh-CN、en）
@@ -92,8 +93,9 @@ apps/
 ### 适配器模式
 - `ITaskAdapter` 接口定义统一的任务操作
 - `DidaListAdapter`: 连接滴答清单 API
+- `TodoistAdapter`: 连接 Todoist API
 - `LocalAdapter`: 完全本地存储（游客模式，限 3 个任务）
-- 工厂模式创建适配器实例
+- 工厂模式创建适配器实例，根据 `adapter_type` 选择适配器
 
 ### 关键 Hooks
 - `usePomodoro`: 番茄计时器，使用 Chrome Storage 实现跨标签页同步

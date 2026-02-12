@@ -92,7 +92,7 @@ export function HelpPanel({ className }: HelpPanelProps) {
 
       {/* Footer */}
       <div className="px-3 py-1 text-xs text-center text-[var(--text-secondary)]">
-        Made with ♥ by Wonderland
+        © First Glance
       </div>
     </div>
   )

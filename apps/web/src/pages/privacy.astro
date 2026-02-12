@@ -1,0 +1,312 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="隐私政策 - First Glance" description="First Glance 隐私政策 / Privacy Policy">
+  <div class="fixed inset-0 paper-texture pointer-events-none z-0"></div>
+
+  <nav class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/first-glance/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 relative flex items-center justify-center bg-white rounded-xl shadow-sm border border-border group-hover:rotate-3 transition-transform">
+          <div class="absolute inset-2 border-2 border-pink rounded-full border-dashed animate-spin-slow opacity-60"></div>
+          <div class="w-2.5 h-2.5 bg-pink rounded-full"></div>
+        </div>
+        <span class="font-serif font-bold text-lg tracking-tight text-text">First Glance</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="#zh" class="text-sm font-bold text-text-muted hover:text-text transition-colors">中文</a>
+        <a href="#en" class="text-sm font-bold text-text-muted hover:text-text transition-colors">English</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative z-10 max-w-3xl mx-auto px-6 pt-28 pb-20">
+    <header class="text-center mb-16">
+      <h1 class="text-3xl md:text-4xl font-serif font-bold text-text mb-3">Privacy Policy</h1>
+      <p class="text-text-muted text-sm">Last Updated: 2026-02-12</p>
+    </header>
+
+    <!-- 中文版 -->
+    <section id="zh" class="mb-20">
+      <h2 class="text-2xl font-serif font-bold text-text mb-8 pb-3 border-b-2 border-pink">中文版</h2>
+
+      <div class="space-y-8 text-text-muted leading-relaxed">
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">概述</h3>
+          <p>「First Glance」是一款 Chrome 浏览器扩展，用于在新标签页展示任务管理工具的任务。支持连接滴答清单（Dida365/TickTick）和 Todoist，也可作为独立的本地任务管理工具使用。本隐私政策说明我们如何收集、使用和保护您的信息。</p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">数据收集</h3>
+          <p class="mb-3">本扩展收集和存储以下数据：</p>
+          <ul class="list-disc pl-6 space-y-3">
+            <li>
+              <strong class="text-text">账户授权信息</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>滴答清单 OAuth 访问令牌和刷新令牌（请求范围：tasks:read tasks:write）</li>
+                <li>Todoist OAuth 访问令牌（请求范围：data:read_write,data:delete）</li>
+                <li>令牌存储在浏览器本地存储（chrome.storage.local）中</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">用户偏好设置</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>主题选择、默认项目设置</li>
+                <li>网站屏蔽列表</li>
+                <li>存储在 Chrome 同步存储（chrome.storage.sync）中，支持跨设备同步</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">任务数据缓存</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>从滴答清单或 Todoist API 获取的任务和项目数据</li>
+                <li>仅缓存在本地（chrome.storage.local），用于提升加载速度</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">番茄钟状态</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>计时器模式、开始时间、完成次数等状态信息</li>
+                <li>存储在本地（chrome.storage.local），仅用于跨标签页同步</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">游客模式数据</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>未连接任何服务时，最多 3 个本地任务</li>
+                <li>完全存储在本地，不与任何外部服务通信</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">数据使用</h3>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>所有数据仅用于扩展功能的正常运作</li>
+            <li>我们<strong class="text-text">不会</strong>将您的数据发送到任何第三方服务器</li>
+            <li>我们<strong class="text-text">不会</strong>收集任何分析数据或使用追踪</li>
+            <li>我们<strong class="text-text">不会</strong>收集浏览历史或个人身份信息</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">第三方服务</h3>
+          <p class="mb-3">本扩展根据您的选择，可连接以下任务管理服务之一：</p>
+          <ul class="list-disc pl-6 space-y-3">
+            <li>
+              <strong class="text-text">滴答清单（Dida365/TickTick）</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>API 地址：api.dida365.com</li>
+                <li>用于读取和管理您的任务、项目数据</li>
+                <li>您的数据受滴答清单隐私政策保护：<a href="https://dida365.com/about/privacy" target="_blank" class="text-pink hover:underline">https://dida365.com/about/privacy</a></li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Todoist</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>API 地址：api.todoist.com/rest/v2</li>
+                <li>用于读取和管理您的任务、项目数据</li>
+                <li>您的数据受 Todoist 隐私政策保护：<a href="https://todoist.com/privacy" target="_blank" class="text-pink hover:underline">https://todoist.com/privacy</a></li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">游客模式（无需连接）</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>完全离线，所有数据存储在本地</li>
+                <li>不与任何外部服务通信</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">权限说明</h3>
+          <p class="mb-3">本扩展请求以下 Chrome 权限：</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">storage</code>：存储用户偏好、授权令牌和任务缓存</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">identity</code>：OAuth 登录流程，用于获取滴答清单或 Todoist 的授权</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">declarativeNetRequest</code>：网站屏蔽功能，仅拦截您手动配置的屏蔽网站并重定向到扩展页面，不会读取或收集任何网页内容</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">alarms</code>：定时任务，用于自动刷新授权令牌和管理休息模式（Chill Mode）计时</li>
+            <li>访问 <code class="bg-background px-1.5 py-0.5 rounded text-sm">api.dida365.com</code>、<code class="bg-background px-1.5 py-0.5 rounded text-sm">api.todoist.com</code>：获取和管理任务数据</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">&lt;all_urls&gt;</code>：仅用于 declarativeNetRequest 拦截用户自行配置的屏蔽网站，不会访问或读取任何网页内容</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">数据存储位置</h3>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>所有数据存储在您的浏览器本地</li>
+            <li><strong class="text-text">chrome.storage.local</strong>：授权令牌、任务缓存、番茄钟状态、游客模式任务</li>
+            <li><strong class="text-text">chrome.storage.sync</strong>：用户偏好设置（主题、屏蔽网站列表），支持跨设备同步</li>
+            <li>我们没有服务器，不存储任何用户数据</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">数据删除</h3>
+          <p class="mb-2">您可以随时：</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>在扩展中登出账户，清除授权信息</li>
+            <li>卸载扩展，删除所有本地数据</li>
+            <li>在滴答清单或 Todoist 的账户设置中撤销应用授权</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">联系方式</h3>
+          <p>如有隐私相关问题，请通过以下方式联系：</p>
+          <ul class="list-disc pl-6 mt-2">
+            <li>GitHub Issues: <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="text-pink hover:underline">https://github.com/gwifloria/first-glance/issues</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- English Version -->
+    <section id="en" class="mb-20">
+      <h2 class="text-2xl font-serif font-bold text-text mb-8 pb-3 border-b-2 border-pink">English Version</h2>
+
+      <div class="space-y-8 text-text-muted leading-relaxed">
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Overview</h3>
+          <p>"First Glance" is a Chrome browser extension that displays tasks from your task management tools on the new tab page. It supports connecting to Dida365 (TickTick) and Todoist, and can also be used as a standalone local task manager. This privacy policy explains how we collect, use, and protect your information.</p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Data Collection</h3>
+          <p class="mb-3">This extension collects and stores the following data:</p>
+          <ul class="list-disc pl-6 space-y-3">
+            <li>
+              <strong class="text-text">Account Authorization</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Dida365 OAuth access and refresh tokens (scope: tasks:read tasks:write)</li>
+                <li>Todoist OAuth access token (scope: data:read_write,data:delete)</li>
+                <li>Tokens are stored in browser local storage (chrome.storage.local)</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">User Preferences</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Theme selection, default project settings</li>
+                <li>Website blocking list</li>
+                <li>Stored in Chrome sync storage (chrome.storage.sync), synced across devices</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Task Data Cache</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Tasks and projects fetched from Dida365 or Todoist API</li>
+                <li>Cached locally only (chrome.storage.local) to improve loading speed</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Pomodoro Timer State</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Timer mode, start time, completion count, and other state</li>
+                <li>Stored locally (chrome.storage.local), only for cross-tab synchronization</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Guest Mode Data</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Up to 3 local tasks when not connected to any service</li>
+                <li>Stored entirely locally, no communication with external services</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Data Usage</h3>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>All data is used solely for the extension's functionality</li>
+            <li>We do <strong class="text-text">NOT</strong> send your data to any third-party servers</li>
+            <li>We do <strong class="text-text">NOT</strong> collect any analytics or tracking data</li>
+            <li>We do <strong class="text-text">NOT</strong> collect browsing history or personally identifiable information</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Third-Party Services</h3>
+          <p class="mb-3">Based on your choice, this extension connects to one of the following task management services:</p>
+          <ul class="list-disc pl-6 space-y-3">
+            <li>
+              <strong class="text-text">Dida365 / TickTick</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>API endpoint: api.dida365.com</li>
+                <li>Used to read and manage your tasks and projects</li>
+                <li>Your data is protected by Dida365's privacy policy: <a href="https://dida365.com/about/privacy" target="_blank" class="text-pink hover:underline">https://dida365.com/about/privacy</a></li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Todoist</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>API endpoint: api.todoist.com/rest/v2</li>
+                <li>Used to read and manage your tasks and projects</li>
+                <li>Your data is protected by Todoist's privacy policy: <a href="https://todoist.com/privacy" target="_blank" class="text-pink hover:underline">https://todoist.com/privacy</a></li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">Guest Mode (no connection required)</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Fully offline, all data stored locally</li>
+                <li>No communication with any external service</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Permissions Explained</h3>
+          <p class="mb-3">This extension requests the following Chrome permissions:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">storage</code>: Store user preferences, auth tokens, and task cache</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">identity</code>: OAuth login flow for Dida365 or Todoist authorization</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">declarativeNetRequest</code>: Website blocking feature. Only intercepts websites you manually configure and redirects to the extension page. Does not read or collect any web page content</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">alarms</code>: Scheduled tasks for automatic token refresh and Chill Mode (rest mode) timer management</li>
+            <li>Access to <code class="bg-background px-1.5 py-0.5 rounded text-sm">api.dida365.com</code>, <code class="bg-background px-1.5 py-0.5 rounded text-sm">api.todoist.com</code>: Fetch and manage task data</li>
+            <li><code class="bg-background px-1.5 py-0.5 rounded text-sm">&lt;all_urls&gt;</code>: Used solely for declarativeNetRequest to intercept user-configured blocked websites. Does not access or read any web page content</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Data Storage Location</h3>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>All data is stored locally in your browser</li>
+            <li><strong class="text-text">chrome.storage.local</strong>: Auth tokens, task cache, Pomodoro timer state, guest mode tasks</li>
+            <li><strong class="text-text">chrome.storage.sync</strong>: User preferences (theme, blocked sites list), synced across devices</li>
+            <li>We have no servers and store no user data</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Data Deletion</h3>
+          <p class="mb-2">You can at any time:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Log out in the extension to clear authorization</li>
+            <li>Uninstall the extension to delete all local data</li>
+            <li>Revoke app access in your Dida365 or Todoist account settings</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold text-text mb-3">Contact</h3>
+          <p>For privacy-related questions, please contact us via:</p>
+          <ul class="list-disc pl-6 mt-2">
+            <li>GitHub Issues: <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="text-pink hover:underline">https://github.com/gwifloria/first-glance/issues</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center pt-8 border-t border-border">
+      <p class="text-text-muted text-sm">&copy; 2025 First Glance</p>
+      <p class="mt-2">
+        <a href="https://github.com/gwifloria/first-glance" target="_blank" class="text-pink text-sm hover:underline">GitHub</a>
+      </p>
+    </footer>
+  </main>
+</Layout>

@@ -3,7 +3,7 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo/+AKT+VDIvgaoZP/UQeBm1qiLBmSy2waAllqhMkoU56jzXCBYUMwR+v24DpEfOTf+lvHO0bvyDDD5l9LWIjHHSJ36/R3ESiqir8AO9tJV/+wgDmaPimaDJslX91mYm3WWRrpToDo+BXpHIv1EGjpnjvpHYr5lneUz1FU/G1gVcxxxl+EpSWBUO2VT8v0xxqX3lCH6UTy1IuMB23cwQZ+auiJyBYX/eDh36MZJqfpcNwCmWbqIz2ltJLQGmYB5n9Tw3ju+89ZmNRNDgnIOoHOmrHWVzG3iIlIpP6aH1ZBPhpcolxDCDqfETRLsq8DCZUIK6Rb5Pja72Z4aGGEg0HZQIDAQAB",
   "name": "First Glance - Focus Tab",
   "description": "Turn your new tab into a focus dashboard. View high-priority tasks at a glance. Stay productive, avoid distractions.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",

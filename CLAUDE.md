@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Chrome 扩展：替换新标签页，展示滴答清单任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、游客模式、多主题、中英文切换。
+Chrome 扩展：替换新标签页，展示任务管理工具（滴答清单/Todoist）的任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、网站屏蔽、游客模式、多主题、中英文切换。
 
 技术栈：React 19 + TypeScript 5.7 + Vite 6 + Ant Design + Tailwind CSS + i18next
 
@@ -80,6 +80,11 @@ apps/
 │       │   └── taskFilters/   # 任务筛选/排序/分组
 │       └── types/             # TypeScript 类型
 └── web/                       # 项目官网（Astro）
+    └── src/pages/
+        ├── index.astro        # 中文首页
+        ├── privacy.astro      # 隐私政策页（中英双语）
+        ├── changelog.astro    # 更新日志
+        └── en/                # 英文版页面
 ```
 
 ## 核心概念

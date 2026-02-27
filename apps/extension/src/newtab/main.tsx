@@ -1,6 +1,6 @@
 import { StrictMode, useState, useEffect, useMemo, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import enUS from 'antd/locale/en_US'
 import { useTranslation } from 'react-i18next'
@@ -38,7 +38,7 @@ function AntdConfigProvider({ children }: { children: ReactNode }) {
 
   return (
     <ConfigProvider locale={antdLocale} theme={antdTheme}>
-      {children}
+      <AntdApp>{children}</AntdApp>
     </ConfigProvider>
   )
 }

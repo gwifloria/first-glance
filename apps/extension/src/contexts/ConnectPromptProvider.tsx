@@ -2,7 +2,7 @@
  * 连接弹窗 Provider
  */
 import { ConnectPrompt } from '@/components/ConnectPrompt'
-import { message } from 'antd'
+import { App } from 'antd'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppMode } from './useAppMode'
@@ -11,6 +11,7 @@ import type { ServiceProvider } from '@/services/authManager'
 
 export function ConnectPromptProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation('common')
+  const { message } = App.useApp()
   const { connect } = useAppMode()
 
   const [open, setOpen] = useState(false)

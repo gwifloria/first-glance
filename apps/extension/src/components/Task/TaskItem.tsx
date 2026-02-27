@@ -56,8 +56,8 @@ export const TaskItem = memo(function TaskItem({
 
         <div className="flex-1 min-w-0">
           {parentTitle && (
-            <div className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5">
-              {parentTitle}
+            <div className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5 inline-flex items-center gap-0.5 bg-[var(--bg-secondary)] rounded px-1.5 py-0.5 w-fit">
+              <span className="opacity-60">↳</span> {parentTitle}
             </div>
           )}
           <div

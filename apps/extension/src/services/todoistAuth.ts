@@ -11,8 +11,8 @@ import { storage } from './storage'
 const CLIENT_ID = import.meta.env.VITE_TODOIST_CLIENT_ID || ''
 const CLIENT_SECRET = import.meta.env.VITE_TODOIST_CLIENT_SECRET || ''
 
-const AUTH_URL = 'https://app.todoist.com/oauth/authorize'
-const TOKEN_URL = 'https://api.todoist.com/oauth/access_token'
+const AUTH_URL = 'https://todoist.com/oauth/authorize'
+const TOKEN_URL = 'https://todoist.com/oauth/access_token'
 
 // 开发环境下校验配置
 if (import.meta.env.DEV && (!CLIENT_ID || !CLIENT_SECRET)) {

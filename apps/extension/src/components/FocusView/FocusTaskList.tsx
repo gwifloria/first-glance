@@ -44,8 +44,8 @@ const FocusTaskItem = memo(function FocusTaskItem({
       />
       <div className="flex-1 flex flex-col">
         {parentTitle && (
-          <span className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5">
-            {parentTitle}
+          <span className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5 inline-flex items-center gap-0.5 bg-[var(--bg-secondary)] rounded px-1.5 py-0.5 w-fit">
+            <span className="opacity-60">↳</span> {parentTitle}
           </span>
         )}
         <span

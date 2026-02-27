@@ -5,7 +5,7 @@
     "viewTasks": "View task list ({{count}} tasks)"
   },
   "placeholder": {
-    "addFocus": "Add another focus...",
+    "addFocus": "Add another focus, press Enter ↵",
     "connectToAdd": "Connect to add more..."
   },
   "guestLimit": {

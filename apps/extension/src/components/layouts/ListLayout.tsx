@@ -3,6 +3,7 @@ import { useTaskContext } from '@/contexts/TaskContext'
 import { Sidebar } from '@/components/Sidebar'
 import { TaskList } from '@/components/TaskList'
 import { ChillModeIndicator } from '@/components/common'
+import { BuddyButton } from '@/components/Buddy/BuddyButton'
 
 interface ListLayoutProps {
   onFocus: () => void
@@ -60,6 +61,7 @@ export function ListLayout({ onFocus }: ListLayoutProps) {
       </div>
 
       <ChillModeIndicator />
+      <BuddyButton />
     </div>
   )
 }

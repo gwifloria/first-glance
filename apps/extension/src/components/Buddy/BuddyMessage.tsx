@@ -1,6 +1,4 @@
 import { type ReactNode } from 'react'
-import { Spin } from 'antd'
-import { useTranslation } from 'react-i18next'
 
 /**
  * 轻量 Markdown 渲染
@@ -64,38 +62,26 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
 }
 
 interface BuddyMessageProps {
-  content: string | null
-  loading: boolean
-  error: string | null
+  role: 'user' | 'assistant'
+  content: string
 }
 
-export function BuddyMessage({ content, loading, error }: BuddyMessageProps) {
-  const { t } = useTranslation('buddy')
-
-  if (loading) {
+export function BuddyMessage({ role, content }: BuddyMessageProps) {
+  if (role === 'user') {
     return (
-      <div className="flex items-center justify-center gap-2 py-4">
-        <Spin size="small" />
-        <span className="text-sm text-[var(--text-secondary)]">
-          {t('thinking')}
-        </span>
+      <div className="flex justify-end">
+        <div className="text-sm leading-relaxed py-2 px-3 rounded-xl bg-[var(--accent)] text-white max-w-[85%]">
+          {content}
+        </div>
       </div>
     )
   }
-
-  if (error) {
-    return (
-      <div className="text-sm text-red-500 py-2 px-3 rounded-lg bg-red-50">
-        {error}
-      </div>
-    )
-  }
-
-  if (!content) return null
 
   return (
-    <div className="text-sm text-[var(--text-primary)] leading-relaxed py-2 px-3 rounded-xl bg-[var(--bg-secondary)]">
-      {renderSimpleMarkdown(content)}
+    <div className="flex justify-start">
+      <div className="text-sm text-[var(--text-primary)] leading-relaxed py-2 px-3 rounded-xl bg-[var(--bg-secondary)] max-w-[85%]">
+        {renderSimpleMarkdown(content)}
+      </div>
     </div>
   )
 }

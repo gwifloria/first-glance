@@ -5,38 +5,70 @@ const REQUEST_TIMEOUT = 30_000
 const TEST_TIMEOUT = 15_000
 
 /**
- * 构建任务摘要，供 AI 参考
+ * 格式化单个任务为文本行
  */
-function buildTaskSummary(tasks: Task[]): string {
-  if (tasks.length === 0) return '当前没有待办任务。'
-
+function formatTask(t: Task): string {
   const priorityLabel: Record<number, string> = {
     5: '高',
     3: '中',
     1: '低',
     0: '无',
   }
+  const parts: string[] = [`- ${t.title}`]
+  if (t.priority > 0)
+    parts.push(`[优先级:${priorityLabel[t.priority] ?? '无'}]`)
+  if (t.dueDate) parts.push(`[截止:${t.dueDate.slice(0, 10)}]`)
+  return parts.join(' ')
+}
 
-  const lines = tasks.slice(0, 15).map((t) => {
-    const parts: string[] = [`- ${t.title}`]
-    if (t.priority > 0)
-      parts.push(`[优先级:${priorityLabel[t.priority] ?? '无'}]`)
-    if (t.dueDate) parts.push(`[截止:${t.dueDate.slice(0, 10)}]`)
-    return parts.join(' ')
-  })
+/**
+ * 构建任务摘要
+ * focusTasks 非空时区分焦点/其他；为空时列出全部任务
+ */
+function buildTaskSummary(focusTasks: Task[], allTasks: Task[]): string {
+  if (allTasks.length === 0) return '当前没有待办任务。'
 
-  if (tasks.length > 15) {
-    lines.push(`...还有 ${tasks.length - 15} 个任务`)
+  // 无焦点区分时，直接列出全部任务
+  if (focusTasks.length === 0) {
+    const shown = allTasks.slice(0, 15)
+    const lines = ['当前用户的任务列表：', ...shown.map(formatTask)]
+    if (allTasks.length > 15) {
+      lines.push(`...还有 ${allTasks.length - 15} 个任务`)
+    }
+    return lines.join('\n')
   }
 
-  return lines.join('\n')
+  // 有焦点任务时，区分焦点和其他
+  const focusIds = new Set(focusTasks.map((t) => t.id))
+  const otherTasks = allTasks.filter((t) => !focusIds.has(t.id))
+
+  const sections: string[] = []
+
+  sections.push(
+    '【当前焦点任务】（用户正在关注的任务，优先围绕这些建议）',
+    ...focusTasks.map(formatTask)
+  )
+
+  if (otherTasks.length > 0) {
+    const shown = otherTasks.slice(0, 10)
+    sections.push('', '【其他待办任务】', ...shown.map(formatTask))
+    if (otherTasks.length > 10) {
+      sections.push(`...还有 ${otherTasks.length - 10} 个任务`)
+    }
+  }
+
+  return sections.join('\n')
 }
 
 /**
  * 构建系统提示词
  */
-function buildSystemPrompt(mood: Mood, tasks: Task[]): string {
-  const taskSummary = buildTaskSummary(tasks)
+function buildSystemPrompt(
+  mood: Mood,
+  focusTasks: Task[],
+  allTasks: Task[]
+): string {
+  const taskSummary = buildTaskSummary(focusTasks, allTasks)
 
   const moodStrategies: Record<Mood, string> = {
     good: `用户状态不错，精力充沛。推荐优先级最高或最紧急的任务，鼓励挑战重要的工作。`,
@@ -44,9 +76,13 @@ function buildSystemPrompt(mood: Mood, tasks: Task[]): string {
     low: `用户状态低落，精力不足。找到用户可能拖延的任务，引导将大任务拆解为 1-5 分钟的小步骤。语气温和鼓励，不要施加压力。`,
   }
 
+  const focusHint =
+    focusTasks.length > 0
+      ? '- 优先围绕【当前焦点任务】给出具体的下一步行动建议'
+      : '- 给出具体的下一步行动建议'
+
   return `你是一个任务规划助手，帮助用户决定下一步该做什么。
 
-当前用户的任务列表：
 ${taskSummary}
 
 用户当前情绪状态：${mood === 'good' ? '状态不错' : mood === 'okay' ? '一般' : '有点累'}
@@ -55,7 +91,7 @@ ${taskSummary}
 
 要求：
 - 简洁回复，3-5 句话
-- 给出具体的下一步行动建议
+${focusHint}
 - 引用用户实际的任务名称
 - 如果用户没有任务，给出轻松的鼓励
 - 使用用户的语言回复（如果任务标题是中文就用中文，英文就用英文）`
@@ -106,10 +142,11 @@ export async function testAIConfig(config: AIConfig): Promise<void> {
 export async function sendBuddyRequest(
   config: AIConfig,
   mood: Mood,
-  tasks: Task[],
+  focusTasks: Task[],
+  allTasks: Task[],
   history: BuddyMessage[] = []
 ): Promise<string> {
-  const systemPrompt = buildSystemPrompt(mood, tasks)
+  const systemPrompt = buildSystemPrompt(mood, focusTasks, allTasks)
 
   const messages = [
     { role: 'system' as const, content: systemPrompt },

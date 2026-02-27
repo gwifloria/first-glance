@@ -1,15 +1,16 @@
 import { useState, useCallback } from 'react'
-import { Popover, Button } from 'antd'
+import { Button } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { BuddyPanel } from './BuddyPanel'
 import { BuddySettingsModal } from './BuddySettingsModal'
 
 interface BuddyButtonProps {
-  className?: string
+  /** FocusView 传 true，ListView 不传或 false */
+  useFocusContext?: boolean
 }
 
-export function BuddyButton({ className }: BuddyButtonProps) {
+export function BuddyButton({ useFocusContext }: BuddyButtonProps) {
   const { t } = useTranslation('buddy')
   const [open, setOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -21,29 +22,21 @@ export function BuddyButton({ className }: BuddyButtonProps) {
 
   return (
     <>
-      <Popover
-        content={<BuddyPanel onOpenSettings={handleOpenSettings} />}
-        trigger="click"
-        placement="topRight"
-        open={open}
-        onOpenChange={setOpen}
-        arrow={false}
-        styles={{
-          body: {
-            padding: 0,
-            backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--border)',
-          },
-        }}
-      >
-        <Button
-          type="text"
-          size="small"
-          icon={<BulbOutlined />}
-          className={`!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] ${className}`}
-          title={t('button')}
+      <Button
+        shape="circle"
+        icon={<BulbOutlined />}
+        onClick={() => setOpen(!open)}
+        className="!fixed !bottom-4 !right-4 !z-50 !w-10 !h-10 !shadow-md !bg-[var(--bg-primary)] !border-[var(--border)] !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+        title={t('button')}
+      />
+
+      {open && (
+        <BuddyPanel
+          onClose={() => setOpen(false)}
+          onOpenSettings={handleOpenSettings}
+          useFocusContext={useFocusContext}
         />
-      </Popover>
+      )}
 
       <BuddySettingsModal
         open={settingsOpen}

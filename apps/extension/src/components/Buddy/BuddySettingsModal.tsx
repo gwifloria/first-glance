@@ -6,6 +6,24 @@ import { getSettings, setSettings } from '@/services/settingsStorage'
 import { testAIConfig } from '@/services/aiService'
 import type { AIConfig } from '@/types/buddy'
 
+const PRESETS = [
+  {
+    label: 'ChatGPT',
+    baseUrl: 'https://api.openai.com/v1',
+    model: 'gpt-4o-mini',
+  },
+  {
+    label: 'Gemini',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+    model: 'gemini-2.0-flash',
+  },
+  {
+    label: 'DeepSeek',
+    baseUrl: 'https://api.deepseek.com/v1',
+    model: 'deepseek-chat',
+  },
+] as const
+
 interface BuddySettingsModalProps {
   open: boolean
   onClose: () => void
@@ -105,6 +123,22 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
       width={400}
     >
       <div className="flex flex-col gap-4 mt-4">
+        <div className="flex gap-2">
+          {PRESETS.map((preset) => (
+            <Button
+              key={preset.label}
+              size="small"
+              type={baseUrl === preset.baseUrl ? 'primary' : 'default'}
+              ghost={baseUrl === preset.baseUrl}
+              onClick={() => {
+                setBaseUrl(preset.baseUrl)
+                setModel(preset.model)
+              }}
+            >
+              {preset.label}
+            </Button>
+          ))}
+        </div>
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">
             {t('settings.baseUrl')}

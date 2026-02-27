@@ -11,6 +11,13 @@
   "configMissing": "请先在设置中配置 AI",
   "retry": "重试",
   "reset": "重新选择",
+  "input": {
+    "placeholder": "输入消息...",
+    "send": "发送",
+    "addTask": "添加任务"
+  },
+  "taskAdded": "任务已添加 ✓",
+  "close": "关闭",
   "settings": {
     "title": "AI 助手",
     "baseUrl": "API 地址",
@@ -19,6 +26,7 @@
     "apiKeyPlaceholder": "sk-...",
     "model": "模型",
     "modelPlaceholder": "gpt-4o-mini",
+    "presets": "快速选择",
     "test": "测试连接",
     "testing": "测试中...",
     "testSuccess": "连接成功",

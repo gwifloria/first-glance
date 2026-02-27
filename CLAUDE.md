@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Chrome 扩展：替换新标签页，展示任务管理工具（滴答清单/Todoist）的任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、网站屏蔽、游客模式、多主题、中英文切换。
+Chrome 扩展：替换新标签页，展示任务管理工具（滴答清单/Todoist）的任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、网站屏蔽、AI Buddy（对话式任务助手）、游客模式、多主题、中英文切换。
 
 技术栈：React 19 + TypeScript 5.7 + Vite 6 + Ant Design + Tailwind CSS + i18next
 
@@ -59,6 +59,7 @@ apps/
 │       │   ├── Sidebar/       # List 模式侧边栏（筛选、项目树）
 │       │   ├── TaskList/      # 任务列表（分组、快速添加）
 │       │   ├── Task/          # 任务卡片（编辑、完成）
+│       │   ├── Buddy/         # AI Buddy（对话面板、设置、Mood 选择）
 │       │   ├── BlockedPage/   # 被屏蔽页面（ChillMode 入口）
 │       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator、HelpPanel）
 │       ├── contexts/          # React Context
@@ -74,6 +75,11 @@ apps/
 │       │   ├── DidaListAdapter  # 滴答清单 API
 │       │   ├── TodoistAdapter   # Todoist API
 │       │   └── LocalAdapter     # 本地存储（游客模式）
+│       ├── services/          # 服务层
+│       │   ├── aiService.ts     # AI Buddy 请求（OpenAI 兼容 API）
+│       │   ├── settingsStorage  # 用户设置持久化
+│       │   ├── auth / authManager / todoistAuth  # OAuth 认证
+│       │   └── storage.ts       # Chrome Storage 封装
 │       ├── themes/            # 5 种主题定义
 │       ├── i18n/              # 国际化（zh-CN、en）
 │       ├── utils/             # 工具函数
@@ -120,6 +126,15 @@ apps/
 - 屏蔽规则动态更新，存储在 `chrome.storage.sync`
 - 被屏蔽时重定向到 `BlockedPage` 组件
 - 支持 Chill Mode（休息模式）：长按 10 秒触发，暂停屏蔽 15 分钟
+
+### AI Buddy
+- 对话式任务助手，通过 OpenAI 兼容 API 提供基于情绪和任务列表的建议
+- 组件：`BuddyButton`（浮动入口）→ `BuddyPanel`（聊天面板）→ `BuddyMessage`（消息气泡）
+- 三阶段状态机：`no-config`（未配置）→ `select-mood`（选情绪）→ `chatting`（多轮对话）
+- `MoodSelector`: 选择情绪（good/okay/low），影响 AI 的 system prompt 策略
+- `BuddySettingsModal`: 配置 API 地址、Key、模型
+- `aiService.ts`: 构建 system prompt（含任务摘要 + 情绪策略），发送 OpenAI 格式请求
+- 聊天面板支持「发送消息」继续对话和「添加任务」快速创建任务
 
 ### BlockedPage 组件
 - `BlockedPage/index.tsx`: 被屏蔽页面主入口

@@ -2,6 +2,7 @@
  * 滴答清单 API 请求客户端
  */
 import { auth } from '@/services/auth'
+import { AuthError } from '@/api/AuthError'
 import { DIDA_API_BASE } from './endpoints'
 
 export async function request<T = void>(
@@ -29,6 +30,15 @@ export async function request<T = void>(
       errorData?.error ||
       errorData?.message ||
       `请求失败: ${response.status}`
+
+    if (
+      response.status === 401 ||
+      response.status === 403 ||
+      response.status === 410
+    ) {
+      throw new AuthError(errorMsg, response.status)
+    }
+
     throw new Error(errorMsg)
   }
 

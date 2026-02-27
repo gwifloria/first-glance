@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { createTaskAdapter, type AdapterType } from '@/api/adapters'
+import { AuthError } from '@/api/AuthError'
 import { storage } from '@/services/storage'
 import type { Task, Project } from '@/types'
 
@@ -24,7 +25,10 @@ export interface TaskActions {
  * 负责：原始数据获取、缓存、CRUD 操作
  * 通过 adapter 支持多种后端（滴答清单、本地存储等）
  */
-export function useTaskData(adapterType: AdapterType) {
+export function useTaskData(
+  adapterType: AdapterType,
+  onAuthError?: () => void
+) {
   const adapter = useMemo(() => createTaskAdapter(adapterType), [adapterType])
   const isLocal = adapterType === 'local'
 
@@ -52,6 +56,11 @@ export function useTaskData(adapterType: AdapterType) {
       setTasks(data.tasks)
       setProjects(data.projects)
     } catch (err) {
+      if (err instanceof AuthError) {
+        onAuthError?.()
+        setError('认证已失效，请重新连接')
+        return
+      }
       // 远程模式尝试使用缓存（需要检查缓存有效期）
       if (!isLocal) {
         const isCacheValid = await storage.isCacheValid()
@@ -71,7 +80,7 @@ export function useTaskData(adapterType: AdapterType) {
       setLoading(false)
       refreshingRef.current = false
     }
-  }, [adapter, isLocal])
+  }, [adapter, isLocal, onAuthError])
 
   // 只刷新收集箱任务（用于快速更新）
   const refreshInbox = useCallback(async () => {
@@ -87,7 +96,7 @@ export function useTaskData(adapterType: AdapterType) {
         // 远程模式：合并非收集箱任务
         const nonInboxTasks = prev.filter(
           (t) =>
-            !t.projectId.startsWith('inbox') && t.projectId !== 'local-inbox'
+            !t.projectId?.startsWith('inbox') && t.projectId !== 'local-inbox'
         )
         return [...nonInboxTasks, ...inboxTasks]
       })
@@ -154,14 +163,21 @@ export function useTaskData(adapterType: AdapterType) {
           priority: task.priority,
           dueDate: task.dueDate,
         })
+        // API 响应可能不包含 dueDate，用请求值回填确保本地状态正确
+        if (!created.dueDate && task.dueDate) {
+          created.dueDate = task.dueDate
+        }
         setTasks((prev) => [...prev, created])
         return created
       } catch (err) {
+        if (err instanceof AuthError) {
+          onAuthError?.()
+        }
         setError(err instanceof Error ? err.message : '创建任务失败')
         throw err
       }
     },
-    [adapter]
+    [adapter, onAuthError]
   )
 
   // 结构化返回

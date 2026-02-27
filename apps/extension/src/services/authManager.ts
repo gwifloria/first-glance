@@ -5,6 +5,7 @@
 import { storage } from './storage'
 import { auth as didaAuth } from './auth'
 import { todoistAuth } from './todoistAuth'
+import { setSettings } from './settingsStorage'
 
 export type ServiceProvider = 'didaList' | 'todoist'
 
@@ -68,6 +69,8 @@ class AuthManagerImpl implements AuthManager {
     }
 
     await storage.clearAllAuth()
+    // 清除服务相关的设置（如 defaultProjectId），避免切换服务后残留
+    await setSettings({ defaultProjectId: null })
   }
 
   async getValidToken(): Promise<string | null> {

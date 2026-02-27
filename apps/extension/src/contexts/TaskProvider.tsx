@@ -6,11 +6,12 @@ import { useEffect, useMemo, type ReactNode } from 'react'
 import { useAppMode } from './useAppMode'
 import { useTaskData } from '@/hooks/useTaskData'
 import { useTaskViews } from '@/hooks/useTaskViews'
+import { buildTaskMap } from '@/utils/taskMap'
 import { TaskContext, type TaskContextValue } from './TaskContext'
 import type { AdapterType } from '@/types'
 
 export function TaskProvider({ children }: { children: ReactNode }) {
-  const { isConnected, isGuest, currentProvider } = useAppMode()
+  const { isConnected, isGuest, currentProvider, disconnect } = useAppMode()
 
   // 根据连接状态和服务商确定适配器类型
   const adapterType: AdapterType = useMemo(() => {
@@ -20,7 +21,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     return currentProvider
   }, [isConnected, currentProvider])
 
-  const { data, actions } = useTaskData(adapterType)
+  const { data: rawData, actions } = useTaskData(adapterType, disconnect)
+  const data = useMemo(
+    () => ({ ...rawData, taskMap: buildTaskMap(rawData.tasks) }),
+    [rawData]
+  )
   const { views: baseViews, filters } = useTaskViews(data.tasks)
 
   // 聚焦任务：guest 模式显示所有本地任务，connected 模式显示今日聚焦任务

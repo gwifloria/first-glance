@@ -18,7 +18,7 @@ export function filterTasks(
   } else {
     switch (filter) {
       case 'inbox':
-        filtered = filtered.filter((t) => t.projectId.startsWith('inbox'))
+        filtered = filtered.filter((t) => t.projectId?.startsWith('inbox'))
         break
       case 'today':
         filtered = filtered.filter((t) => isToday(t.dueDate))

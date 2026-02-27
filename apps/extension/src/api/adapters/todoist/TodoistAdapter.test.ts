@@ -6,20 +6,20 @@ import {
   transformProjectFromTodoist,
   type TodoistTask,
   type TodoistProject,
-} from './transforms'
+} from './TodoistAdapter'
 
 describe('Todoist transforms', () => {
   describe('transformTaskFromTodoist', () => {
     it('应该正确转换基本任务', () => {
       const todoistTask: TodoistTask = {
         id: '123',
-        project_id: 'proj-1',
+        projectId: 'proj-1',
         content: '测试任务',
         description: '任务描述',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '2024-01-01T00:00:00Z',
+        childOrder: 1,
+        addedAt: '2024-01-01T00:00:00Z',
         labels: ['work'],
       }
 
@@ -43,13 +43,13 @@ describe('Todoist transforms', () => {
     it('应该正确转换优先级', () => {
       const baseTask: TodoistTask = {
         id: '1',
-        project_id: 'p1',
+        projectId: 'p1',
         content: 'test',
         description: '',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '',
+        childOrder: 1,
+        addedAt: '',
         labels: [],
       }
 
@@ -74,39 +74,39 @@ describe('Todoist transforms', () => {
     it('应该正确转换完成状态', () => {
       const baseTask: TodoistTask = {
         id: '1',
-        project_id: 'p1',
+        projectId: 'p1',
         content: 'test',
         description: '',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '',
+        childOrder: 1,
+        addedAt: '',
         labels: [],
       }
 
       expect(
-        transformTaskFromTodoist({ ...baseTask, is_completed: false }).status
+        transformTaskFromTodoist({ ...baseTask, checked: false }).status
       ).toBe(0)
       expect(
-        transformTaskFromTodoist({ ...baseTask, is_completed: true }).status
+        transformTaskFromTodoist({ ...baseTask, checked: true }).status
       ).toBe(2)
     })
 
     it('应该正确转换全天任务日期', () => {
       const task: TodoistTask = {
         id: '1',
-        project_id: 'p1',
+        projectId: 'p1',
         content: 'test',
         description: '',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '',
+        childOrder: 1,
+        addedAt: '',
         labels: [],
         due: {
           date: '2024-01-15',
           string: 'Jan 15',
-          is_recurring: false,
+          isRecurring: false,
         },
       }
 
@@ -115,40 +115,40 @@ describe('Todoist transforms', () => {
       expect(result.isAllDay).toBe(true)
     })
 
-    it('应该正确转换带时间的日期', () => {
+    it('应该正确转换带时间的日期（v1 格式：date 含 UTC datetime）', () => {
       const task: TodoistTask = {
         id: '1',
-        project_id: 'p1',
+        projectId: 'p1',
         content: 'test',
         description: '',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '',
+        childOrder: 1,
+        addedAt: '',
         labels: [],
         due: {
-          date: '2024-01-15',
-          datetime: '2024-01-15T14:30:00',
+          date: '2024-01-15T06:30:00Z',
           string: 'Jan 15 2:30pm',
-          is_recurring: false,
+          timezone: 'Asia/Shanghai',
+          isRecurring: false,
         },
       }
 
       const result = transformTaskFromTodoist(task)
-      expect(result.dueDate).toBe('2024-01-15T14:30:00')
+      expect(result.dueDate).toBe('2024-01-15T06:30:00Z')
       expect(result.isAllDay).toBe(false)
     })
 
     it('应该处理空描述', () => {
       const task: TodoistTask = {
         id: '1',
-        project_id: 'p1',
+        projectId: 'p1',
         content: 'test',
         description: '',
-        is_completed: false,
+        checked: false,
         priority: 1,
-        order: 1,
-        created_at: '',
+        childOrder: 1,
+        addedAt: '',
         labels: [],
       }
 
@@ -167,7 +167,7 @@ describe('Todoist transforms', () => {
       })
     })
 
-    it('应该包含所有可选字段', () => {
+    it('应该包含所有可选字段（全天日期）', () => {
       const result = transformCreateTaskToTodoist({
         title: '新任务',
         projectId: 'proj-1',
@@ -178,21 +178,35 @@ describe('Todoist transforms', () => {
 
       expect(result).toEqual({
         content: '新任务',
-        project_id: 'proj-1',
+        projectId: 'proj-1',
         description: '描述',
         priority: 4, // 5 -> 4 (高)
-        due_date: '2024-01-15',
+        due: { date: '2024-01-15' },
       })
     })
 
-    it('应该正确处理带时间的日期', () => {
+    it('应该正确处理带时间的日期（due 对象 + 时区）', () => {
       const result = transformCreateTaskToTodoist({
         title: '任务',
         dueDate: '2024-01-15T14:30:00',
       })
 
-      expect(result.due_date).toBeUndefined()
-      expect(result.due_datetime).toBe('2024-01-15T14:30:00')
+      expect(result.due).toEqual({
+        date: '2024-01-15T14:30:00',
+        timezone: expect.any(String),
+      })
+    })
+
+    it('应该正确处理带偏移量的日期（去除偏移量）', () => {
+      const result = transformCreateTaskToTodoist({
+        title: '任务',
+        dueDate: '2024-01-15T00:00:00.000+08:00',
+      })
+
+      expect(result.due).toEqual({
+        date: '2024-01-15T00:00:00',
+        timezone: expect.any(String),
+      })
     })
 
     it('应该正确转换优先级到 Todoist 格式', () => {
@@ -240,19 +254,21 @@ describe('Todoist transforms', () => {
     it('应该正确处理日期更新', () => {
       // 全天日期
       expect(transformUpdateTaskToTodoist({ dueDate: '2024-01-15' })).toEqual({
-        due_date: '2024-01-15',
+        due: { date: '2024-01-15' },
       })
 
       // 带时间的日期
-      expect(
-        transformUpdateTaskToTodoist({ dueDate: '2024-01-15T10:00:00' })
-      ).toEqual({
-        due_datetime: '2024-01-15T10:00:00',
+      const result = transformUpdateTaskToTodoist({
+        dueDate: '2024-01-15T10:00:00',
+      })
+      expect(result.due).toEqual({
+        date: '2024-01-15T10:00:00',
+        timezone: expect.any(String),
       })
 
       // 清除日期
       expect(transformUpdateTaskToTodoist({ dueDate: '' })).toEqual({
-        due_date: undefined,
+        due: null,
       })
     })
   })
@@ -263,10 +279,10 @@ describe('Todoist transforms', () => {
         id: 'proj-1',
         name: '工作',
         color: 'blue',
-        order: 1,
-        is_inbox_project: false,
-        is_favorite: false,
-        view_style: 'list',
+        childOrder: 1,
+        inboxProject: false,
+        isFavorite: false,
+        viewStyle: 'list',
       }
 
       expect(transformProjectFromTodoist(project)).toEqual({
@@ -282,10 +298,10 @@ describe('Todoist transforms', () => {
         id: 'inbox-1',
         name: 'Inbox',
         color: 'grey',
-        order: 0,
-        is_inbox_project: true,
-        is_favorite: false,
-        view_style: 'list',
+        childOrder: 0,
+        inboxProject: true,
+        isFavorite: false,
+        viewStyle: 'list',
       }
 
       expect(transformProjectFromTodoist(inbox).kind).toBe('INBOX')

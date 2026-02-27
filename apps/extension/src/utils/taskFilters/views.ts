@@ -36,13 +36,11 @@ export function computeTaskViews(tasks: Task[]): ComputedViews {
 
   for (const task of tasks) {
     // 1. 项目计数（所有任务都算）
-    result.projectCounts.set(
-      task.projectId,
-      (result.projectCounts.get(task.projectId) ?? 0) + 1
-    )
+    const pid = task.projectId ?? ''
+    result.projectCounts.set(pid, (result.projectCounts.get(pid) ?? 0) + 1)
 
     // 2. Inbox 任务
-    if (task.projectId.startsWith('inbox')) {
+    if (pid.startsWith('inbox')) {
       result.inbox.push(task)
       result.counts.inbox++
     }

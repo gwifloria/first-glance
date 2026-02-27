@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { formatDateTimeWithTimezone } from '@/utils/date'
+import { formatDateStr } from '@/utils/date'
 import { getSettings } from '@/services/settingsStorage'
 import type { Task } from '@/types'
 
@@ -41,8 +41,8 @@ export function FocusTaskInput({
         projectId = settings.defaultProjectId
       }
 
-      // 使用本地日期格式（自动处理时区）
-      const dueDate = formatDateTimeWithTimezone(new Date())
+      // 今天凌晨 + 时区（由 adapter transform 处理时区附加）
+      const dueDate = `${formatDateStr(new Date())}T00:00:00`
 
       const result = await onCreate({
         title: newTaskTitle.trim(),

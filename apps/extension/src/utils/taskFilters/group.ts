@@ -110,7 +110,7 @@ function groupByProject(tasks: Task[], projects: Project[]): TaskGroup[] {
 
   // 分配任务
   for (const task of tasks) {
-    if (task.projectId.startsWith('inbox')) {
+    if (task.projectId?.startsWith('inbox')) {
       projectMap.get('inbox')?.tasks.push(task)
     } else if (projectMap.has(task.projectId)) {
       projectMap.get(task.projectId)?.tasks.push(task)

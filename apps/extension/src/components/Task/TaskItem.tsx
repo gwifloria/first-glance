@@ -15,6 +15,7 @@ import type { Task, Project } from '@/types'
 interface TaskItemProps {
   task: Task
   project?: Project
+  parentTitle?: string
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
@@ -23,6 +24,7 @@ interface TaskItemProps {
 export const TaskItem = memo(function TaskItem({
   task,
   project,
+  parentTitle,
   onComplete,
   onDelete,
   onEdit,
@@ -53,6 +55,11 @@ export const TaskItem = memo(function TaskItem({
         />
 
         <div className="flex-1 min-w-0">
+          {parentTitle && (
+            <div className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5">
+              {parentTitle}
+            </div>
+          )}
           <div
             className={`
               text-sm text-[var(--text-primary)] leading-relaxed break-words mb-1 font-hand

@@ -3,13 +3,14 @@
  * 统一管理任务数据，避免视图切换时重复请求
  */
 import { createContext, useContext } from 'react'
+import type { Task } from '@/types'
 import type { TaskData, TaskActions } from '@/hooks/useTaskData'
 import type { TaskViews, TaskFilters } from '@/hooks/useTaskViews'
 
 export interface TaskContextValue {
-  data: TaskData
+  data: TaskData & { taskMap: Map<string, Task> }
   actions: TaskActions
-  views: TaskViews & { focusTasks: import('@/types').Task[] }
+  views: TaskViews & { focusTasks: Task[] }
   filters: TaskFilters
 }
 

@@ -33,6 +33,8 @@ export interface Task {
   modifiedTime?: string
   createdTime?: string
   tags?: string[]
+  /** 父任务 ID（子任务才有） */
+  parentId?: string
 }
 
 /** 本地任务（访客模式） */

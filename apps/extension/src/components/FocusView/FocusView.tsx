@@ -5,7 +5,6 @@ import { FocusTaskList } from './FocusTaskList'
 import { FocusQuote } from './FocusQuote'
 import { FocusFloatButton } from './FocusFloatButton'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
-import { HelpPanel } from '../common'
 
 interface FocusViewProps {
   quote: Quote
@@ -28,7 +27,6 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <FocusQuote quote={quote} />
-      <HelpPanel className="help-float-btn" />
       <ChillModeIndicator />
     </div>
   )

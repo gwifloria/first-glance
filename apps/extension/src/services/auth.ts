@@ -4,8 +4,6 @@ import type { AuthToken } from '@/types'
 // 这些值需要从环境变量或配置中获取
 const CLIENT_ID = import.meta.env.VITE_DIDA_CLIENT_ID || ''
 const CLIENT_SECRET = import.meta.env.VITE_DIDA_CLIENT_SECRET || ''
-const REDIRECT_URI = chrome.identity.getRedirectURL()
-
 const AUTH_URL = 'https://dida365.com/oauth/authorize'
 const TOKEN_URL = 'https://dida365.com/oauth/token'
 
@@ -38,9 +36,10 @@ class AuthService {
       throw new Error('认证配置缺失，请检查环境变量')
     }
 
+    const redirectUri = chrome.identity.getRedirectURL()
     const authUrl = new URL(AUTH_URL)
     authUrl.searchParams.set('client_id', CLIENT_ID)
-    authUrl.searchParams.set('redirect_uri', REDIRECT_URI)
+    authUrl.searchParams.set('redirect_uri', redirectUri)
     authUrl.searchParams.set('response_type', 'code')
     authUrl.searchParams.set('scope', 'tasks:read tasks:write')
 
@@ -70,7 +69,7 @@ class AuthService {
               return
             }
 
-            const token = await this.exchangeCodeForToken(code)
+            const token = await this.exchangeCodeForToken(code, redirectUri)
             await storage.setToken(token)
             resolve(token)
           } catch (error) {
@@ -81,7 +80,10 @@ class AuthService {
     })
   }
 
-  async exchangeCodeForToken(code: string): Promise<AuthToken> {
+  private async exchangeCodeForToken(
+    code: string,
+    redirectUri: string
+  ): Promise<AuthToken> {
     const response = await fetch(TOKEN_URL, {
       method: 'POST',
       headers: {
@@ -91,7 +93,7 @@ class AuthService {
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         code,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
         scope: 'tasks:read tasks:write',
       }),
     })

@@ -1,6 +1,6 @@
 /**
  * Todoist OAuth 认证服务
- * 文档: https://developer.todoist.com/rest/v2/#oauth
+ * 文档: https://developer.todoist.com/api/v1/
  *
  * 特点：
  * - Token 永久有效，无需 refresh

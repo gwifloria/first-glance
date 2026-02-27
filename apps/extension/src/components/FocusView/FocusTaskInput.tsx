@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { formatDateTimeWithTimezone } from '@/utils/date'
+import { formatDateStr } from '@/utils/date'
 import { getSettings } from '@/services/settingsStorage'
 import type { Task } from '@/types'
 
@@ -41,8 +39,8 @@ export function FocusTaskInput({
         projectId = settings.defaultProjectId
       }
 
-      // 使用本地日期格式（自动处理时区）
-      const dueDate = formatDateTimeWithTimezone(new Date())
+      // 全天任务，使用纯日期字符串
+      const dueDate = formatDateStr(new Date())
 
       const result = await onCreate({
         title: newTaskTitle.trim(),
@@ -73,15 +71,6 @@ export function FocusTaskInput({
         }
         disabled={creating || (isGuestMode && !canAddMore)}
         className="w-full text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
-      />
-      <Button
-        type="text"
-        shape="circle"
-        size="small"
-        onClick={handleCreateTask}
-        disabled={creating || (isGuestMode && !canAddMore)}
-        icon={<PlusOutlined />}
-        className="!mx-auto !mt-2 !flex"
       />
       {/* 访客模式限制提示 */}
       {isGuestMode && (

@@ -1,6 +1,8 @@
 import { memo } from 'react'
 import { RightOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useTaskContext } from '@/contexts/TaskContext'
+import { getParentTitle } from '@/utils/taskMap'
 import { TaskItem } from '../Task/TaskItem'
 import type { Task, Project } from '@/types'
 import type { TaskGroup } from '@/utils/taskFilters'
@@ -44,6 +46,9 @@ export const TaskDateGroup = memo(function TaskDateGroup({
   onEdit,
 }: TaskDateGroupProps) {
   const { t } = useTranslation('task')
+  const {
+    data: { taskMap },
+  } = useTaskContext()
 
   const getProjectById = (projectId: string) =>
     projects.find((p) => p.id === projectId)
@@ -78,6 +83,7 @@ export const TaskDateGroup = memo(function TaskDateGroup({
               key={task.id}
               task={task}
               project={getProjectById(task.projectId)}
+              parentTitle={getParentTitle(task, taskMap)}
               onComplete={onComplete}
               onDelete={onDelete}
               onEdit={onEdit}

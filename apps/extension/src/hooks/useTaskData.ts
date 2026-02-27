@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { createTaskAdapter, type AdapterType } from '@/api/adapters'
+import { AuthError } from '@/api/AuthError'
 import { storage } from '@/services/storage'
 import type { Task, Project } from '@/types'
 
@@ -12,7 +13,6 @@ export interface TaskData {
 
 export interface TaskActions {
   refresh: () => Promise<void>
-  refreshInbox: () => Promise<void>
   completeTask: (task: Task) => Promise<void>
   deleteTask: (task: Task) => Promise<void>
   updateTask: (taskId: string, updates: Partial<Task>) => Promise<void>
@@ -24,7 +24,10 @@ export interface TaskActions {
  * 负责：原始数据获取、缓存、CRUD 操作
  * 通过 adapter 支持多种后端（滴答清单、本地存储等）
  */
-export function useTaskData(adapterType: AdapterType) {
+export function useTaskData(
+  adapterType: AdapterType,
+  onAuthError?: () => void
+) {
   const adapter = useMemo(() => createTaskAdapter(adapterType), [adapterType])
   const isLocal = adapterType === 'local'
 
@@ -35,8 +38,6 @@ export function useTaskData(adapterType: AdapterType) {
 
   // 防止并发刷新导致竞态条件
   const refreshingRef = useRef(false)
-  const refreshInboxRef = useRef(false)
-
   // ============ 数据获取 ============
 
   const refresh = useCallback(async () => {
@@ -52,6 +53,11 @@ export function useTaskData(adapterType: AdapterType) {
       setTasks(data.tasks)
       setProjects(data.projects)
     } catch (err) {
+      if (err instanceof AuthError) {
+        onAuthError?.()
+        setError('认证已失效，请重新连接')
+        return
+      }
       // 远程模式尝试使用缓存（需要检查缓存有效期）
       if (!isLocal) {
         const isCacheValid = await storage.isCacheValid()
@@ -71,32 +77,7 @@ export function useTaskData(adapterType: AdapterType) {
       setLoading(false)
       refreshingRef.current = false
     }
-  }, [adapter, isLocal])
-
-  // 只刷新收集箱任务（用于快速更新）
-  const refreshInbox = useCallback(async () => {
-    // 防止并发刷新
-    if (refreshInboxRef.current) return
-    refreshInboxRef.current = true
-
-    try {
-      const inboxTasks = await adapter.getInboxTasks()
-      setTasks((prev) => {
-        // 本地模式：所有任务都是收集箱任务
-        if (isLocal) return inboxTasks
-        // 远程模式：合并非收集箱任务
-        const nonInboxTasks = prev.filter(
-          (t) =>
-            !t.projectId.startsWith('inbox') && t.projectId !== 'local-inbox'
-        )
-        return [...nonInboxTasks, ...inboxTasks]
-      })
-    } catch (err) {
-      console.error('[useTaskData] 刷新收集箱失败:', err)
-    } finally {
-      refreshInboxRef.current = false
-    }
-  }, [adapter, isLocal])
+  }, [adapter, isLocal, onAuthError])
 
   // 注意：不再自动刷新，由 TaskProvider 控制首次加载
   // 组件可以通过 actions.refresh() 手动刷新
@@ -154,14 +135,21 @@ export function useTaskData(adapterType: AdapterType) {
           priority: task.priority,
           dueDate: task.dueDate,
         })
+        // API 响应可能不包含 dueDate，用请求值回填确保本地状态正确
+        if (!created.dueDate && task.dueDate) {
+          created.dueDate = task.dueDate
+        }
         setTasks((prev) => [...prev, created])
         return created
       } catch (err) {
+        if (err instanceof AuthError) {
+          onAuthError?.()
+        }
         setError(err instanceof Error ? err.message : '创建任务失败')
         throw err
       }
     },
-    [adapter]
+    [adapter, onAuthError]
   )
 
   // 结构化返回
@@ -169,7 +157,6 @@ export function useTaskData(adapterType: AdapterType) {
 
   const actions: TaskActions = {
     refresh,
-    refreshInbox,
     completeTask,
     deleteTask,
     updateTask,

@@ -5,7 +5,7 @@
     "viewTasks": "查看任务列表（{{count}}个任务）"
   },
   "placeholder": {
-    "addFocus": "Add another focus...",
+    "addFocus": "添加新的任务，回车确认 ↵",
     "connectToAdd": "Connect to add more..."
   },
   "guestLimit": {

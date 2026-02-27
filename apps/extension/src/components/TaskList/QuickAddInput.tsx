@@ -1,7 +1,7 @@
 import { FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
 import type { Task } from '@/types'
-import { formatDateTimeWithTimezone } from '@/utils/date'
+import { formatDateStr } from '@/utils/date'
 import { Input } from 'antd'
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -46,13 +46,13 @@ export const QuickAddInput = memo(function QuickAddInput({
       }
     }
 
-    // 根据 filter 设置 dueDate
+    // 根据 filter 设置 dueDate（全天任务，纯日期字符串）
     if (filter === FILTER_NAMES.TODAY) {
-      dueDate = formatDateTimeWithTimezone(new Date())
+      dueDate = formatDateStr(new Date())
     } else if (filter === FILTER_NAMES.TOMORROW) {
       const tomorrow = new Date()
       tomorrow.setDate(tomorrow.getDate() + 1)
-      dueDate = formatDateTimeWithTimezone(tomorrow)
+      dueDate = formatDateStr(tomorrow)
     }
     // inbox 不设置默认日期
 

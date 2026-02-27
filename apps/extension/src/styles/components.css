@@ -116,8 +116,8 @@
   box-shadow: var(--shadow-medium) !important;
 }
 
-/* Help 浮动按钮 - 右下角 */
-.help-float-btn {
+/* Buddy 浮动按钮 - 右下角 */
+.buddy-float-btn {
   position: absolute !important;
   bottom: 24px !important;
   right: 24px !important;

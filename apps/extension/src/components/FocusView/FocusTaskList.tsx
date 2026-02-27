@@ -1,6 +1,7 @@
 import { useAppMode } from '@/contexts/useAppMode'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
+import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
 import { message, Spin } from 'antd'
@@ -14,11 +15,13 @@ const MAX_LOCAL_TASKS = 3
 
 interface FocusTaskItemProps {
   task: Task
+  parentTitle?: string
   onComplete: (task: Task) => void
 }
 
 const FocusTaskItem = memo(function FocusTaskItem({
   task,
+  parentTitle,
   onComplete,
 }: FocusTaskItemProps) {
   const { completing, handleComplete } = useTaskCompletion(onComplete, {
@@ -39,11 +42,18 @@ const FocusTaskItem = memo(function FocusTaskItem({
         variant="focus"
         disabled={completing}
       />
-      <span
-        className={`flex-1 text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
-      >
-        {renderMarkdownLinks(task.title)}
-      </span>
+      <div className="flex-1 flex flex-col">
+        {parentTitle && (
+          <span className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5 inline-flex items-center gap-0.5 bg-[var(--bg-secondary)] rounded px-1.5 py-0.5 w-fit">
+            <span className="opacity-60">↳</span> {parentTitle}
+          </span>
+        )}
+        <span
+          className={`text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
+        >
+          {renderMarkdownLinks(task.title)}
+        </span>
+      </div>
     </div>
   )
 })
@@ -54,7 +64,7 @@ export function FocusTaskList() {
   const { isGuest } = useAppMode()
 
   const { data, actions, views } = useTaskContext()
-  const { tasks, loading: tasksLoading } = data
+  const { tasks, loading: tasksLoading, taskMap } = data
   const { completeTask, createTask } = actions
   const { focusTasks } = views
 
@@ -102,6 +112,7 @@ export function FocusTaskList() {
               <FocusTaskItem
                 key={task.id}
                 task={task}
+                parentTitle={getParentTitle(task, taskMap)}
                 onComplete={completeTask}
               />
             ))}

@@ -94,8 +94,8 @@ export function getNextWeekStr(): string {
 }
 
 /**
- * 生成带本地时区的 ISO 日期时间字符串
- * 例如：2024-01-15T00:00:00.000+0800
+ * 生成带本地时区的 RFC 3339 日期时间字符串
+ * 例如：2024-01-15T00:00:00.000+08:00
  */
 export function formatDateTimeWithTimezone(date: Date): string {
   const dateStr = formatDateStr(date)
@@ -103,5 +103,5 @@ export function formatDateTimeWithTimezone(date: Date): string {
   const sign = offset >= 0 ? '+' : '-'
   const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0')
   const minutes = String(Math.abs(offset) % 60).padStart(2, '0')
-  return `${dateStr}T00:00:00.000${sign}${hours}${minutes}`
+  return `${dateStr}T00:00:00.000${sign}${hours}:${minutes}`
 }

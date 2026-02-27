@@ -6,6 +6,7 @@ import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
+import { BuddyButton } from '../Buddy/BuddyButton'
 
 interface FocusViewProps {
   quote: Quote
@@ -21,14 +22,14 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
 
       {/* Top bar */}
-      <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">
+      <div className="flex justify-end items-center gap-2 p-6 relative z-10">
         <SettingsPanel />
       </div>
 
       <FocusFloatButton onSwitchView={onSwitchView} />
 
       {/* 主内容区 */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 max-lg:px-4 relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
         <Clock
           variant="large"
           showGreeting
@@ -49,9 +50,9 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       {/* Quote */}
-      <div className="text-center pb-8 px-6 max-lg:pb-4 max-lg:px-4 relative z-10">
+      <div className="text-center pb-8 px-6 relative z-10">
         <p
-          className="text-lg max-md:text-base text-[var(--text-primary)] italic opacity-70 max-w-3xl mx-auto"
+          className="text-lg text-[var(--text-primary)] italic opacity-70 max-w-3xl mx-auto"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           "{quote.text}"
@@ -62,6 +63,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <ChillModeIndicator />
+      <BuddyButton useFocusContext />
     </div>
   )
 }

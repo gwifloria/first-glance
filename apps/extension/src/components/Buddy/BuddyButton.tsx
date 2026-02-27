@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { BuddyPanel } from './BuddyPanel'
 import { BuddySettingsModal } from './BuddySettingsModal'
 
-export function BuddyButton() {
+interface BuddyButtonProps {
+  /** FocusView 传 true，ListView 不传或 false */
+  useFocusContext?: boolean
+}
+
+export function BuddyButton({ useFocusContext }: BuddyButtonProps) {
   const { t } = useTranslation('buddy')
   const [hasOpened, setHasOpened] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -30,16 +35,16 @@ export function BuddyButton() {
       <Button
         shape="circle"
         icon={<BulbOutlined />}
-        onClick={handleToggle}
+        onClick={() => setOpen(!open)}
         className="!fixed !bottom-4 !right-4 !z-50 !w-10 !h-10 !shadow-md !bg-[var(--bg-primary)] !border-[var(--border)] !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
         title={t('button')}
       />
 
-      {hasOpened && (
+      {open && (
         <BuddyPanel
-          visible={visible}
-          onClose={() => setVisible(false)}
+          onClose={() => setOpen(false)}
           onOpenSettings={handleOpenSettings}
+          useFocusContext={useFocusContext}
         />
       )}
 

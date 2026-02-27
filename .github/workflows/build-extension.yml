@@ -3,10 +3,10 @@ name: Build Extension
 on:
   push:
     branches:
-      - staging
+      - dev
   pull_request:
     branches:
-      - staging
+      - dev
   workflow_dispatch:
 
 permissions:

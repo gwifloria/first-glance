@@ -94,6 +94,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
   const { isGuest, disconnect } = useAppMode()
   const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
+  const [disconnectOpen, setDisconnectOpen] = useState(false)
   const [open, setOpen] = useState(false)
 
   const version = chrome.runtime.getManifest().version
@@ -127,13 +128,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           label={tCommon('button.disconnect')}
           onClick={() => {
             setOpen(false)
-            Modal.confirm({
-              title: tCommon('disconnectConfirm.title'),
-              content: tCommon('disconnectConfirm.description'),
-              okText: tCommon('button.confirm'),
-              cancelText: tCommon('button.cancel'),
-              onOk: disconnect,
-            })
+            setDisconnectOpen(true)
           }}
         />
       )}
@@ -205,6 +200,20 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           className={`!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] ${className}`}
         />
       </Popover>
+
+      <Modal
+        title={tCommon('disconnectConfirm.title')}
+        open={disconnectOpen}
+        onOk={() => {
+          setDisconnectOpen(false)
+          disconnect()
+        }}
+        onCancel={() => setDisconnectOpen(false)}
+        okText={tCommon('button.confirm')}
+        cancelText={tCommon('button.cancel')}
+      >
+        {tCommon('disconnectConfirm.description')}
+      </Modal>
 
       <BlocksiteModal
         open={blocksiteOpen}

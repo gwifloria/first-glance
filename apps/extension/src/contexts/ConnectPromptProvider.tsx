@@ -46,7 +46,7 @@ export function ConnectPromptProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [connect, t]
+    [connect, message, t]
   )
 
   const handleCancel = useCallback(() => {

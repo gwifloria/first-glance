@@ -50,11 +50,6 @@ export class LocalAdapter implements ITaskAdapter {
     }
   }
 
-  async getInboxTasks(): Promise<Task[]> {
-    const localTasks = await localTaskStorage.getPendingTasks()
-    return localTasks.map((t) => this.toTask(t))
-  }
-
   async createTask(input: CreateTaskInput): Promise<Task> {
     const local = await localTaskStorage.createQuickTask(input.title)
     if (!local) {

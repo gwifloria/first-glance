@@ -22,10 +22,6 @@ export class DidaListAdapter implements ITaskAdapter {
     return projectsApi.getAllTasks()
   }
 
-  async getInboxTasks(): Promise<Task[]> {
-    return projectsApi.getInboxTasks()
-  }
-
   async createTask(input: CreateTaskInput): Promise<Task> {
     return tasksApi.create({
       title: input.title,

@@ -60,14 +60,6 @@ class AuthManagerImpl implements AuthManager {
   }
 
   async disconnect(): Promise<void> {
-    const provider = await this.getCurrentProvider()
-
-    if (provider === 'didaList') {
-      await didaAuth.logout()
-    } else if (provider === 'todoist') {
-      await todoistAuth.logout()
-    }
-
     await storage.clearAllAuth()
     // 清除服务相关的设置（如 defaultProjectId），避免切换服务后残留
     await setSettings({ defaultProjectId: null })

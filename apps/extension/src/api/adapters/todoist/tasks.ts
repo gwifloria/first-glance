@@ -15,13 +15,6 @@ export const tasksApi = {
     return fetchAllPages<TodoistTask>(endpoints.tasks)
   },
 
-  /** 获取指定项目的任务（自动分页） */
-  async getByProject(projectId: string): Promise<TodoistTask[]> {
-    return fetchAllPages<TodoistTask>(
-      `${endpoints.tasks}?project_id=${projectId}`
-    )
-  },
-
   /** 创建任务 */
   async create(input: TodoistCreateTaskRequest): Promise<TodoistTask> {
     return request<TodoistTask>(endpoints.tasks, {
@@ -44,11 +37,6 @@ export const tasksApi = {
   /** 完成任务 */
   async close(taskId: string): Promise<void> {
     return request(endpoints.closeTask(taskId), { method: 'POST' })
-  },
-
-  /** 重新打开任务 */
-  async reopen(taskId: string): Promise<void> {
-    return request(endpoints.reopenTask(taskId), { method: 'POST' })
   },
 
   /** 删除任务 */

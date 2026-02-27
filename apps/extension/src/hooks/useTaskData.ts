@@ -13,7 +13,6 @@ export interface TaskData {
 
 export interface TaskActions {
   refresh: () => Promise<void>
-  refreshInbox: () => Promise<void>
   completeTask: (task: Task) => Promise<void>
   deleteTask: (task: Task) => Promise<void>
   updateTask: (taskId: string, updates: Partial<Task>) => Promise<void>
@@ -39,8 +38,6 @@ export function useTaskData(
 
   // 防止并发刷新导致竞态条件
   const refreshingRef = useRef(false)
-  const refreshInboxRef = useRef(false)
-
   // ============ 数据获取 ============
 
   const refresh = useCallback(async () => {
@@ -81,31 +78,6 @@ export function useTaskData(
       refreshingRef.current = false
     }
   }, [adapter, isLocal, onAuthError])
-
-  // 只刷新收集箱任务（用于快速更新）
-  const refreshInbox = useCallback(async () => {
-    // 防止并发刷新
-    if (refreshInboxRef.current) return
-    refreshInboxRef.current = true
-
-    try {
-      const inboxTasks = await adapter.getInboxTasks()
-      setTasks((prev) => {
-        // 本地模式：所有任务都是收集箱任务
-        if (isLocal) return inboxTasks
-        // 远程模式：合并非收集箱任务
-        const nonInboxTasks = prev.filter(
-          (t) =>
-            !t.projectId?.startsWith('inbox') && t.projectId !== 'local-inbox'
-        )
-        return [...nonInboxTasks, ...inboxTasks]
-      })
-    } catch (err) {
-      console.error('[useTaskData] 刷新收集箱失败:', err)
-    } finally {
-      refreshInboxRef.current = false
-    }
-  }, [adapter, isLocal])
 
   // 注意：不再自动刷新，由 TaskProvider 控制首次加载
   // 组件可以通过 actions.refresh() 手动刷新
@@ -185,7 +157,6 @@ export function useTaskData(
 
   const actions: TaskActions = {
     refresh,
-    refreshInbox,
     completeTask,
     deleteTask,
     updateTask,

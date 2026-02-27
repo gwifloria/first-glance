@@ -28,14 +28,17 @@ export interface TodoistTask {
   /** 1=普通, 2=低, 3=中, 4=高（数字越大优先级越高） */
   priority: number
   due?: {
-    /** 全天: "YYYY-MM-DD"；带时间: "YYYY-MM-DDTHH:MM:SSZ" (UTC) */
+    /** v1 API 中始终为纯日期 YYYY-MM-DD */
     date: string
+    /** 带时间任务的 RFC3339 UTC datetime（如 "2024-01-15T06:30:00Z"），全天任务为 null */
+    datetime?: string | null
     string: string
     timezone?: string | null
+    lang?: string | null
     isRecurring: boolean
   }
   childOrder: number
-  addedAt: string
+  addedAt: string | null
   labels: string[]
   parentId?: string
 }
@@ -46,27 +49,25 @@ export interface TodoistProject {
   name: string
   color: string
   childOrder: number
-  inboxProject: boolean
+  inboxProject?: boolean
   isFavorite: boolean
   parentId?: string
   viewStyle: string
 }
 
-/** due 对象（用于创建/更新请求） */
-interface TodoistDueInput {
-  /** 本地时间: "YYYY-MM-DD" 或 "YYYY-MM-DDTHH:MM:SS" */
-  date: string
-  /** IANA 时区名，带时间时必填 */
-  timezone?: string
-}
-
-/** 创建任务请求体 */
+/**
+ * 创建任务请求体
+ * Todoist v1 API 使用扁平 due_date / due_datetime 字段（非嵌套 due 对象）
+ */
 export interface TodoistCreateTaskRequest {
   content: string
   description?: string
   projectId?: string
   priority?: number
-  due?: TodoistDueInput
+  /** 全天日期 YYYY-MM-DD */
+  dueDate?: string
+  /** 带时间的日期 RFC3339 UTC，如 2026-02-27T06:30:00Z */
+  dueDatetime?: string
 }
 
 /** 更新任务请求体 */
@@ -74,7 +75,8 @@ export interface TodoistUpdateTaskRequest {
   content?: string
   description?: string
   priority?: number
-  due?: TodoistDueInput | null
+  dueDate?: string | null
+  dueDatetime?: string | null
 }
 
 // ==================== 数据转换 ====================
@@ -112,12 +114,12 @@ export function transformTaskFromTodoist(raw: TodoistTask): Task {
     projectId: raw.projectId,
     title: raw.content,
     content: raw.description || undefined,
-    dueDate: raw.due?.date,
-    isAllDay: raw.due?.date ? !raw.due.date.includes('T') : true,
+    dueDate: raw.due?.datetime ?? raw.due?.date,
+    isAllDay: raw.due ? !raw.due.datetime : true,
     priority: priorityFromTodoist(raw.priority),
     status: raw.checked ? 2 : 0,
     sortOrder: raw.childOrder,
-    createdTime: raw.addedAt,
+    createdTime: raw.addedAt ?? '',
     tags: raw.labels,
     parentId: raw.parentId || undefined,
   }
@@ -134,23 +136,22 @@ export function transformProjectFromTodoist(raw: TodoistProject): Project {
 }
 
 /**
- * 将 dueDate 字符串转为 Todoist due 对象
- * - "YYYY-MM-DD" → 全天任务
- * - "YYYY-MM-DDTHH:MM:SS..." → 带时间任务（附加浏览器时区）
+ * 将内部 dueDate 字符串映射到 Todoist v1 API 的扁平字段
+ * - "YYYY-MM-DD" → dueDate（全天）
+ * - 含 "T" 的 datetime → dueDatetime（带时间，需 UTC 格式）
  */
-function buildDueObject(dueDate: string): TodoistDueInput {
+function applyDueFields(
+  req: { dueDate?: string | null; dueDatetime?: string | null },
+  dueDate: string
+): void {
   if (dueDate.includes('T')) {
-    // 提取本地时间部分（去除毫秒、偏移量、Z 后缀）
-    const localDateTime = dueDate
-      .replace(/\.\d{3}/, '')
-      .replace(/[+-]\d{2}:\d{2}$/, '')
-      .replace(/Z$/, '')
-    return {
-      date: localDateTime,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    }
+    // 确保是 UTC 格式（带 Z 后缀）
+    // 输入可能是：本地 "2026-02-27T14:30:00"、UTC "2026-02-27T06:30:00Z"、带偏移 "...+08:00"
+    const d = new Date(dueDate)
+    req.dueDatetime = d.toISOString()
+  } else {
+    req.dueDate = dueDate
   }
-  return { date: dueDate }
 }
 
 /** 创建任务输入 → Todoist 请求体 */
@@ -163,7 +164,7 @@ export function transformCreateTaskToTodoist(
   if (input.content) req.description = input.content
   if (input.priority !== undefined)
     req.priority = priorityToTodoist(input.priority)
-  if (input.dueDate) req.due = buildDueObject(input.dueDate)
+  if (input.dueDate) applyDueFields(req, input.dueDate)
 
   return req
 }
@@ -180,7 +181,13 @@ export function transformUpdateTaskToTodoist(
     req.priority = priorityToTodoist(input.priority)
 
   if (input.dueDate !== undefined) {
-    req.due = input.dueDate ? buildDueObject(input.dueDate) : null
+    if (input.dueDate) {
+      applyDueFields(req, input.dueDate)
+    } else {
+      // 清除日期：两个字段都置 null
+      req.dueDate = null
+      req.dueDatetime = null
+    }
   }
 
   return req
@@ -206,28 +213,28 @@ export class TodoistAdapter implements ITaskAdapter {
   }
 
   async getAllTasks(): Promise<GetAllTasksResult> {
-    const [todoistTasks, projects] = await Promise.all([
+    const [todoistTasks, todoistProjects] = await Promise.all([
       tasksApi.getAll(),
-      this.getProjects(),
+      projectsApi.getAll(),
     ])
+
+    const projects = todoistProjects.map(transformProjectFromTodoist)
+    projects.sort((a, b) => {
+      if (a.kind === 'INBOX') return -1
+      if (b.kind === 'INBOX') return 1
+      return a.sortOrder - b.sortOrder
+    })
 
     const tasks = todoistTasks
       .map(transformTaskFromTodoist)
       .filter((task) => task.status === 0)
 
-    await storage.setCachedTasks(tasks)
+    await Promise.all([
+      storage.setCachedTasks(tasks),
+      storage.setCachedProjects(projects),
+    ])
+
     return { tasks, projects }
-  }
-
-  async getInboxTasks(): Promise<Task[]> {
-    const todoistProjects = await projectsApi.getAll()
-    const inbox = todoistProjects.find((p) => p.inboxProject)
-    if (!inbox) return []
-
-    const todoistTasks = await tasksApi.getByProject(inbox.id)
-    return todoistTasks
-      .map(transformTaskFromTodoist)
-      .filter((task) => task.status === 0)
   }
 
   async createTask(input: CreateTaskInput): Promise<Task> {

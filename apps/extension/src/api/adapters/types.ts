@@ -45,9 +45,6 @@ export interface ITaskAdapter {
   /** 获取所有任务和项目 */
   getAllTasks(): Promise<GetAllTasksResult>
 
-  /** 获取收集箱任务 */
-  getInboxTasks(): Promise<Task[]>
-
   /** 创建任务 */
   createTask(input: CreateTaskInput): Promise<Task>
 

@@ -10,6 +10,7 @@ import zhCNSettings from './locales/zh-CN/settings.json'
 import zhCNOnboarding from './locales/zh-CN/onboarding.json'
 import zhCNFocus from './locales/zh-CN/focus.json'
 import zhCNBlocked from './locales/zh-CN/blocked.json'
+import zhCNBuddy from './locales/zh-CN/buddy.json'
 
 import enCommon from './locales/en/common.json'
 import enSidebar from './locales/en/sidebar.json'
@@ -18,6 +19,7 @@ import enSettings from './locales/en/settings.json'
 import enOnboarding from './locales/en/onboarding.json'
 import enFocus from './locales/en/focus.json'
 import enBlocked from './locales/en/blocked.json'
+import enBuddy from './locales/en/buddy.json'
 
 const resources = {
   'zh-CN': {
@@ -28,6 +30,7 @@ const resources = {
     onboarding: zhCNOnboarding,
     focus: zhCNFocus,
     blocked: zhCNBlocked,
+    buddy: zhCNBuddy,
   },
   en: {
     common: enCommon,
@@ -37,6 +40,7 @@ const resources = {
     onboarding: enOnboarding,
     focus: enFocus,
     blocked: enBlocked,
+    buddy: enBuddy,
   },
 }
 
@@ -63,6 +67,7 @@ i18n
       'onboarding',
       'focus',
       'blocked',
+      'buddy',
     ],
 
     interpolation: {

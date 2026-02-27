@@ -1,0 +1,27 @@
+{
+  "button": "AI Buddy",
+  "mood": {
+    "title": "How are you feeling?",
+    "good": "Feeling good",
+    "okay": "So-so",
+    "low": "A bit tired"
+  },
+  "thinking": "Thinking...",
+  "error": "Something went wrong, please try again",
+  "configMissing": "Please configure AI in settings first",
+  "retry": "Retry",
+  "reset": "Choose again",
+  "settings": {
+    "title": "AI Buddy",
+    "baseUrl": "API URL",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "model": "Model",
+    "modelPlaceholder": "gpt-4o-mini",
+    "test": "Test Connection",
+    "testing": "Testing...",
+    "testSuccess": "Connection successful",
+    "testFail": "Connection failed: {{reason}}"
+  }
+}

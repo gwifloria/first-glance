@@ -18,3 +18,6 @@ export { defaultSettings } from './settings'
 
 // 适配器相关
 export type { AdapterType } from '@/api/adapters/types'
+
+// AI Buddy 相关
+export type { Mood, AIConfig, BuddyMessage } from './buddy'

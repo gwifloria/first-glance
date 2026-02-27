@@ -2,7 +2,7 @@ import { defaultSettings, type AppSettings } from '@/types/settings'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
-const CURRENT_VERSION = 4
+const CURRENT_VERSION = 5
 
 // 旧版存储键（用于迁移）
 const LEGACY_SETTINGS_KEY = 'user_settings'
@@ -156,6 +156,14 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
     return {
       defaultProjectId: d.defaultProjectId ?? null,
       blockedSites: d.blockedSites ?? [],
+    }
+  },
+  // v4 -> v5: 添加 aiConfig 字段
+  5: (data) => {
+    const d = (data || {}) as Record<string, unknown>
+    return {
+      ...d,
+      aiConfig: d.aiConfig ?? undefined,
     }
   },
 }

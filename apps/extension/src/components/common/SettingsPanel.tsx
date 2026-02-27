@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Popover, Button, Divider, Popconfirm } from 'antd'
+import { Popover, Button, Divider, Modal } from 'antd'
 import {
   SettingOutlined,
   StopOutlined,
@@ -122,22 +122,20 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           }}
         />
       ) : (
-        <Popconfirm
-          title={tCommon('disconnectConfirm.title')}
-          description={tCommon('disconnectConfirm.description')}
-          onConfirm={() => {
+        <MenuItem
+          icon={<DisconnectOutlined />}
+          label={tCommon('button.disconnect')}
+          onClick={() => {
             setOpen(false)
-            disconnect()
+            Modal.confirm({
+              title: tCommon('disconnectConfirm.title'),
+              content: tCommon('disconnectConfirm.description'),
+              okText: tCommon('button.confirm'),
+              cancelText: tCommon('button.cancel'),
+              onOk: disconnect,
+            })
           }}
-          okText={tCommon('button.confirm')}
-          cancelText={tCommon('button.cancel')}
-          placement="left"
-        >
-          <MenuItem
-            icon={<DisconnectOutlined />}
-            label={tCommon('button.disconnect')}
-          />
-        </Popconfirm>
+        />
       )}
 
       {/* 屏蔽网站 */}

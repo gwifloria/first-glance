@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { RightOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
@@ -47,8 +47,38 @@ export const TaskDateGroup = memo(function TaskDateGroup({
 }: TaskDateGroupProps) {
   const { t } = useTranslation('task')
   const {
-    data: { taskMap },
+    data: { taskMap, tasks: allTasks },
   } = useTaskContext()
+
+  // 展开/折叠子任务状态（默认全部展开）
+  const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set())
+  const toggleExpand = (taskId: string) => {
+    setExpandedTasks((prev) => {
+      const next = new Set(prev)
+      if (next.has(taskId)) next.delete(taskId)
+      else next.add(taskId)
+      return next
+    })
+  }
+
+  // parentId → children[] 映射
+  const childrenMap = useMemo(() => {
+    const map = new Map<string, Task[]>()
+    for (const task of allTasks) {
+      if (task.parentId && taskMap.has(task.parentId)) {
+        const children = map.get(task.parentId) ?? []
+        children.push(task)
+        map.set(task.parentId, children)
+      }
+    }
+    return map
+  }, [allTasks, taskMap])
+
+  // 只保留 root 任务（无 parentId 或 parent 不在 taskMap 中的孤儿）
+  const rootTasks = useMemo(
+    () => group.tasks.filter((t) => !t.parentId || !taskMap.has(t.parentId)),
+    [group.tasks, taskMap]
+  )
 
   const getProjectById = (projectId: string) =>
     projects.find((p) => p.id === projectId)
@@ -78,17 +108,41 @@ export const TaskDateGroup = memo(function TaskDateGroup({
       )}
       {!isCollapsed && (
         <div className="flex flex-col gap-1">
-          {group.tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              project={getProjectById(task.projectId)}
-              parentTitle={getParentTitle(task, taskMap)}
-              onComplete={onComplete}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
-          ))}
+          {rootTasks.map((task) => {
+            const children = childrenMap.get(task.id)
+            const hasChildren = !!children && children.length > 0
+            const isExpanded = hasChildren && !expandedTasks.has(task.id)
+
+            return (
+              <div key={task.id}>
+                <TaskItem
+                  task={task}
+                  project={getProjectById(task.projectId)}
+                  parentTitle={getParentTitle(task, taskMap)}
+                  expandable={hasChildren}
+                  expanded={isExpanded}
+                  onToggleExpand={() => toggleExpand(task.id)}
+                  onComplete={onComplete}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
+                {hasChildren && isExpanded && (
+                  <div className="pl-10 flex flex-col gap-1">
+                    {children.map((child) => (
+                      <TaskItem
+                        key={child.id}
+                        task={child}
+                        project={getProjectById(child.projectId)}
+                        onComplete={onComplete}
+                        onDelete={onDelete}
+                        onEdit={onEdit}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

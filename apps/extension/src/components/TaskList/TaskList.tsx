@@ -70,7 +70,7 @@ export const TaskList = memo(function TaskList({
   const handleSave = useCallback(
     async (taskId: string | null, values: Partial<Task>) => {
       if (taskId) {
-        onUpdate(taskId, values)
+        await onUpdate(taskId, values)
       } else {
         await onCreate(values)
       }

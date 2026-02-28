@@ -1,13 +1,13 @@
 import { memo } from 'react'
 import { Button, Popconfirm } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, RightOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { formatShortDate } from '@/utils/date'
 import { isOverdue } from '@/utils/taskFilters'
 import { getPriorityColor } from '@/constants/task'
 import { isInboxProject } from '@/utils/project'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
-import { ProjectColorDot } from '../ProjectColorDot'
+import { ProjectColorDot } from '../common/ProjectColorDot'
 import { TaskCheckbox } from '../common/TaskCheckbox'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import type { Task, Project } from '@/types'
@@ -16,6 +16,9 @@ interface TaskItemProps {
   task: Task
   project?: Project
   parentTitle?: string
+  expandable?: boolean
+  expanded?: boolean
+  onToggleExpand?: () => void
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
@@ -25,6 +28,9 @@ export const TaskItem = memo(function TaskItem({
   task,
   project,
   parentTitle,
+  expandable,
+  expanded,
+  onToggleExpand,
   onComplete,
   onDelete,
   onEdit,
@@ -48,6 +54,19 @@ export const TaskItem = memo(function TaskItem({
       `}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">
+        {expandable && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleExpand?.()
+            }}
+            className="flex items-center justify-center w-4 h-4 mt-0.5 shrink-0 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            <RightOutlined
+              className={`text-[8px] transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`}
+            />
+          </button>
+        )}
         <TaskCheckbox
           completing={completing}
           onComplete={() => handleComplete(task)}

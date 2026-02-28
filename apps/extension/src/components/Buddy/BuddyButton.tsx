@@ -5,18 +5,23 @@ import { useTranslation } from 'react-i18next'
 import { BuddyPanel } from './BuddyPanel'
 import { BuddySettingsModal } from './BuddySettingsModal'
 
-interface BuddyButtonProps {
-  /** FocusView 传 true，ListView 不传或 false */
-  useFocusContext?: boolean
-}
-
-export function BuddyButton({ useFocusContext }: BuddyButtonProps) {
+export function BuddyButton() {
   const { t } = useTranslation('buddy')
-  const [open, setOpen] = useState(false)
+  const [hasOpened, setHasOpened] = useState(false)
+  const [visible, setVisible] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
+  const handleToggle = useCallback(() => {
+    if (!visible) {
+      setHasOpened(true)
+      setVisible(true)
+    } else {
+      setVisible(false)
+    }
+  }, [visible])
+
   const handleOpenSettings = useCallback(() => {
-    setOpen(false)
+    setVisible(false)
     setSettingsOpen(true)
   }, [])
 
@@ -25,16 +30,16 @@ export function BuddyButton({ useFocusContext }: BuddyButtonProps) {
       <Button
         shape="circle"
         icon={<BulbOutlined />}
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className="!fixed !bottom-4 !right-4 !z-50 !w-10 !h-10 !shadow-md !bg-[var(--bg-primary)] !border-[var(--border)] !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
         title={t('button')}
       />
 
-      {open && (
+      {hasOpened && (
         <BuddyPanel
-          onClose={() => setOpen(false)}
+          visible={visible}
+          onClose={() => setVisible(false)}
           onOpenSettings={handleOpenSettings}
-          useFocusContext={useFocusContext}
         />
       )}
 

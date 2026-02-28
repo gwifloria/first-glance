@@ -6,7 +6,6 @@ import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
-import { BuddyButton } from '../Buddy/BuddyButton'
 
 interface FocusViewProps {
   quote: Quote
@@ -63,7 +62,6 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <ChillModeIndicator />
-      <BuddyButton useFocusContext />
     </div>
   )
 }

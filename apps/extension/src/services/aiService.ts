@@ -81,6 +81,26 @@ function buildSystemPrompt(
       ? '- 优先围绕【当前焦点任务】给出具体的下一步行动建议'
       : '- 给出具体的下一步行动建议'
 
+  const actionsInstruction =
+    allTasks.length > 0
+      ? `
+
+操作建议格式（可选）：
+当你有具体的操作建议时（如调整优先级、拆解任务为小步骤），在回复末尾附加操作区段。
+格式要求：
+\`\`\`
+:::actions
+set_priority|任务标题|high
+add_subtask|任务标题|步骤1,步骤2,步骤3
+:::
+\`\`\`
+- set_priority: 调整优先级，可选值 high/medium/low/none
+- add_subtask: 拆解任务为子任务/步骤，用逗号分隔
+- 任务标题必须与用户任务列表中的标题完全一致
+- 只在有明确建议时才输出此区段，日常对话不需要
+- 每个操作占一行`
+      : ''
+
   return `你是一个任务规划助手，帮助用户决定下一步该做什么。
 
 ${taskSummary}
@@ -94,7 +114,7 @@ ${taskSummary}
 ${focusHint}
 - 引用用户实际的任务名称
 - 如果用户没有任务，给出轻松的鼓励
-- 使用用户的语言回复（如果任务标题是中文就用中文，英文就用英文）`
+- 使用用户的语言回复（如果任务标题是中文就用中文，英文就用英文）${actionsInstruction}`
 }
 
 /**
@@ -144,7 +164,8 @@ export async function sendBuddyRequest(
   mood: Mood,
   focusTasks: Task[],
   allTasks: Task[],
-  history: BuddyMessage[] = []
+  history: BuddyMessage[] = [],
+  signal?: AbortSignal
 ): Promise<string> {
   const systemPrompt = buildSystemPrompt(mood, focusTasks, allTasks)
 
@@ -171,6 +192,15 @@ export async function sendBuddyRequest(
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
+  // 外部 signal 触发时也 abort
+  if (signal) {
+    if (signal.aborted) {
+      controller.abort()
+    } else {
+      signal.addEventListener('abort', () => controller.abort(), { once: true })
+    }
+  }
+
   try {
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
@@ -181,7 +211,7 @@ export async function sendBuddyRequest(
       body: JSON.stringify({
         model: config.model,
         messages,
-        max_tokens: 500,
+        max_tokens: 800,
         temperature: 0.7,
       }),
       signal: controller.signal,

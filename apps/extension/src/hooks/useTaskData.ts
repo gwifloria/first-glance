@@ -134,6 +134,7 @@ export function useTaskData(
           content: task.content,
           priority: task.priority,
           dueDate: task.dueDate,
+          parentId: task.parentId,
         })
         // API 响应可能不包含 dueDate，用请求值回填确保本地状态正确
         if (!created.dueDate && task.dueDate) {

@@ -9,15 +9,29 @@
   "thinking": "Thinking...",
   "error": "Something went wrong, please try again",
   "configMissing": "Please configure AI in settings first",
-  "retry": "Retry",
-  "reset": "Choose again",
   "input": {
     "placeholder": "Type a message...",
     "send": "Send",
     "addTask": "Add task"
   },
   "taskAdded": "Task added ✓",
-  "close": "Close",
+  "action": {
+    "adopt": "Adopt",
+    "subtasksAdded": "{{count}} subtasks added",
+    "priorityUpdated": "Priority updated",
+    "addAll": "Add all",
+    "setPriority": "Set priority to {{level}}",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "none": "None"
+    }
+  },
+  "newChat": "New chat",
+  "suggestion": {
+    "breakDown": "Help me break down tasks"
+  },
   "settings": {
     "title": "AI Buddy",
     "baseUrl": "API URL",

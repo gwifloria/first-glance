@@ -11,6 +11,7 @@ export interface CreateTaskInput {
   content?: string
   priority?: number
   dueDate?: string
+  parentId?: string
 }
 
 /** 更新任务的输入 */

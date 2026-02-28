@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
-import { BlocksiteModal } from '../BlocksiteModal'
+import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
 import { ThemeToggle } from './ThemeToggle'
 
 const HELP_LINKS = {

@@ -3,7 +3,7 @@ import { Button, Tooltip } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
-import { DefaultProjectModal } from '../DefaultProjectModal'
+import { DefaultProjectModal } from './DefaultProjectModal'
 
 interface SidebarFooterProps {
   collapsed?: boolean

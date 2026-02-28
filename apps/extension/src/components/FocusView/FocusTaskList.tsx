@@ -5,7 +5,7 @@ import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
 import { message, Spin } from 'antd'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
 import { RefreshButton } from '../common/RefreshButton'
@@ -16,17 +16,35 @@ const MAX_LOCAL_TASKS = 3
 interface FocusTaskItemProps {
   task: Task
   parentTitle?: string
+  childInfo?: { total: number; completed: number }
   onComplete: (task: Task) => void
 }
 
 const FocusTaskItem = memo(function FocusTaskItem({
   task,
   parentTitle,
+  childInfo,
   onComplete,
 }: FocusTaskItemProps) {
+  const { t } = useTranslation('focus')
   const { completing, handleComplete } = useTaskCompletion(onComplete, {
     delayBefore: false,
   })
+
+  // 合并 checklist items 和 child tasks 的计数
+  const subtaskCount = useMemo(() => {
+    let total = 0
+    let completed = 0
+    if (task.items && task.items.length > 0) {
+      total += task.items.length
+      completed += task.items.filter((item) => item.status !== 0).length
+    }
+    if (childInfo) {
+      total += childInfo.total
+      completed += childInfo.completed
+    }
+    return total > 0 ? { total, completed } : null
+  }, [task.items, childInfo])
 
   return (
     <div
@@ -53,6 +71,14 @@ const FocusTaskItem = memo(function FocusTaskItem({
         >
           {renderMarkdownLinks(task.title)}
         </span>
+        {subtaskCount && (
+          <span className="text-xs text-[var(--text-secondary)] mt-0.5">
+            {t('subtaskProgress', {
+              completed: subtaskCount.completed,
+              total: subtaskCount.total,
+            })}
+          </span>
+        )}
       </div>
     </div>
   )
@@ -67,6 +93,20 @@ export function FocusTaskList() {
   const { tasks, loading: tasksLoading, taskMap } = data
   const { completeTask, createTask } = actions
   const { focusTasks } = views
+
+  // 从所有 tasks 中构建子任务计数 map
+  const childCountMap = useMemo(() => {
+    const map = new Map<string, { total: number; completed: number }>()
+    for (const task of tasks) {
+      if (task.parentId) {
+        const entry = map.get(task.parentId) ?? { total: 0, completed: 0 }
+        entry.total++
+        if (task.status === 2) entry.completed++
+        map.set(task.parentId, entry)
+      }
+    }
+    return map
+  }, [tasks])
 
   // 只在初始加载时显示 skeleton，连接过程中保持显示原内容
   const loading = tasksLoading && tasks.length === 0
@@ -113,6 +153,7 @@ export function FocusTaskList() {
                 key={task.id}
                 task={task}
                 parentTitle={getParentTitle(task, taskMap)}
+                childInfo={childCountMap.get(task.id)}
                 onComplete={completeTask}
               />
             ))}

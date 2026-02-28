@@ -241,13 +241,25 @@ export function BuddyPanel({
     [mood, loading, messages, getValidConfig, getTasksForAI, processReply, t]
   )
 
-  // 执行操作建议
+  // 执行操作建议，返回可选的 undo 函数
   const handleExecuteAction = useCallback(
-    async (action: BuddyAction) => {
+    async (action: BuddyAction): Promise<(() => Promise<void>) | void> => {
       if (action.type === 'set_priority') {
+        // 保存旧优先级
+        const oldTask = (data.tasks as Task[]).find(
+          (t) => t.id === action.taskId
+        )
+        const oldPriority = oldTask?.priority ?? 0
+
         const numericPriority = priorityToNumber[action.priority]
         await actions.updateTask(action.taskId, { priority: numericPriority })
         message.success(t('action.priorityUpdated'))
+
+        // 返回 undo 函数
+        return async () => {
+          await actions.updateTask(action.taskId, { priority: oldPriority })
+          message.success(t('action.priorityReverted'))
+        }
       } else if (action.type === 'add_subtasks') {
         // 统一使用 createTask({ parentId }) 创建真正的子任务
         const task = (data.tasks as Task[]).find((t) => t.id === action.taskId)

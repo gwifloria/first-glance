@@ -4,7 +4,7 @@ import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
-import { Checkbox, message, Popover, Spin } from 'antd'
+import { message, Spin } from 'antd'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
@@ -17,7 +17,6 @@ interface FocusTaskItemProps {
   task: Task
   parentTitle?: string
   childInfo?: { total: number; completed: number }
-  children?: Task[]
   onComplete: (task: Task) => void
   onCompleteChild: (task: Task) => void
 }
@@ -26,7 +25,6 @@ const FocusTaskItem = memo(function FocusTaskItem({
   task,
   parentTitle,
   childInfo,
-  children: childTasks,
   onComplete,
   onCompleteChild,
 }: FocusTaskItemProps) {
@@ -76,45 +74,12 @@ const FocusTaskItem = memo(function FocusTaskItem({
           {renderMarkdownLinks(task.title)}
         </span>
         {subtaskCount && (
-          <Popover
-            placement="bottomLeft"
-            trigger="click"
-            content={
-              <div className="max-w-[200px] space-y-1.5">
-                {childTasks?.map((child) => (
-                  <div key={child.id} className="flex items-center gap-1.5">
-                    <TaskCheckbox
-                      completing={false}
-                      onComplete={() => onCompleteChild(child)}
-                      variant="default"
-                    />
-                    <span
-                      className={`text-xs truncate ${child.status === 2 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
-                    >
-                      {child.title}
-                    </span>
-                  </div>
-                ))}
-                {task.items?.map((item) => (
-                  <div key={item.id} className="flex items-center gap-1.5">
-                    <Checkbox checked={item.status !== 0} disabled />
-                    <span
-                      className={`text-xs truncate ${item.status !== 0 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
-                    >
-                      {item.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            }
-          >
-            <span className="text-xs text-[var(--text-secondary)] mt-0.5 cursor-pointer hover:text-[var(--text-primary)] transition-colors">
-              {t('subtaskProgress', {
-                completed: subtaskCount.completed,
-                total: subtaskCount.total,
-              })}
-            </span>
-          </Popover>
+          <span className="text-xs text-[var(--text-secondary)] mt-0.5">
+            {t('subtaskProgress', {
+              completed: subtaskCount.completed,
+              total: subtaskCount.total,
+            })}
+          </span>
         )}
       </div>
     </div>
@@ -131,23 +96,18 @@ export function FocusTaskList() {
   const { completeTask, createTask } = actions
   const { focusTasks } = views
 
-  // 从所有 tasks 中构建子任务计数 map 和子任务列表 map
-  const { childCountMap, childrenMap } = useMemo(() => {
-    const countMap = new Map<string, { total: number; completed: number }>()
-    const listMap = new Map<string, Task[]>()
+  // 从所有 tasks 中构建子任务计数 map
+  const childCountMap = useMemo(() => {
+    const map = new Map<string, { total: number; completed: number }>()
     for (const task of tasks) {
       if (task.parentId) {
-        const entry = countMap.get(task.parentId) ?? { total: 0, completed: 0 }
+        const entry = map.get(task.parentId) ?? { total: 0, completed: 0 }
         entry.total++
         if (task.status === 2) entry.completed++
-        countMap.set(task.parentId, entry)
-
-        const list = listMap.get(task.parentId) ?? []
-        list.push(task)
-        listMap.set(task.parentId, list)
+        map.set(task.parentId, entry)
       }
     }
-    return { childCountMap: countMap, childrenMap: listMap }
+    return map
   }, [tasks])
 
   // 只在初始加载时显示 skeleton，连接过程中保持显示原内容
@@ -196,7 +156,6 @@ export function FocusTaskList() {
                 task={task}
                 parentTitle={getParentTitle(task, taskMap)}
                 childInfo={childCountMap.get(task.id)}
-                children={childrenMap.get(task.id)}
                 onComplete={completeTask}
                 onCompleteChild={completeTask}
               />

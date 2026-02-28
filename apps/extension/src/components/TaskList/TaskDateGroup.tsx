@@ -184,21 +184,41 @@ export const TaskDateGroup = memo(function TaskDateGroup({
       )}
       {!isCollapsed && (
         <div className="flex flex-col gap-1">
-          {rootTasks.map((task) => (
-            <TaskTree
-              key={task.id}
-              task={task}
-              depth={0}
-              childrenMap={childrenMap}
-              expandedTasks={expandedTasks}
-              taskMap={taskMap}
-              getProjectById={getProjectById}
-              onToggleExpand={toggleExpand}
-              onComplete={onComplete}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
-          ))}
+          {rootTasks.map((task) => {
+            const children = childrenMap.get(task.id)
+            const hasChildren = !!children && children.length > 0
+            const isExpanded = hasChildren && !expandedTasks.has(task.id)
+
+            return (
+              <div key={task.id}>
+                <TaskItem
+                  task={task}
+                  project={getProjectById(task.projectId)}
+                  parentTitle={getParentTitle(task, taskMap)}
+                  expandable={hasChildren}
+                  expanded={isExpanded}
+                  onToggleExpand={() => toggleExpand(task.id)}
+                  onComplete={onComplete}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
+                {hasChildren && isExpanded && (
+                  <div className="pl-10 flex flex-col gap-1">
+                    {children.map((child) => (
+                      <TaskItem
+                        key={child.id}
+                        task={child}
+                        project={getProjectById(child.projectId)}
+                        onComplete={onComplete}
+                        onDelete={onDelete}
+                        onEdit={onEdit}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

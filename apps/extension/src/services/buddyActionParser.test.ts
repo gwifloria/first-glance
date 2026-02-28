@@ -47,15 +47,9 @@ describe('matchTaskByTitle', () => {
     expect(result?.id).toBe('t2')
   })
 
-  it('包含匹配：较长的任务标题包含在搜索词中', () => {
-    const result = matchTaskByTitle('今天修复登录 Bug 并部署', TASKS)
-    expect(result?.id).toBe('t2')
-  })
-
-  it('包含匹配：短标题（<4字符）不进行反向匹配，避免误匹配', () => {
+  it('包含匹配：任务标题包含在搜索词中', () => {
     const result = matchTaskByTitle('今天写周报并提交', TASKS)
-    // '写周报' 只有 3 个字符，不走 normalized.includes(taskTitle)
-    expect(result).toBeUndefined()
+    expect(result?.id).toBe('t1')
   })
 
   it('无匹配返回 undefined', () => {

@@ -5,12 +5,18 @@ import {
   SettingOutlined,
   SendOutlined,
   PlusOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { getSettings, subscribeSettings } from '@/services/settingsStorage'
 import { sendBuddyRequest } from '@/services/aiService'
-import type { Mood, BuddyMessage as BuddyMessageType } from '@/types/buddy'
+import { extractActions, priorityToNumber } from '@/services/buddyActionParser'
+import type {
+  Mood,
+  BuddyMessage as BuddyMessageType,
+  BuddyAction,
+} from '@/types/buddy'
 import type { Task } from '@/types'
 import { BuddyMessage } from './BuddyMessage'
 
@@ -54,15 +60,15 @@ function MoodSelector({ onSelect }: { onSelect: (mood: Mood) => void }) {
 // --- BuddyPanel ---
 
 interface BuddyPanelProps {
+  visible: boolean
   onClose: () => void
   onOpenSettings: () => void
-  useFocusContext?: boolean
 }
 
 export function BuddyPanel({
+  visible,
   onClose,
   onOpenSettings,
-  useFocusContext,
 }: BuddyPanelProps) {
   const { t } = useTranslation('buddy')
   const { data, actions, views } = useTaskContext()
@@ -97,12 +103,39 @@ export function BuddyPanel({
     })
   }, [])
 
+  // 任务数据源变化时重置对话（如 disconnect 后任务清空）
+  const prevTaskCountRef = useRef(data.tasks.length)
+  useEffect(() => {
+    const prev = prevTaskCountRef.current
+    const curr = data.tasks.length
+    prevTaskCountRef.current = curr
+    // 从有任务变成无任务（disconnect），且当前在对话中 → 自动重置
+    if (prev > 0 && curr === 0 && phase === 'chatting') {
+      abortRef.current?.abort()
+      setMessages([])
+      setMood(null)
+      setInputValue('')
+      setLoading(false)
+      setPhase('select-mood')
+    }
+  }, [data.tasks.length, phase])
+
+  // 重置对话
+  const handleReset = useCallback(() => {
+    abortRef.current?.abort()
+    setMessages([])
+    setMood(null)
+    setInputValue('')
+    setLoading(false)
+    setPhase('select-mood')
+  }, [])
+
   // 获取当前任务数据
   const getTasksForAI = useCallback(() => {
     const allTasks = (data.tasks ?? []) as Task[]
-    const focusTasks = useFocusContext ? (views.focusTasks as Task[]) : []
+    const focusTasks = (views.focusTasks as Task[]) ?? []
     return { focusTasks, allTasks }
-  }, [data.tasks, views.focusTasks, useFocusContext])
+  }, [data.tasks, views.focusTasks])
 
   // 校验 AI 配置，无效时切到 no-config
   const getValidConfig = useCallback(async () => {
@@ -115,12 +148,32 @@ export function BuddyPanel({
     return config
   }, [])
 
+  // 处理 AI 回复：提取 actions 并生成消息
+  const processReply = useCallback(
+    (reply: string): BuddyMessageType => {
+      const allTasks = (data.tasks ?? []) as Task[]
+      const { cleanText, actions: parsedActions } = extractActions(
+        reply,
+        allTasks
+      )
+      return {
+        role: 'assistant',
+        content: cleanText,
+        actions: parsedActions.length > 0 ? parsedActions : undefined,
+      }
+    },
+    [data.tasks]
+  )
+
   // 选择 mood 后发起首次 AI 请求
   const handleMoodSelect = useCallback(
     async (selectedMood: Mood) => {
       setMood(selectedMood)
       setPhase('chatting')
       setLoading(true)
+
+      abortRef.current?.abort()
+      abortRef.current = new AbortController()
 
       try {
         const config = await getValidConfig()
@@ -131,9 +184,11 @@ export function BuddyPanel({
           config,
           selectedMood,
           focusTasks,
-          allTasks
+          allTasks,
+          [],
+          abortRef.current.signal
         )
-        setMessages([{ role: 'assistant', content: reply }])
+        setMessages([processReply(reply)])
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : t('error')
         setMessages([{ role: 'assistant', content: `⚠️ ${errorMsg}` }])
@@ -141,7 +196,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [getValidConfig, getTasksForAI, t]
+    [getValidConfig, getTasksForAI, processReply, t]
   )
 
   // 发送用户消息
@@ -168,9 +223,10 @@ export function BuddyPanel({
           mood,
           focusTasks,
           allTasks,
-          newMessages
+          newMessages,
+          abortRef.current!.signal
         )
-        setMessages([...newMessages, { role: 'assistant', content: reply }])
+        setMessages([...newMessages, processReply(reply)])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
@@ -182,13 +238,39 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [mood, loading, messages, getValidConfig, getTasksForAI, t]
+    [mood, loading, messages, getValidConfig, getTasksForAI, processReply, t]
+  )
+
+  // 执行操作建议
+  const handleExecuteAction = useCallback(
+    async (action: BuddyAction) => {
+      if (action.type === 'set_priority') {
+        const numericPriority = priorityToNumber[action.priority]
+        await actions.updateTask(action.taskId, { priority: numericPriority })
+        message.success(t('action.priorityUpdated'))
+      } else if (action.type === 'add_subtasks') {
+        // 统一使用 createTask({ parentId }) 创建真正的子任务
+        const task = (data.tasks as Task[]).find((t) => t.id === action.taskId)
+        for (const subtitle of action.subtitles) {
+          await actions.createTask({
+            title: subtitle,
+            projectId: task?.projectId,
+            parentId: action.taskId,
+          })
+        }
+        message.success(
+          t('action.subtasksAdded', { count: action.subtitles.length })
+        )
+      }
+    },
+    [actions, data.tasks, t]
   )
 
   // 添加任务
   const handleAddTask = useCallback(
     async (title: string) => {
       if (!title.trim()) return
+      setInputValue('')
 
       try {
         const settings = await getSettings()
@@ -198,7 +280,6 @@ export function BuddyPanel({
             ? settings.defaultProjectId
             : undefined
         await actions.createTask({ title: title.trim(), projectId })
-        setInputValue('')
         message.success(t('taskAdded'))
       } catch {
         message.error(t('error'))
@@ -215,13 +296,25 @@ export function BuddyPanel({
   }
 
   return (
-    <div className="fixed bottom-16 right-4 z-50 w-[360px] h-[480px] flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] shadow-lg overflow-hidden">
+    <div
+      className={`fixed bottom-16 right-4 z-50 w-[360px] h-[480px] flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] shadow-lg overflow-hidden ${!visible ? 'hidden' : ''}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
         <span className="text-sm font-medium text-[var(--text-primary)]">
           🤖 {t('button')}
         </span>
         <div className="flex items-center gap-1">
+          {phase === 'chatting' && (
+            <Button
+              type="text"
+              size="small"
+              icon={<ReloadOutlined />}
+              onClick={handleReset}
+              title={t('newChat')}
+              className="!text-[var(--text-secondary)]"
+            />
+          )}
           <Button
             type="text"
             size="small"
@@ -271,6 +364,8 @@ export function BuddyPanel({
                 key={`${i}-${msg.role}`}
                 role={msg.role}
                 content={msg.content}
+                actions={msg.actions}
+                onAction={handleExecuteAction}
               />
             ))}
             {loading && (
@@ -281,6 +376,17 @@ export function BuddyPanel({
                 </span>
               </div>
             )}
+            {/* 首次建议后显示快捷引导 */}
+            {!loading &&
+              messages.length === 1 &&
+              messages[0].role === 'assistant' && (
+                <button
+                  onClick={() => handleSend(t('suggestion.breakDown'))}
+                  className="self-start text-xs px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  {t('suggestion.breakDown')}
+                </button>
+              )}
             <div ref={messagesEndRef} />
           </div>
         )}

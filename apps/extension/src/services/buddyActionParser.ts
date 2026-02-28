@@ -32,13 +32,10 @@ export function matchTaskByTitle(
   const exact = tasks.find((t) => t.title.toLowerCase() === normalized)
   if (exact) return exact
 
-  // 包含匹配：任务标题包含搜索词，或搜索词包含较长的任务标题（避免短标题误匹配）
+  // 包含匹配：任务标题包含搜索词，或搜索词包含任务标题
   return tasks.find((t) => {
     const taskTitle = t.title.toLowerCase()
-    return (
-      taskTitle.includes(normalized) ||
-      (taskTitle.length >= 4 && normalized.includes(taskTitle))
-    )
+    return taskTitle.includes(normalized) || normalized.includes(taskTitle)
   })
 }
 

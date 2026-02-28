@@ -10,15 +10,29 @@
   "thinking": "正在思考...",
   "error": "出了点问题，请稍后再试",
   "configMissing": "请先在设置中配置 AI",
-  "retry": "重试",
-  "reset": "重新选择",
   "input": {
     "placeholder": "输入消息...",
     "send": "发送",
     "addTask": "添加任务"
   },
   "taskAdded": "任务已添加 ✓",
-  "close": "关闭",
+  "action": {
+    "adopt": "采纳",
+    "subtasksAdded": "已添加 {{count}} 个子任务",
+    "priorityUpdated": "优先级已更新",
+    "addAll": "全部添加",
+    "setPriority": "设为优先级 {{level}}",
+    "priority": {
+      "high": "高",
+      "medium": "中",
+      "low": "低",
+      "none": "无"
+    }
+  },
+  "newChat": "新对话",
+  "suggestion": {
+    "breakDown": "帮我拆解一下任务"
+  },
   "settings": {
     "title": "AI 助手",
     "baseUrl": "API 地址",

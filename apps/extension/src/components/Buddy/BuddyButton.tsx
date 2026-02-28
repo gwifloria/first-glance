@@ -1,15 +1,29 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { getSettings, subscribeSettings } from '@/services/settingsStorage'
 import { BuddyPanel } from './BuddyPanel'
 import { BuddySettingsModal } from './BuddySettingsModal'
 
 export function BuddyButton() {
   const { t } = useTranslation('buddy')
+  const [hasConfig, setHasConfig] = useState(false)
   const [hasOpened, setHasOpened] = useState(false)
   const [visible, setVisible] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+
+  // 检查 AI 配置，并监听变化
+  useEffect(() => {
+    const check = (config?: {
+      baseUrl?: string
+      apiKey?: string
+      model?: string
+    }) => !!(config?.baseUrl && config?.apiKey && config?.model)
+
+    getSettings().then((s) => setHasConfig(check(s.aiConfig)))
+    return subscribeSettings((s) => setHasConfig(check(s.aiConfig)))
+  }, [])
 
   const handleToggle = useCallback(() => {
     if (!visible) {
@@ -24,6 +38,8 @@ export function BuddyButton() {
     setVisible(false)
     setSettingsOpen(true)
   }, [])
+
+  if (!hasConfig) return null
 
   return (
     <>

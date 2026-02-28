@@ -21,6 +21,10 @@
     "subtasksAdded": "已添加 {{count}} 个子任务",
     "priorityUpdated": "优先级已更新",
     "addAll": "全部添加",
+    "addSelected": "添加选中的 {{count}} 项",
+    "guestDisabled": "连接滴答清单或 Todoist 后可使用",
+    "undo": "撤销",
+    "priorityReverted": "优先级已恢复",
     "setPriority": "设为优先级 {{level}}",
     "priority": {
       "high": "高",

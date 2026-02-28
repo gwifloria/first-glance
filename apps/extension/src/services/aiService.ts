@@ -15,50 +15,93 @@ const PRIORITY_LABEL: Record<number, string> = {
  * 格式化单个任务为文本行
  */
 function formatTask(t: Task): string {
-  const priorityLabel: Record<number, string> = {
-    5: '高',
-    3: '中',
-    1: '低',
-    0: '无',
-  }
   const parts: string[] = [`- ${t.title}`]
   if (t.priority > 0)
-    parts.push(`[优先级:${priorityLabel[t.priority] ?? '无'}]`)
+    parts.push(`[优先级:${PRIORITY_LABEL[t.priority] ?? '无'}]`)
   if (t.dueDate) parts.push(`[截止:${t.dueDate.slice(0, 10)}]`)
   return parts.join(' ')
 }
 
 /**
+ * 构建 parentId → 子任务列表 的映射
+ */
+function buildChildrenMap(tasks: Task[]): Map<string, Task[]> {
+  const map = new Map<string, Task[]>()
+  for (const t of tasks) {
+    if (t.parentId) {
+      const list = map.get(t.parentId)
+      if (list) {
+        list.push(t)
+      } else {
+        map.set(t.parentId, [t])
+      }
+    }
+  }
+  return map
+}
+
+/**
+ * 格式化任务及其子任务为文本行
+ */
+function formatTaskWithChildren(
+  t: Task,
+  childrenMap: Map<string, Task[]>
+): string[] {
+  const lines = [formatTask(t)]
+  const children = childrenMap.get(t.id)
+  if (children && children.length > 0) {
+    for (const child of children) {
+      lines.push(`  - ${child.title}`)
+    }
+  }
+  return lines
+}
+
+/**
  * 构建任务摘要
  * focusTasks 非空时区分焦点/其他；为空时列出全部任务
+ * 包含已有子任务信息，避免 AI 建议重复的子任务
  */
 function buildTaskSummary(focusTasks: Task[], allTasks: Task[]): string {
   if (allTasks.length === 0) return '当前没有待办任务。'
 
+  const childrenMap = buildChildrenMap(allTasks)
+  // 顶层任务：没有 parentId 的任务
+  const topLevelTasks = allTasks.filter((t) => !t.parentId)
+
   // 无焦点区分时，直接列出全部任务
   if (focusTasks.length === 0) {
-    const shown = allTasks.slice(0, 15)
-    const lines = ['当前用户的任务列表：', ...shown.map(formatTask)]
-    if (allTasks.length > 15) {
-      lines.push(`...还有 ${allTasks.length - 15} 个任务`)
+    const shown = topLevelTasks.slice(0, 15)
+    const lines = [
+      '当前用户的任务列表：',
+      ...shown.flatMap((t) => formatTaskWithChildren(t, childrenMap)),
+    ]
+    if (topLevelTasks.length > 15) {
+      lines.push(`...还有 ${topLevelTasks.length - 15} 个任务`)
     }
     return lines.join('\n')
   }
 
   // 有焦点任务时，区分焦点和其他
   const focusIds = new Set(focusTasks.map((t) => t.id))
-  const otherTasks = allTasks.filter((t) => !focusIds.has(t.id))
+  // 焦点中只取顶层任务
+  const focusTopLevel = focusTasks.filter((t) => !t.parentId)
+  const otherTasks = topLevelTasks.filter((t) => !focusIds.has(t.id))
 
   const sections: string[] = []
 
   sections.push(
     '【当前焦点任务】（用户正在关注的任务，优先围绕这些建议）',
-    ...focusTasks.map(formatTask)
+    ...focusTopLevel.flatMap((t) => formatTaskWithChildren(t, childrenMap))
   )
 
   if (otherTasks.length > 0) {
     const shown = otherTasks.slice(0, 10)
-    sections.push('', '【其他待办任务】', ...shown.map(formatTask))
+    sections.push(
+      '',
+      '【其他待办任务】',
+      ...shown.flatMap((t) => formatTaskWithChildren(t, childrenMap))
+    )
     if (otherTasks.length > 10) {
       sections.push(`...还有 ${otherTasks.length - 10} 个任务`)
     }
@@ -102,7 +145,7 @@ add_subtask|任务标题|步骤1,步骤2,步骤3
 :::
 \`\`\`
 - set_priority: 调整优先级，可选值 high/medium/low/none
-- add_subtask: 拆解任务为子任务/步骤，用逗号分隔
+- add_subtask: 拆解任务为子任务/步骤，用逗号分隔（不要建议已存在的子任务）
 - 任务标题必须与用户任务列表中的标题完全一致
 - 只在有明确建议时才输出此区段，日常对话不需要
 - 每个操作占一行`

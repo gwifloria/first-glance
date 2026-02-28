@@ -24,10 +24,10 @@ type PanelPhase = 'no-config' | 'select-mood' | 'chatting'
 
 // --- MoodSelector（内联，仅此处使用） ---
 
-const MOOD_OPTIONS: { key: Mood; emoji: string; labelKey: string }[] = [
-  { key: 'good', emoji: '😊', labelKey: 'mood.good' },
-  { key: 'okay', emoji: '😐', labelKey: 'mood.okay' },
-  { key: 'low', emoji: '😔', labelKey: 'mood.low' },
+const MOOD_OPTIONS: { key: Mood; kaomoji: string; labelKey: string }[] = [
+  { key: 'good', kaomoji: '(◕‿◕)', labelKey: 'mood.good' },
+  { key: 'okay', kaomoji: '(￣_￣)', labelKey: 'mood.okay' },
+  { key: 'low', kaomoji: '(´-ω-`)', labelKey: 'mood.low' },
 ]
 
 function MoodSelector({ onSelect }: { onSelect: (mood: Mood) => void }) {
@@ -39,14 +39,14 @@ function MoodSelector({ onSelect }: { onSelect: (mood: Mood) => void }) {
         {t('mood.title')}
       </div>
       <div className="flex gap-2">
-        {MOOD_OPTIONS.map(({ key, emoji, labelKey }) => (
+        {MOOD_OPTIONS.map(({ key, kaomoji, labelKey }) => (
           <Button
             key={key}
             type="text"
             onClick={() => onSelect(key)}
             className="!flex !flex-col !items-center !gap-1 !h-auto !py-2 !px-3 !rounded-xl hover:!bg-[var(--bg-secondary)]"
           >
-            <span className="text-xl">{emoji}</span>
+            <span className="text-base">{kaomoji}</span>
             <span className="text-xs text-[var(--text-secondary)]">
               {t(labelKey)}
             </span>
@@ -314,7 +314,7 @@ export function BuddyPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
         <span className="text-sm font-medium text-[var(--text-primary)]">
-          🤖 {t('button')}
+          {t('button')}
         </span>
         <div className="flex items-center gap-1">
           {phase === 'chatting' && (

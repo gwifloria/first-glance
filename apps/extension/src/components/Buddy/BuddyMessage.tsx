@@ -70,10 +70,10 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
 }
 
 const PRIORITY_LABELS: Record<string, string> = {
-  high: '⬆️',
-  medium: '➡️',
-  low: '⬇️',
-  none: '⏺',
+  high: '↑',
+  medium: '→',
+  low: '↓',
+  none: '·',
 }
 
 /** 操作描述文本 */

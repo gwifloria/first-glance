@@ -13,8 +13,9 @@ const PRIORITY_LABEL: Record<number, string> = {
 
 /**
  * 格式化单个任务为文本行
+ * @internal 仅供测试使用
  */
-function formatTask(t: Task): string {
+export function formatTask(t: Task): string {
   const parts: string[] = [`- ${t.title}`]
   if (t.priority > 0)
     parts.push(`[优先级:${PRIORITY_LABEL[t.priority] ?? '无'}]`)
@@ -24,8 +25,9 @@ function formatTask(t: Task): string {
 
 /**
  * 构建 parentId → 子任务列表 的映射
+ * @internal 仅供测试使用
  */
-function buildChildrenMap(tasks: Task[]): Map<string, Task[]> {
+export function buildChildrenMap(tasks: Task[]): Map<string, Task[]> {
   const map = new Map<string, Task[]>()
   for (const t of tasks) {
     if (t.parentId) {
@@ -61,8 +63,9 @@ function formatTaskWithChildren(
  * 构建任务摘要
  * focusTasks 非空时区分焦点/其他；为空时列出全部任务
  * 包含已有子任务信息，避免 AI 建议重复的子任务
+ * @internal 仅供测试使用
  */
-function buildTaskSummary(focusTasks: Task[], allTasks: Task[]): string {
+export function buildTaskSummary(focusTasks: Task[], allTasks: Task[]): string {
   if (allTasks.length === 0) return '当前没有待办任务。'
 
   const childrenMap = buildChildrenMap(allTasks)

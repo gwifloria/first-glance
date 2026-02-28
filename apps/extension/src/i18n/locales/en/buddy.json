@@ -21,6 +21,10 @@
     "subtasksAdded": "{{count}} subtasks added",
     "priorityUpdated": "Priority updated",
     "addAll": "Add all",
+    "addSelected": "Add {{count}} selected",
+    "guestDisabled": "Connect TickTick or Todoist to use",
+    "undo": "Undo",
+    "priorityReverted": "Priority reverted",
     "setPriority": "Set priority to {{level}}",
     "priority": {
       "high": "High",

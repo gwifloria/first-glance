@@ -1,7 +1,8 @@
-import { type ReactNode, useState } from 'react'
-import { Button } from 'antd'
+import { type ReactNode, useState, useEffect, useRef } from 'react'
+import { Button, Checkbox, Tooltip } from 'antd'
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useAppMode } from '@/contexts'
 import type { BuddyAction, ActionStatus } from '@/types/buddy'
 
 /**
@@ -80,12 +81,25 @@ function ActionCard({
   action,
   status,
   onExecute,
+  undoFn,
+  onUndo,
 }: {
   action: BuddyAction
   status: ActionStatus
-  onExecute: () => void
+  onExecute: (modifiedAction: BuddyAction) => void
+  undoFn?: () => Promise<void>
+  onUndo?: () => void
 }) {
   const { t } = useTranslation('buddy')
+  const { isGuest } = useAppMode()
+
+  // 子任务多选状态
+  const [selected, setSelected] = useState<Set<number>>(
+    () =>
+      new Set(
+        action.type === 'add_subtasks' ? action.subtitles.map((_, i) => i) : []
+      )
+  )
 
   const buttonContent =
     status === 'executing' ? (
@@ -94,19 +108,72 @@ function ActionCard({
       <CheckOutlined />
     ) : null
 
-  const doneText =
-    action.type === 'set_priority'
-      ? t('action.priorityUpdated')
-      : t('action.subtasksAdded', {
-          count: action.type === 'add_subtasks' ? action.subtitles.length : 0,
-        })
+  const handleClick = () => {
+    if (action.type === 'add_subtasks') {
+      const filteredSubtitles = action.subtitles.filter((_, i) =>
+        selected.has(i)
+      )
+      onExecute({ ...action, subtitles: filteredSubtitles })
+    } else {
+      onExecute(action)
+    }
+  }
 
-  const buttonText =
-    status === 'done'
-      ? doneText
-      : action.type === 'add_subtasks'
+  const noSelection = action.type === 'add_subtasks' && selected.size === 0
+
+  const getButtonText = () => {
+    if (status === 'done') {
+      return action.type === 'set_priority'
+        ? t('action.priorityUpdated')
+        : t('action.subtasksAdded', { count: selected.size })
+    }
+    if (action.type === 'add_subtasks') {
+      return selected.size === action.subtitles.length
         ? t('action.addAll')
-        : t('action.adopt')
+        : t('action.addSelected', { count: selected.size })
+    }
+    return t('action.adopt')
+  }
+
+  const isDisabled =
+    isGuest || status === 'executing' || status === 'done' || noSelection
+
+  const renderButton = () => {
+    const btn = (
+      <Button
+        type="text"
+        size="small"
+        onClick={handleClick}
+        disabled={isDisabled}
+        className="!text-xs !h-6 !px-2 !text-[var(--accent)]"
+        icon={buttonContent}
+      >
+        {status !== 'executing' && getButtonText()}
+      </Button>
+    )
+
+    if (isGuest && status === 'idle') {
+      return (
+        <Tooltip title={t('action.guestDisabled')}>
+          <span>{btn}</span>
+        </Tooltip>
+      )
+    }
+
+    return btn
+  }
+
+  const renderUndoButton = () => {
+    if (status !== 'done' || !undoFn || !onUndo) return null
+    return (
+      <button
+        onClick={onUndo}
+        className="text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] ml-1"
+      >
+        {t('action.undo')}
+      </button>
+    )
+  }
 
   if (action.type === 'set_priority') {
     return (
@@ -121,16 +188,10 @@ function ActionCard({
             })}
           </div>
         </div>
-        <Button
-          type="text"
-          size="small"
-          onClick={onExecute}
-          disabled={status === 'executing' || status === 'done'}
-          className="!text-xs !h-6 !px-2 !text-[var(--accent)]"
-          icon={buttonContent}
-        >
-          {status !== 'executing' && buttonText}
-        </Button>
+        <div className="flex items-center">
+          {renderButton()}
+          {renderUndoButton()}
+        </div>
       </div>
     )
   }
@@ -143,24 +204,28 @@ function ActionCard({
       </div>
       <div className="flex flex-col gap-0.5 mb-1.5">
         {action.subtitles.map((sub, i) => (
-          <div
+          <Checkbox
             key={i}
-            className="text-xs text-[var(--text-primary)] pl-2 before:content-['·'] before:mr-1 before:text-[var(--text-secondary)]"
+            checked={selected.has(i)}
+            onChange={(e) => {
+              setSelected((prev) => {
+                const next = new Set(prev)
+                if (e.target.checked) {
+                  next.add(i)
+                } else {
+                  next.delete(i)
+                }
+                return next
+              })
+            }}
+            disabled={status === 'executing' || status === 'done'}
+            className="!text-xs"
           >
             {sub}
-          </div>
+          </Checkbox>
         ))}
       </div>
-      <Button
-        type="text"
-        size="small"
-        onClick={onExecute}
-        disabled={status === 'executing' || status === 'done'}
-        className="!text-xs !h-6 !px-2 !text-[var(--accent)]"
-        icon={buttonContent}
-      >
-        {status !== 'executing' && buttonText}
-      </Button>
+      {renderButton()}
     </div>
   )
 }
@@ -169,7 +234,7 @@ interface BuddyMessageProps {
   role: 'user' | 'assistant'
   content: string
   actions?: BuddyAction[]
-  onAction?: (action: BuddyAction) => Promise<void>
+  onAction?: (action: BuddyAction) => Promise<(() => Promise<void>) | void>
 }
 
 export function BuddyMessage({
@@ -179,13 +244,64 @@ export function BuddyMessage({
   onAction,
 }: BuddyMessageProps) {
   const [statuses, setStatuses] = useState<Record<number, ActionStatus>>({})
+  const [undoFns, setUndoFns] = useState<Record<number, () => Promise<void>>>(
+    {}
+  )
+  const timerRefs = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+
+  // 清理定时器
+  useEffect(() => {
+    const refs = timerRefs.current
+    return () => {
+      Object.values(refs).forEach(clearTimeout)
+    }
+  }, [])
 
   const handleExecute = async (action: BuddyAction, index: number) => {
     if (!onAction) return
     setStatuses((prev) => ({ ...prev, [index]: 'executing' }))
     try {
-      await onAction(action)
+      const undoFn = await onAction(action)
       setStatuses((prev) => ({ ...prev, [index]: 'done' }))
+      if (undoFn) {
+        setUndoFns((prev) => ({ ...prev, [index]: undoFn }))
+        // 5 秒后自动清除 undo
+        timerRefs.current[index] = setTimeout(() => {
+          setUndoFns((prev) => {
+            const next = { ...prev }
+            delete next[index]
+            return next
+          })
+          delete timerRefs.current[index]
+        }, 5000)
+      }
+    } catch {
+      setStatuses((prev) => ({ ...prev, [index]: 'error' }))
+    }
+  }
+
+  const handleUndo = async (index: number) => {
+    const undoFn = undoFns[index]
+    if (!undoFn) return
+    // 清除定时器
+    if (timerRefs.current[index]) {
+      clearTimeout(timerRefs.current[index])
+      delete timerRefs.current[index]
+    }
+    setStatuses((prev) => ({ ...prev, [index]: 'executing' }))
+    try {
+      await undoFn()
+      // 撤销成功，恢复到 idle
+      setStatuses((prev) => {
+        const next = { ...prev }
+        delete next[index]
+        return next
+      })
+      setUndoFns((prev) => {
+        const next = { ...prev }
+        delete next[index]
+        return next
+      })
     } catch {
       setStatuses((prev) => ({ ...prev, [index]: 'error' }))
     }
@@ -212,7 +328,9 @@ export function BuddyMessage({
                 key={`${action.type}-${action.taskId}-${i}`}
                 action={action}
                 status={statuses[i] ?? 'idle'}
-                onExecute={() => handleExecute(action, i)}
+                onExecute={(modifiedAction) => handleExecute(modifiedAction, i)}
+                undoFn={undoFns[i]}
+                onUndo={() => handleUndo(i)}
               />
             ))}
           </div>

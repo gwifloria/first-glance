@@ -162,13 +162,14 @@ apps/
 
 ### PR 规范与 Changelog 生成
 - PR 模板 (`.github/PULL_REQUEST_TEMPLATE.md`) 包含双语更新说明 section
-- 创建 PR 时填写 "更新说明 / Release Notes" 中的中英文内容
+- **创建 PR 时必须填写 "更新说明 / Release Notes" 中的中英文内容**，release workflow 依赖 PR body 生成 changelog
 - 添加合适的 label 进行分类：
   - `feature`: 新功能 → ✨ 新功能 / New Features
   - `bug`: Bug 修复 → 🐛 Bug 修复 / Bug Fixes
   - `improvement`: 优化改进 → 💄 优化 / Improvements
   - `skip-changelog`: 跳过 changelog（纯技术性变更）
 - 发布时 release.yml 会自动从已合并 PR 中提取更新说明，生成双语 GitHub Release Notes
+- 使用 `gh pr create` 时，body 必须包含 `### 中文` 和 `### English` 区段，内容为面向用户的更新说明（非技术性描述）
 
 ## 环境变量管理
 

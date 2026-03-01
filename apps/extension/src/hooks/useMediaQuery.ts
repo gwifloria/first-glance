@@ -1,7 +1,5 @@
 import { useCallback, useSyncExternalStore } from 'react'
 
-const getServerSnapshot = () => false
-
 /**
  * 监听 CSS media query 匹配状态
  */
@@ -20,5 +18,5 @@ export function useMediaQuery(query: string): boolean {
     [query]
   )
 
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  return useSyncExternalStore(subscribe, getSnapshot)
 }

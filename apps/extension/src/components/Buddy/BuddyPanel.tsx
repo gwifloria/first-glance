@@ -315,7 +315,7 @@ export function BuddyPanel({
 
   return (
     <div
-      className={`fixed bottom-16 right-4 z-50 w-[360px] h-[480px] flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] shadow-lg overflow-hidden ${!visible ? 'hidden' : ''}`}
+      className={`fixed bottom-16 right-4 z-50 w-[360px] max-sm:w-[calc(100vw-2rem)] h-[480px] max-h-[70vh] flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] shadow-lg overflow-hidden ${!visible ? 'hidden' : ''}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">

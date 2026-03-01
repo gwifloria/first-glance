@@ -82,7 +82,7 @@ import Layout from '../layouts/Layout.astro'
           <h3 class="text-lg font-bold text-text mb-3">数据使用</h3>
           <ul class="list-disc pl-6 space-y-2">
             <li>所有数据仅用于扩展功能的正常运作</li>
-            <li>我们<strong class="text-text">不会</strong>将您的数据发送到任何第三方服务器</li>
+            <li>除 AI 助手功能外（见下方说明），我们<strong class="text-text">不会</strong>将您的数据发送到任何第三方服务器</li>
             <li>我们<strong class="text-text">不会</strong>收集任何分析数据或使用追踪</li>
             <li>我们<strong class="text-text">不会</strong>收集浏览历史或个人身份信息</li>
           </ul>
@@ -113,6 +113,14 @@ import Layout from '../layouts/Layout.astro'
               <ul class="list-disc pl-6 mt-1 space-y-1">
                 <li>完全离线，所有数据存储在本地</li>
                 <li>不与任何外部服务通信</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">AI 助手（可选功能）</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>需要用户自行配置 API 地址、密钥和模型，未配置则不启用</li>
+                <li>启用后，任务摘要（标题、优先级、截止日期）和对话内容会发送至您配置的 AI 服务</li>
+                <li>数据的存储和使用由该 AI 服务提供商的隐私政策管理</li>
               </ul>
             </li>
           </ul>
@@ -219,7 +227,7 @@ import Layout from '../layouts/Layout.astro'
           <h3 class="text-lg font-bold text-text mb-3">Data Usage</h3>
           <ul class="list-disc pl-6 space-y-2">
             <li>All data is used solely for the extension's functionality</li>
-            <li>We do <strong class="text-text">NOT</strong> send your data to any third-party servers</li>
+            <li>Except for the optional AI Buddy feature (see below), we do <strong class="text-text">NOT</strong> send your data to any third-party servers</li>
             <li>We do <strong class="text-text">NOT</strong> collect any analytics or tracking data</li>
             <li>We do <strong class="text-text">NOT</strong> collect browsing history or personally identifiable information</li>
           </ul>
@@ -250,6 +258,14 @@ import Layout from '../layouts/Layout.astro'
               <ul class="list-disc pl-6 mt-1 space-y-1">
                 <li>Fully offline, all data stored locally</li>
                 <li>No communication with any external service</li>
+              </ul>
+            </li>
+            <li>
+              <strong class="text-text">AI Buddy (optional feature)</strong>
+              <ul class="list-disc pl-6 mt-1 space-y-1">
+                <li>Requires user to manually configure API URL, key, and model; not enabled unless configured</li>
+                <li>When enabled, task summaries (titles, priorities, due dates) and conversation content are sent to your configured AI service</li>
+                <li>Data retention and usage are governed by that AI service provider's privacy policy</li>
               </ul>
             </li>
           </ul>

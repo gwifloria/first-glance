@@ -26,6 +26,7 @@
     "retry": "失败，点击重试",
     "undo": "撤销",
     "priorityReverted": "优先级已恢复",
+    "subtasksReverted": "子任务已撤销",
     "setPriority": "设为优先级 {{level}}",
     "priority": {
       "high": "高",
@@ -46,7 +47,8 @@
     "apiKeyPlaceholder": "sk-...",
     "model": "模型",
     "modelPlaceholder": "gpt-4o-mini",
-    "presets": "快速选择",
+    "provider": "服务商",
+    "custom": "自定义",
     "test": "测试连接",
     "testing": "测试中...",
     "testSuccess": "连接成功",

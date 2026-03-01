@@ -24,6 +24,82 @@ const TRANSLATABLE_GROUPS = new Set([
   'pinned',
 ])
 
+const MAX_DEPTH = 3
+
+function TaskTree({
+  task,
+  depth,
+  childrenMap,
+  expandedTasks,
+  taskMap,
+  getProjectById,
+  onToggleExpand,
+  onComplete,
+  onDelete,
+  onEdit,
+}: {
+  task: Task
+  depth: number
+  childrenMap: Map<string, Task[]>
+  expandedTasks: Set<string>
+  taskMap: Map<string, Task>
+  getProjectById: (id: string) => Project | undefined
+  onToggleExpand: (id: string) => void
+  onComplete: (task: Task) => void
+  onDelete: (task: Task) => void
+  onEdit: (task: Task) => void
+}) {
+  const children = childrenMap.get(task.id)
+  const hasChildren = !!children && children.length > 0
+  const isExpanded = hasChildren && !expandedTasks.has(task.id)
+
+  return (
+    <div>
+      <TaskItem
+        task={task}
+        project={getProjectById(task.projectId)}
+        parentTitle={getParentTitle(task, taskMap)}
+        expandable={hasChildren}
+        expanded={isExpanded}
+        onToggleExpand={() => onToggleExpand(task.id)}
+        onComplete={onComplete}
+        onDelete={onDelete}
+        onEdit={onEdit}
+      />
+      {hasChildren && isExpanded && (
+        <div className="pl-7 flex flex-col gap-1">
+          {children.map((child) =>
+            depth < MAX_DEPTH ? (
+              <TaskTree
+                key={child.id}
+                task={child}
+                depth={depth + 1}
+                childrenMap={childrenMap}
+                expandedTasks={expandedTasks}
+                taskMap={taskMap}
+                getProjectById={getProjectById}
+                onToggleExpand={onToggleExpand}
+                onComplete={onComplete}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            ) : (
+              <TaskItem
+                key={child.id}
+                task={child}
+                project={getProjectById(child.projectId)}
+                onComplete={onComplete}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            )
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface TaskDateGroupProps {
   group: TaskGroup
   projects: Project[]
@@ -108,41 +184,21 @@ export const TaskDateGroup = memo(function TaskDateGroup({
       )}
       {!isCollapsed && (
         <div className="flex flex-col gap-1">
-          {rootTasks.map((task) => {
-            const children = childrenMap.get(task.id)
-            const hasChildren = !!children && children.length > 0
-            const isExpanded = hasChildren && !expandedTasks.has(task.id)
-
-            return (
-              <div key={task.id}>
-                <TaskItem
-                  task={task}
-                  project={getProjectById(task.projectId)}
-                  parentTitle={getParentTitle(task, taskMap)}
-                  expandable={hasChildren}
-                  expanded={isExpanded}
-                  onToggleExpand={() => toggleExpand(task.id)}
-                  onComplete={onComplete}
-                  onDelete={onDelete}
-                  onEdit={onEdit}
-                />
-                {hasChildren && isExpanded && (
-                  <div className="pl-10 flex flex-col gap-1">
-                    {children.map((child) => (
-                      <TaskItem
-                        key={child.id}
-                        task={child}
-                        project={getProjectById(child.projectId)}
-                        onComplete={onComplete}
-                        onDelete={onDelete}
-                        onEdit={onEdit}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          {rootTasks.map((task) => (
+            <TaskTree
+              key={task.id}
+              task={task}
+              depth={0}
+              childrenMap={childrenMap}
+              expandedTasks={expandedTasks}
+              taskMap={taskMap}
+              getProjectById={getProjectById}
+              onToggleExpand={toggleExpand}
+              onComplete={onComplete}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
+          ))}
         </div>
       )}
     </div>

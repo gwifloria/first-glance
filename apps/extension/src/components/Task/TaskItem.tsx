@@ -60,7 +60,7 @@ export const TaskItem = memo(function TaskItem({
               e.stopPropagation()
               onToggleExpand?.()
             }}
-            className="flex items-center justify-center w-4 h-4 mt-0.5 shrink-0 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            className="flex items-center justify-center w-4 h-4 mt-0.5 shrink-0 -ml-7 mr-3 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <RightOutlined
               className={`text-[8px] transition-transform duration-200 ${expanded ? 'rotate-90' : ''}`}

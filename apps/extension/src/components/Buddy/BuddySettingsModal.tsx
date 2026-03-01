@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Modal, Input, Button, message } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Modal, Input, Button, Select, message } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { getSettings, setSettings } from '@/services/settingsStorage'
@@ -8,21 +8,26 @@ import type { AIConfig } from '@/types/buddy'
 
 const PRESETS = [
   {
+    key: 'chatgpt',
     label: 'ChatGPT',
     baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4o-mini',
   },
   {
+    key: 'gemini',
     label: 'Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
     model: 'gemini-2.0-flash',
   },
   {
+    key: 'deepseek',
     label: 'DeepSeek',
     baseUrl: 'https://api.deepseek.com/v1',
     model: 'deepseek-chat',
   },
 ] as const
+
+const CUSTOM_KEY = 'custom'
 
 interface BuddySettingsModalProps {
   open: boolean
@@ -31,12 +36,32 @@ interface BuddySettingsModalProps {
 
 export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
   const { t } = useTranslation('buddy')
+  const { t: tCommon } = useTranslation('common')
   const [baseUrl, setBaseUrl] = useState('')
   const [apiKey, setApiKey] = useState('')
   const [model, setModel] = useState('')
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
   const [testPassed, setTestPassed] = useState(false)
+
+  // 根据 baseUrl 推导当前选中的 provider
+  const selectedProvider = useMemo(() => {
+    const match = PRESETS.find((p) => p.baseUrl === baseUrl.trim())
+    return match ? match.key : CUSTOM_KEY
+  }, [baseUrl])
+
+  const handleProviderChange = (key: string) => {
+    if (key === CUSTOM_KEY) {
+      setBaseUrl('')
+      setModel('')
+      return
+    }
+    const preset = PRESETS.find((p) => p.key === key)
+    if (preset) {
+      setBaseUrl(preset.baseUrl)
+      setModel(preset.model)
+    }
+  }
 
   // 打开时加载当前配置
   useEffect(() => {
@@ -116,7 +141,7 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
             {testing ? t('settings.testing') : t('settings.test')}
           </Button>
           <Button type="primary" onClick={handleSave} loading={saving}>
-            OK
+            {tCommon('button.save')}
           </Button>
         </div>
       }
@@ -124,21 +149,19 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
       style={{ maxWidth: 400 }}
     >
       <div className="flex flex-col gap-4 mt-4">
-        <div className="flex gap-2">
-          {PRESETS.map((preset) => (
-            <Button
-              key={preset.label}
-              size="small"
-              type={baseUrl === preset.baseUrl ? 'primary' : 'default'}
-              ghost={baseUrl === preset.baseUrl}
-              onClick={() => {
-                setBaseUrl(preset.baseUrl)
-                setModel(preset.model)
-              }}
-            >
-              {preset.label}
-            </Button>
-          ))}
+        <div>
+          <label className="block text-sm text-[var(--text-secondary)] mb-1">
+            {t('settings.provider')}
+          </label>
+          <Select
+            value={selectedProvider}
+            onChange={handleProviderChange}
+            className="w-full"
+            options={[
+              ...PRESETS.map((p) => ({ value: p.key, label: p.label })),
+              { value: CUSTOM_KEY, label: t('settings.custom') },
+            ]}
+          />
         </div>
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">

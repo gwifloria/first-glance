@@ -4,7 +4,7 @@ import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
-import { message, Popover, Spin } from 'antd'
+import { Checkbox, message, Popover, Spin } from 'antd'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
@@ -97,12 +97,7 @@ const FocusTaskItem = memo(function FocusTaskItem({
                 ))}
                 {task.items?.map((item) => (
                   <div key={item.id} className="flex items-center gap-1.5">
-                    <input
-                      type="checkbox"
-                      checked={item.status !== 0}
-                      disabled
-                      className="accent-[var(--accent)] opacity-60"
-                    />
+                    <Checkbox checked={item.status !== 0} disabled />
                     <span
                       className={`text-xs truncate ${item.status !== 0 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
                     >

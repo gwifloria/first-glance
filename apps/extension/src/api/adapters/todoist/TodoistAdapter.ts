@@ -68,6 +68,8 @@ export interface TodoistCreateTaskRequest {
   dueDate?: string
   /** 带时间的日期 RFC3339 UTC，如 2026-02-27T06:30:00Z */
   dueDatetime?: string
+  /** 父任务 ID（创建子任务时使用） */
+  parentId?: string
 }
 
 /** 更新任务请求体 */
@@ -165,6 +167,7 @@ export function transformCreateTaskToTodoist(
   if (input.priority !== undefined)
     req.priority = priorityToTodoist(input.priority)
   if (input.dueDate) applyDueFields(req, input.dueDate)
+  if (input.parentId) req.parentId = input.parentId
 
   return req
 }

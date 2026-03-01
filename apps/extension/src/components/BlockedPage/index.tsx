@@ -1,10 +1,101 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChillModePanel } from './ChillModePanel'
-import { GoHomeButton } from './GoHomeButton'
-import { KaomojiDisplay } from './KaomojiDisplay'
 import './animations.css'
 import { KAOMOJI, getChillStage } from './constants'
+
+// --- KaomojiDisplay（内联，仅此处使用） ---
+
+function KaomojiDisplay({
+  expression,
+  bubbleText,
+  isShaking = false,
+  animationKey,
+}: {
+  expression: string
+  bubbleText: string
+  isShaking?: boolean
+  animationKey?: string
+}) {
+  return (
+    <div className="relative inline-block mb-8">
+      {/* Speech bubble */}
+      <div className="blocked-bubble animate-bounce-subtle">
+        <span
+          key={animationKey}
+          className={animationKey ? 'animate-text-fade-in inline-block' : ''}
+        >
+          {bubbleText}
+        </span>
+        {/* Bubble tail */}
+        <div className="blocked-bubble-tail" />
+      </div>
+
+      {/* Kaomoji */}
+      <div className={`blocked-kaomoji ${isShaking ? 'animate-shake' : ''}`}>
+        {expression}
+      </div>
+    </div>
+  )
+}
+
+// --- GoHomeButton（内联，仅此处使用） ---
+
+function GoHomeButton({
+  onHoverChange,
+}: {
+  onHoverChange?: (isHovering: boolean) => void
+}) {
+  const { t } = useTranslation('blocked')
+  const [isHovering, setIsHovering] = useState(false)
+
+  const handleGoHome = () => {
+    window.location.href = chrome.runtime.getURL('src/newtab/index.html')
+  }
+
+  const handleMouseEnter = () => {
+    setIsHovering(true)
+    onHoverChange?.(true)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovering(false)
+    onHoverChange?.(false)
+  }
+
+  return (
+    <button
+      onClick={handleGoHome}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="blocked-home-btn"
+    >
+      {/* Fill animation */}
+      <div
+        className="blocked-home-btn-fill"
+        style={{ transform: isHovering ? 'scaleX(1)' : 'scaleX(0)' }}
+      />
+
+      {/* Default text */}
+      <span
+        className="relative z-10 transition-opacity duration-300"
+        style={{ opacity: isHovering ? 0 : 1 }}
+      >
+        {t('buttonDefault')}
+      </span>
+
+      {/* Hover text */}
+      <span
+        className="blocked-home-btn-hover-text"
+        style={{ opacity: isHovering ? 1 : 0 }}
+      >
+        {t('buttonHover')}
+      </span>
+    </button>
+  )
+}
+
+// --- BlockedPage ---
 
 export function BlockedPage() {
   const { t } = useTranslation('blocked')
@@ -52,7 +143,7 @@ export function BlockedPage() {
         }`}
       />
 
-      {/* Paper texture - 通过 CSS 类控制显示 */}
+      {/* Paper texture */}
       <div className="absolute inset-0 opacity-30 pointer-events-none paper-texture" />
 
       {/* Content */}

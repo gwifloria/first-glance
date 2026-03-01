@@ -64,12 +64,12 @@ export function Clock({
         className={`flex flex-col items-center select-none text-center ${className}`}
       >
         <div
-          className={`text-[10rem] leading-none font-medium tracking-tighter transition-all duration-700 cursor-pointer hover:scale-105 ${isPomodoroActive ? pomodoroColor : 'text-[var(--clock-primary)]'}`}
+          className={`text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter transition-all duration-700 cursor-pointer hover:scale-105 ${isPomodoroActive ? pomodoroColor : 'text-[var(--clock-primary)]'}`}
         >
           {displayTime}
         </div>
         {showGreeting && (
-          <div className="text-3xl mt-4 font-bold font-hand text-[var(--clock-primary)] opacity-90">
+          <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-4 font-bold font-hand text-[var(--clock-primary)] opacity-90">
             {isPomodoroActive
               ? pomodoroMode === 'work'
                 ? t('focus:pomodoro.working')

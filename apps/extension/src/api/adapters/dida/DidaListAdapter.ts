@@ -29,6 +29,7 @@ export class DidaListAdapter implements ITaskAdapter {
       content: input.content,
       priority: input.priority ?? 0,
       dueDate: input.dueDate,
+      parentId: input.parentId,
     })
   }
 

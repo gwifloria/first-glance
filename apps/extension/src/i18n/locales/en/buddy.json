@@ -2,6 +2,7 @@
   "button": "AI Buddy",
   "mood": {
     "title": "How are you feeling?",
+    "hint": "AI Buddy gives suggestions based on your tasks and may modify priorities or add subtasks (with your approval)",
     "good": "Feeling good",
     "okay": "So-so",
     "low": "A bit tired"
@@ -9,8 +10,35 @@
   "thinking": "Thinking...",
   "error": "Something went wrong, please try again",
   "configMissing": "Please configure AI in settings first",
-  "retry": "Retry",
-  "reset": "Choose again",
+  "input": {
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "addTask": "Add task"
+  },
+  "taskAdded": "Task added ✓",
+  "action": {
+    "adopt": "Adopt",
+    "subtasksAdded": "{{count}} subtasks added",
+    "priorityUpdated": "Priority updated",
+    "addAll": "Add all",
+    "addSelected": "Add {{count}} selected",
+    "guestDisabled": "Connect TickTick or Todoist to use",
+    "retry": "Failed, click to retry",
+    "undo": "Undo",
+    "priorityReverted": "Priority reverted",
+    "subtasksReverted": "Subtasks removed",
+    "setPriority": "Set priority to {{level}}",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "none": "None"
+    }
+  },
+  "newChat": "New chat",
+  "suggestion": {
+    "breakDown": "Help me break down tasks"
+  },
   "settings": {
     "title": "AI Buddy",
     "baseUrl": "API URL",
@@ -19,6 +47,8 @@
     "apiKeyPlaceholder": "sk-...",
     "model": "Model",
     "modelPlaceholder": "gpt-4o-mini",
+    "provider": "Provider",
+    "custom": "Custom",
     "test": "Test Connection",
     "testing": "Testing...",
     "testSuccess": "Connection successful",

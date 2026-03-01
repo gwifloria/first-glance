@@ -4,39 +4,124 @@ import type { Task } from '@/types'
 const REQUEST_TIMEOUT = 30_000
 const TEST_TIMEOUT = 15_000
 
+const PRIORITY_LABEL: Record<number, string> = {
+  5: '高',
+  3: '中',
+  1: '低',
+  0: '无',
+}
+
 /**
- * 构建任务摘要，供 AI 参考
+ * 格式化单个任务为文本行
+ * @internal 仅供测试使用
  */
-function buildTaskSummary(tasks: Task[]): string {
-  if (tasks.length === 0) return '当前没有待办任务。'
+export function formatTask(t: Task): string {
+  const parts: string[] = [`- ${t.title}`]
+  if (t.priority > 0)
+    parts.push(`[优先级:${PRIORITY_LABEL[t.priority] ?? '无'}]`)
+  if (t.dueDate) parts.push(`[截止:${t.dueDate.slice(0, 10)}]`)
+  return parts.join(' ')
+}
 
-  const priorityLabel: Record<number, string> = {
-    5: '高',
-    3: '中',
-    1: '低',
-    0: '无',
+/**
+ * 构建 parentId → 子任务列表 的映射
+ * @internal 仅供测试使用
+ */
+export function buildChildrenMap(tasks: Task[]): Map<string, Task[]> {
+  const map = new Map<string, Task[]>()
+  for (const t of tasks) {
+    if (t.parentId) {
+      const list = map.get(t.parentId)
+      if (list) {
+        list.push(t)
+      } else {
+        map.set(t.parentId, [t])
+      }
+    }
+  }
+  return map
+}
+
+/**
+ * 格式化任务及其子任务为文本行
+ */
+function formatTaskWithChildren(
+  t: Task,
+  childrenMap: Map<string, Task[]>
+): string[] {
+  const lines = [formatTask(t)]
+  const children = childrenMap.get(t.id)
+  if (children && children.length > 0) {
+    for (const child of children) {
+      lines.push(`  - ${child.title}`)
+    }
+  }
+  return lines
+}
+
+/**
+ * 构建任务摘要
+ * focusTasks 非空时区分焦点/其他；为空时列出全部任务
+ * 包含已有子任务信息，避免 AI 建议重复的子任务
+ * @internal 仅供测试使用
+ */
+export function buildTaskSummary(focusTasks: Task[], allTasks: Task[]): string {
+  if (allTasks.length === 0) return '当前没有待办任务。'
+
+  const childrenMap = buildChildrenMap(allTasks)
+  // 顶层任务：没有 parentId 的任务
+  const topLevelTasks = allTasks.filter((t) => !t.parentId)
+
+  // 无焦点区分时，直接列出全部任务
+  if (focusTasks.length === 0) {
+    const shown = topLevelTasks.slice(0, 15)
+    const lines = [
+      '当前用户的任务列表：',
+      ...shown.flatMap((t) => formatTaskWithChildren(t, childrenMap)),
+    ]
+    if (topLevelTasks.length > 15) {
+      lines.push(`...还有 ${topLevelTasks.length - 15} 个任务`)
+    }
+    return lines.join('\n')
   }
 
-  const lines = tasks.slice(0, 15).map((t) => {
-    const parts: string[] = [`- ${t.title}`]
-    if (t.priority > 0)
-      parts.push(`[优先级:${priorityLabel[t.priority] ?? '无'}]`)
-    if (t.dueDate) parts.push(`[截止:${t.dueDate.slice(0, 10)}]`)
-    return parts.join(' ')
-  })
+  // 有焦点任务时，区分焦点和其他
+  const focusIds = new Set(focusTasks.map((t) => t.id))
+  // 焦点中只取顶层任务
+  const focusTopLevel = focusTasks.filter((t) => !t.parentId)
+  const otherTasks = topLevelTasks.filter((t) => !focusIds.has(t.id))
 
-  if (tasks.length > 15) {
-    lines.push(`...还有 ${tasks.length - 15} 个任务`)
+  const sections: string[] = []
+
+  sections.push(
+    '【当前焦点任务】（用户正在关注的任务，优先围绕这些建议）',
+    ...focusTopLevel.flatMap((t) => formatTaskWithChildren(t, childrenMap))
+  )
+
+  if (otherTasks.length > 0) {
+    const shown = otherTasks.slice(0, 10)
+    sections.push(
+      '',
+      '【其他待办任务】',
+      ...shown.flatMap((t) => formatTaskWithChildren(t, childrenMap))
+    )
+    if (otherTasks.length > 10) {
+      sections.push(`...还有 ${otherTasks.length - 10} 个任务`)
+    }
   }
 
-  return lines.join('\n')
+  return sections.join('\n')
 }
 
 /**
  * 构建系统提示词
  */
-function buildSystemPrompt(mood: Mood, tasks: Task[]): string {
-  const taskSummary = buildTaskSummary(tasks)
+function buildSystemPrompt(
+  mood: Mood,
+  focusTasks: Task[],
+  allTasks: Task[]
+): string {
+  const taskSummary = buildTaskSummary(focusTasks, allTasks)
 
   const moodStrategies: Record<Mood, string> = {
     good: `用户状态不错，精力充沛。推荐优先级最高或最紧急的任务，鼓励挑战重要的工作。`,
@@ -44,9 +129,32 @@ function buildSystemPrompt(mood: Mood, tasks: Task[]): string {
     low: `用户状态低落，精力不足。找到用户可能拖延的任务，引导将大任务拆解为 1-5 分钟的小步骤。语气温和鼓励，不要施加压力。`,
   }
 
+  const focusHint =
+    focusTasks.length > 0
+      ? '- 优先围绕【当前焦点任务】给出具体的下一步行动建议'
+      : '- 给出具体的下一步行动建议'
+
+  const actionsInstruction =
+    allTasks.length > 0
+      ? `
+
+操作建议格式（可选）：
+当你有具体的操作建议时（如调整优先级、拆解任务为小步骤），在回复末尾附加操作区段。
+格式要求：
+:::actions
+set_priority|任务标题|high
+add_subtask|任务标题|步骤1,步骤2,步骤3
+:::
+- set_priority: 调整优先级，可选值 high/medium/low/none
+- add_subtask: 拆解任务为子任务/步骤，用逗号分隔（不要建议已存在的子任务）
+- 每次只对 1 个任务建议拆解，子任务不超过 3-5 个，聚焦最关键的下一步
+- 任务标题必须与用户任务列表中的标题完全一致
+- 只在有明确建议时才输出此区段，日常对话不需要
+- 每个操作占一行`
+      : ''
+
   return `你是一个任务规划助手，帮助用户决定下一步该做什么。
 
-当前用户的任务列表：
 ${taskSummary}
 
 用户当前情绪状态：${mood === 'good' ? '状态不错' : mood === 'okay' ? '一般' : '有点累'}
@@ -55,10 +163,10 @@ ${taskSummary}
 
 要求：
 - 简洁回复，3-5 句话
-- 给出具体的下一步行动建议
+${focusHint}
 - 引用用户实际的任务名称
 - 如果用户没有任务，给出轻松的鼓励
-- 使用用户的语言回复（如果任务标题是中文就用中文，英文就用英文）`
+- 使用用户的语言回复（如果任务标题是中文就用中文，英文就用英文）${actionsInstruction}`
 }
 
 /**
@@ -106,10 +214,12 @@ export async function testAIConfig(config: AIConfig): Promise<void> {
 export async function sendBuddyRequest(
   config: AIConfig,
   mood: Mood,
-  tasks: Task[],
-  history: BuddyMessage[] = []
+  focusTasks: Task[],
+  allTasks: Task[],
+  history: BuddyMessage[] = [],
+  signal?: AbortSignal
 ): Promise<string> {
-  const systemPrompt = buildSystemPrompt(mood, tasks)
+  const systemPrompt = buildSystemPrompt(mood, focusTasks, allTasks)
 
   const messages = [
     { role: 'system' as const, content: systemPrompt },
@@ -134,6 +244,15 @@ export async function sendBuddyRequest(
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
+  // 外部 signal 触发时也 abort
+  if (signal) {
+    if (signal.aborted) {
+      controller.abort()
+    } else {
+      signal.addEventListener('abort', () => controller.abort(), { once: true })
+    }
+  }
+
   try {
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
@@ -144,7 +263,7 @@ export async function sendBuddyRequest(
       body: JSON.stringify({
         model: config.model,
         messages,
-        max_tokens: 500,
+        max_tokens: 800,
         temperature: 0.7,
       }),
       signal: controller.signal,
@@ -167,6 +286,8 @@ export async function sendBuddyRequest(
     return content.trim()
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
+      // 外部信号触发的 abort（用户主动取消），原样抛出让调用方静默处理
+      if (signal?.aborted) throw error
       throw new Error('请求超时，请稍后重试')
     }
     throw error

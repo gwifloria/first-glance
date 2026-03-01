@@ -3,6 +3,7 @@ import { useAppMode } from '@/contexts/useAppMode'
 import { TaskProvider } from '@/contexts/TaskProvider'
 import { FocusLayout, ListLayout } from '@/components/layouts'
 import { BlockedPage } from '@/components/BlockedPage'
+import { BuddyButton } from '@/components/Buddy/BuddyButton'
 
 type ViewMode = 'focus' | 'list'
 
@@ -17,13 +18,17 @@ function AppContent() {
   const handleSwitchToList = useCallback(() => setViewMode('list'), [])
   const handleSwitchToFocus = useCallback(() => setViewMode('focus'), [])
 
-  // 访客模式始终显示 Focus 视图
-  if (isGuest || viewMode === 'focus') {
-    return <FocusLayout onSwitchView={handleSwitchToList} />
-  }
-
-  // 已连接：列表视图
-  return <ListLayout onFocus={handleSwitchToFocus} />
+  return (
+    <>
+      {/* 访客模式始终显示 Focus 视图 */}
+      {isGuest || viewMode === 'focus' ? (
+        <FocusLayout onSwitchView={handleSwitchToList} />
+      ) : (
+        <ListLayout onFocus={handleSwitchToFocus} />
+      )}
+      <BuddyButton />
+    </>
+  )
 }
 
 function App() {

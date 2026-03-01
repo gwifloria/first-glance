@@ -6,12 +6,13 @@
   },
   "placeholder": {
     "addFocus": "添加新的任务，回车确认 ↵",
-    "connectToAdd": "Connect to add more..."
+    "connectToAdd": "连接服务以添加更多任务..."
   },
   "guestLimit": {
-    "available": "{{remaining}}/3 available",
-    "unlock": "Connect to unlock more tasks"
+    "available": "还可添加 {{remaining}} 个",
+    "unlock": "连接服务解锁更多任务"
   },
+  "subtaskProgress": "{{completed}}/{{total}} 子任务完成",
   "pomodoro": {
     "start": "开始番茄",
     "pause": "暂停",

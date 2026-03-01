@@ -18,12 +18,13 @@ Turn your new tab into a focus dashboard. See your high-priority tasks instantly
 - **Internationalization** - Chinese and English support
 - **Site Blocking** - Block distracting websites to stay focused
 - **Chill Mode** - Need a break? Hold for 10 seconds to temporarily disable blocking for 15 minutes
+- **AI Buddy** - Chat-based task assistant powered by OpenAI-compatible API, gives suggestions based on your mood and tasks
 - **Cross-device Sync** - Theme preferences synced via Chrome
 
 ## Supported Platforms
 
 - Dida365 (TickTick)
-- Coming soon: Notion, Todoist
+- Todoist
 
 ## Installation
 
@@ -105,6 +106,8 @@ apps/
 │       │   ├── Sidebar/     # List mode sidebar
 │       │   ├── TaskList/    # Task list components
 │       │   ├── Task/        # Task item components
+│       │   ├── Buddy/       # AI Buddy (chat panel, settings)
+│       │   ├── BlockedPage/ # Blocked page (Chill Mode)
 │       │   └── common/      # Shared components
 │       ├── contexts/        # React Context providers
 │       ├── hooks/           # Custom React hooks
@@ -124,11 +127,15 @@ This project uses GitHub Actions for automation:
 - **bump-version.yml** - Manual workflow to bump version (patch/minor/major)
 - **release.yml** - Auto-publishes to Chrome Web Store when a version tag is created, generates bilingual changelog from merged PRs
 
-## Dida365 API
+## APIs
 
-This extension uses the official Dida365 Open API:
+**Dida365 (TickTick)**
 - Documentation: https://developer.dida365.com/docs
-- You need to register an app in the developer portal to get Client ID and Client Secret
+- Register an app in the developer portal to get Client ID and Client Secret
+
+**Todoist**
+- Documentation: https://developer.todoist.com/rest/v2/
+- Register an app at https://developer.todoist.com to get credentials
 
 ## Privacy
 

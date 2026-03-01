@@ -3,8 +3,9 @@ import { Button } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ThemeToggle } from '../common'
-import { SearchInput } from '../SearchInput'
+import { SearchInput } from './SearchInput'
 import { SmartFilterList } from './SmartFilterList'
 import { ProjectList } from './ProjectList'
 import { SidebarFooter } from './SidebarFooter'
@@ -23,10 +24,12 @@ interface SidebarProps {
 
 function SidebarHeader({
   collapsed,
+  hideToggle,
   onToggleCollapse,
   toggleTitle,
 }: {
   collapsed: boolean
+  hideToggle?: boolean
   onToggleCollapse: () => void
   toggleTitle: string
 }) {
@@ -36,14 +39,16 @@ function SidebarHeader({
         className={`flex items-center gap-2 mb-3 ${collapsed ? 'justify-center' : 'justify-between'}`}
       >
         {!collapsed && <ThemeToggle />}
-        <Button
-          type="text"
-          size="small"
-          onClick={onToggleCollapse}
-          title={toggleTitle}
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          className="!w-5 !h-5 !min-w-0 !p-0"
-        />
+        {!hideToggle && (
+          <Button
+            type="text"
+            size="small"
+            onClick={onToggleCollapse}
+            title={toggleTitle}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            className="!w-5 !h-5 !min-w-0 !p-0"
+          />
+        )}
       </div>
     </div>
   )
@@ -59,7 +64,10 @@ export function Sidebar({
 }: SidebarProps) {
   const { t } = useTranslation('sidebar')
   const [searchQuery, setSearchQuery] = useState('')
-  const [collapsed, toggleCollapsed] = usePersistedBoolean('sidebarCollapsed')
+  const [userCollapsed, toggleUserCollapsed] =
+    usePersistedBoolean('sidebarCollapsed')
+  const isSmallScreen = useMediaQuery('(max-width: 1023px)')
+  const collapsed = isSmallScreen || userCollapsed
 
   const handleSearch = useCallback(
     (value: string) => {
@@ -79,7 +87,8 @@ export function Sidebar({
     >
       <SidebarHeader
         collapsed={collapsed}
-        onToggleCollapse={toggleCollapsed}
+        hideToggle={isSmallScreen}
+        onToggleCollapse={toggleUserCollapsed}
         toggleTitle={collapsed ? t('action.expand') : t('action.collapse')}
       />
 

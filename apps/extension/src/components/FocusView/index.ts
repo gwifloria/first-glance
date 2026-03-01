@@ -1,7 +1,4 @@
 export { FocusView } from './FocusView'
-export { FocusTopBar } from './FocusTopBar'
-export { FocusClock } from './FocusClock'
 export { FocusTaskList } from './FocusTaskList'
 export { FocusTaskInput } from './FocusTaskInput'
 export { FocusFloatButton } from './FocusFloatButton'
-export { FocusQuote } from './FocusQuote'

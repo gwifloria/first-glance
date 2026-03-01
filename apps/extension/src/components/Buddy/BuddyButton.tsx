@@ -1,49 +1,47 @@
 import { useState, useCallback } from 'react'
-import { Popover, Button } from 'antd'
+import { Button } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { BuddyPanel } from './BuddyPanel'
 import { BuddySettingsModal } from './BuddySettingsModal'
 
-interface BuddyButtonProps {
-  className?: string
-}
-
-export function BuddyButton({ className }: BuddyButtonProps) {
+export function BuddyButton() {
   const { t } = useTranslation('buddy')
-  const [open, setOpen] = useState(false)
+  const [hasOpened, setHasOpened] = useState(false)
+  const [visible, setVisible] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
+  const handleToggle = useCallback(() => {
+    if (!visible) {
+      setHasOpened(true)
+      setVisible(true)
+    } else {
+      setVisible(false)
+    }
+  }, [visible])
+
   const handleOpenSettings = useCallback(() => {
-    setOpen(false)
+    setVisible(false)
     setSettingsOpen(true)
   }, [])
 
   return (
     <>
-      <Popover
-        content={<BuddyPanel onOpenSettings={handleOpenSettings} />}
-        trigger="click"
-        placement="topRight"
-        open={open}
-        onOpenChange={setOpen}
-        arrow={false}
-        styles={{
-          body: {
-            padding: 0,
-            backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--border)',
-          },
-        }}
-      >
-        <Button
-          type="text"
-          size="small"
-          icon={<BulbOutlined />}
-          className={`!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] ${className}`}
-          title={t('button')}
+      <Button
+        shape="circle"
+        icon={<BulbOutlined />}
+        onClick={handleToggle}
+        className="!fixed !bottom-4 !right-4 !z-50 !w-10 !h-10 !shadow-md !bg-[var(--bg-primary)] !border-[var(--border)] !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+        title={t('button')}
+      />
+
+      {hasOpened && (
+        <BuddyPanel
+          visible={visible}
+          onClose={() => setVisible(false)}
+          onOpenSettings={handleOpenSettings}
         />
-      </Popover>
+      )}
 
       <BuddySettingsModal
         open={settingsOpen}

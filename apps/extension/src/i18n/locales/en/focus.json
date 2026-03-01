@@ -12,6 +12,7 @@
     "available": "{{remaining}}/3 available",
     "unlock": "Connect to unlock more tasks"
   },
+  "subtaskProgress": "{{completed}}/{{total}} subtasks done",
   "pomodoro": {
     "start": "Start Pomodoro",
     "pause": "Pause",

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Chrome 扩展：替换新标签页，展示任务管理工具（滴答清单/Todoist）的任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、网站屏蔽、游客模式、多主题、中英文切换。
+Chrome 扩展：替换新标签页，展示任务管理工具（滴答清单/Todoist）的任务并支持完整操作（查看、标记完成、编辑、删除、新建）。支持 Focus/List 双视图、番茄钟、网站屏蔽、AI Buddy（对话式任务助手）、游客模式、多主题、中英文切换。
 
 技术栈：React 19 + TypeScript 5.7 + Vite 6 + Ant Design + Tailwind CSS + i18next
 
@@ -59,6 +59,7 @@ apps/
 │       │   ├── Sidebar/       # List 模式侧边栏（筛选、项目树）
 │       │   ├── TaskList/      # 任务列表（分组、快速添加）
 │       │   ├── Task/          # 任务卡片（编辑、完成）
+│       │   ├── Buddy/         # AI Buddy（对话面板、设置、Mood 选择）
 │       │   ├── BlockedPage/   # 被屏蔽页面（ChillMode 入口）
 │       │   └── common/        # 共用组件（Clock、Checkbox、ChillModeIndicator、HelpPanel）
 │       ├── contexts/          # React Context
@@ -74,6 +75,11 @@ apps/
 │       │   ├── DidaListAdapter  # 滴答清单 API
 │       │   ├── TodoistAdapter   # Todoist API
 │       │   └── LocalAdapter     # 本地存储（游客模式）
+│       ├── services/          # 服务层
+│       │   ├── aiService.ts     # AI Buddy 请求（OpenAI 兼容 API）
+│       │   ├── settingsStorage  # 用户设置持久化
+│       │   ├── auth / authManager / todoistAuth  # OAuth 认证
+│       │   └── storage.ts       # Chrome Storage 封装
 │       ├── themes/            # 5 种主题定义
 │       ├── i18n/              # 国际化（zh-CN、en）
 │       ├── utils/             # 工具函数
@@ -121,6 +127,15 @@ apps/
 - 被屏蔽时重定向到 `BlockedPage` 组件
 - 支持 Chill Mode（休息模式）：长按 10 秒触发，暂停屏蔽 15 分钟
 
+### AI Buddy
+- 对话式任务助手，通过 OpenAI 兼容 API 提供基于情绪和任务列表的建议
+- 组件：`BuddyButton`（浮动入口）→ `BuddyPanel`（聊天面板）→ `BuddyMessage`（消息气泡）
+- 三阶段状态机：`no-config`（未配置）→ `select-mood`（选情绪）→ `chatting`（多轮对话）
+- `MoodSelector`: 选择情绪（good/okay/low），影响 AI 的 system prompt 策略
+- `BuddySettingsModal`: 配置 API 地址、Key、模型
+- `aiService.ts`: 构建 system prompt（含任务摘要 + 情绪策略），发送 OpenAI 格式请求
+- 聊天面板支持「发送消息」继续对话和「添加任务」快速创建任务
+
 ### BlockedPage 组件
 - `BlockedPage/index.tsx`: 被屏蔽页面主入口
 - `ChillModePanel.tsx`: 休息模式触发面板（长按解锁）
@@ -147,13 +162,14 @@ apps/
 
 ### PR 规范与 Changelog 生成
 - PR 模板 (`.github/PULL_REQUEST_TEMPLATE.md`) 包含双语更新说明 section
-- 创建 PR 时填写 "更新说明 / Release Notes" 中的中英文内容
+- **创建 PR 时必须填写 "更新说明 / Release Notes" 中的中英文内容**，release workflow 依赖 PR body 生成 changelog
 - 添加合适的 label 进行分类：
   - `feature`: 新功能 → ✨ 新功能 / New Features
   - `bug`: Bug 修复 → 🐛 Bug 修复 / Bug Fixes
   - `improvement`: 优化改进 → 💄 优化 / Improvements
   - `skip-changelog`: 跳过 changelog（纯技术性变更）
 - 发布时 release.yml 会自动从已合并 PR 中提取更新说明，生成双语 GitHub Release Notes
+- 使用 `gh pr create` 时，body 必须包含 `### 中文` 和 `### English` 区段，内容为面向用户的更新说明（非技术性描述）
 
 ## 环境变量管理
 

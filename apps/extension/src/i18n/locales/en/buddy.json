@@ -26,6 +26,7 @@
     "retry": "Failed, click to retry",
     "undo": "Undo",
     "priorityReverted": "Priority reverted",
+    "subtasksReverted": "Subtasks removed",
     "setPriority": "Set priority to {{level}}",
     "priority": {
       "high": "High",
@@ -46,7 +47,8 @@
     "apiKeyPlaceholder": "sk-...",
     "model": "Model",
     "modelPlaceholder": "gpt-4o-mini",
-    "presets": "Quick select",
+    "provider": "Provider",
+    "custom": "Custom",
     "test": "Test Connection",
     "testing": "Testing...",
     "testSuccess": "Connection successful",

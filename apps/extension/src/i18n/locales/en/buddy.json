@@ -23,6 +23,7 @@
     "addAll": "Add all",
     "addSelected": "Add {{count}} selected",
     "guestDisabled": "Connect TickTick or Todoist to use",
+    "retry": "Failed, click to retry",
     "undo": "Undo",
     "priorityReverted": "Priority reverted",
     "setPriority": "Set priority to {{level}}",

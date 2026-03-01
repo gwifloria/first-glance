@@ -1,6 +1,10 @@
 import { type ReactNode, useState, useEffect, useRef } from 'react'
 import { Button, Checkbox, Tooltip } from 'antd'
-import { CheckOutlined, LoadingOutlined } from '@ant-design/icons'
+import {
+  CheckOutlined,
+  LoadingOutlined,
+  WarningOutlined,
+} from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppMode } from '@/contexts'
 import type { BuddyAction, ActionStatus } from '@/types/buddy'
@@ -106,6 +110,8 @@ function ActionCard({
       <LoadingOutlined />
     ) : status === 'done' ? (
       <CheckOutlined />
+    ) : status === 'error' ? (
+      <WarningOutlined />
     ) : null
 
   const handleClick = () => {
@@ -122,6 +128,7 @@ function ActionCard({
   const noSelection = action.type === 'add_subtasks' && selected.size === 0
 
   const getButtonText = () => {
+    if (status === 'error') return t('action.retry')
     if (status === 'done') {
       return action.type === 'set_priority'
         ? t('action.priorityUpdated')
@@ -139,13 +146,18 @@ function ActionCard({
     isGuest || status === 'executing' || status === 'done' || noSelection
 
   const renderButton = () => {
+    const btnClassName =
+      status === 'error'
+        ? '!text-xs !h-6 !px-2 !text-red-500'
+        : '!text-xs !h-6 !px-2 !text-[var(--accent)]'
+
     const btn = (
       <Button
         type="text"
         size="small"
         onClick={handleClick}
         disabled={isDisabled}
-        className="!text-xs !h-6 !px-2 !text-[var(--accent)]"
+        className={btnClassName}
         icon={buttonContent}
       >
         {status !== 'executing' && getButtonText()}

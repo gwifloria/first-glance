@@ -23,6 +23,7 @@
     "addAll": "全部添加",
     "addSelected": "添加选中的 {{count}} 项",
     "guestDisabled": "连接滴答清单或 Todoist 后可使用",
+    "retry": "失败，点击重试",
     "undo": "撤销",
     "priorityReverted": "优先级已恢复",
     "setPriority": "设为优先级 {{level}}",

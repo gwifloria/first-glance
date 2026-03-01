@@ -141,12 +141,10 @@ function buildSystemPrompt(
 操作建议格式（可选）：
 当你有具体的操作建议时（如调整优先级、拆解任务为小步骤），在回复末尾附加操作区段。
 格式要求：
-\`\`\`
 :::actions
 set_priority|任务标题|high
 add_subtask|任务标题|步骤1,步骤2,步骤3
 :::
-\`\`\`
 - set_priority: 调整优先级，可选值 high/medium/low/none
 - add_subtask: 拆解任务为子任务/步骤，用逗号分隔（不要建议已存在的子任务）
 - 任务标题必须与用户任务列表中的标题完全一致

@@ -120,7 +120,8 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
           </Button>
         </div>
       }
-      width={400}
+      width="90vw"
+      style={{ maxWidth: 400 }}
     >
       <div className="flex flex-col gap-4 mt-4">
         <div className="flex gap-2">

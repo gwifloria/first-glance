@@ -86,7 +86,7 @@ export const TaskList = memo(function TaskList({
   }, [])
 
   return (
-    <div className="flex flex-col h-full bg-transparent relative py-10 px-[60px] overflow-hidden max-md:p-5">
+    <div className="flex flex-col h-full bg-transparent relative py-10 px-[60px] max-lg:px-8 overflow-hidden max-md:p-5">
       <TaskListHeader
         filter={filter}
         projects={projects}

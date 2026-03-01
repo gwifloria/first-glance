@@ -4,7 +4,6 @@ import {
   CloseOutlined,
   SettingOutlined,
   SendOutlined,
-  PlusOutlined,
   ReloadOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -97,13 +96,24 @@ export function BuddyPanel({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // 首次挂载检查 AI 配置
+  // 检查 AI 配置，并监听变化
   useEffect(() => {
-    getSettings().then((settings) => {
-      const config = settings.aiConfig
+    const check = (config?: {
+      baseUrl?: string
+      apiKey?: string
+      model?: string
+    }) => {
       const hasConfig = !!(config?.baseUrl && config?.apiKey && config?.model)
-      setPhase(hasConfig ? 'select-mood' : 'no-config')
-    })
+      setPhase((prev) => {
+        // 配置就绪：从 no-config 进入 select-mood
+        if (hasConfig && prev === 'no-config') return 'select-mood'
+        // 配置清空：回到 no-config
+        if (!hasConfig && prev !== 'no-config') return 'no-config'
+        return prev
+      })
+    }
+    getSettings().then((s) => check(s.aiConfig))
+    return subscribeSettings((s) => check(s.aiConfig))
   }, [])
 
   // 任务数据源变化时重置对话（如 disconnect 后任务清空）
@@ -269,41 +279,29 @@ export function BuddyPanel({
       } else if (action.type === 'add_subtasks') {
         // 统一使用 createTask({ parentId }) 创建真正的子任务
         const task = (data.tasks as Task[]).find((t) => t.id === action.taskId)
+        const createdTasks: Task[] = []
         for (const subtitle of action.subtitles) {
-          await actions.createTask({
+          const created = await actions.createTask({
             title: subtitle,
             projectId: task?.projectId,
             parentId: action.taskId,
           })
+          createdTasks.push(created)
         }
         message.success(
           t('action.subtasksAdded', { count: action.subtitles.length })
         )
+
+        // 返回 undo 函数：删除刚创建的子任务
+        return async () => {
+          for (const created of createdTasks) {
+            await actions.deleteTask(created)
+          }
+          message.success(t('action.subtasksReverted'))
+        }
       }
     },
     [actions, data.tasks, t]
-  )
-
-  // 添加任务
-  const handleAddTask = useCallback(
-    async (title: string) => {
-      if (!title.trim()) return
-      setInputValue('')
-
-      try {
-        const settings = await getSettings()
-        const projectId =
-          settings.defaultProjectId &&
-          !settings.defaultProjectId.startsWith('inbox')
-            ? settings.defaultProjectId
-            : undefined
-        await actions.createTask({ title: title.trim(), projectId })
-        message.success(t('taskAdded'))
-      } catch {
-        message.error(t('error'))
-      }
-    },
-    [actions, t]
   )
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -394,10 +392,11 @@ export function BuddyPanel({
                 </span>
               </div>
             )}
-            {/* 首次建议后显示快捷引导 */}
+            {/* 首次建议后显示快捷引导（仅当首条消息无操作建议时） */}
             {!loading &&
               messages.length === 1 &&
-              messages[0].role === 'assistant' && (
+              messages[0].role === 'assistant' &&
+              !messages[0].actions?.length && (
                 <button
                   onClick={() => handleSend(t('suggestion.breakDown'))}
                   className="self-start text-xs px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-colors"
@@ -422,15 +421,6 @@ export function BuddyPanel({
               disabled={loading}
               className="flex-1"
               size="small"
-            />
-            <Button
-              type="text"
-              size="small"
-              icon={<PlusOutlined />}
-              onClick={() => handleAddTask(inputValue)}
-              disabled={!inputValue.trim() || loading}
-              title={t('input.addTask')}
-              className="!text-[var(--text-secondary)]"
             />
             <Button
               type="primary"

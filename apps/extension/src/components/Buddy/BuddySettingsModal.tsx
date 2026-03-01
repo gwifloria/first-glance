@@ -8,21 +8,26 @@ import type { AIConfig } from '@/types/buddy'
 
 const PRESETS = [
   {
+    key: 'chatgpt',
     label: 'ChatGPT',
     baseUrl: 'https://api.openai.com/v1',
     model: 'gpt-4o-mini',
   },
   {
+    key: 'gemini',
     label: 'Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
     model: 'gemini-2.0-flash',
   },
   {
+    key: 'deepseek',
     label: 'DeepSeek',
     baseUrl: 'https://api.deepseek.com/v1',
     model: 'deepseek-chat',
   },
 ] as const
+
+const CUSTOM_KEY = 'custom'
 
 interface BuddySettingsModalProps {
   open: boolean
@@ -144,21 +149,19 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
       style={{ maxWidth: 400 }}
     >
       <div className="flex flex-col gap-4 mt-4">
-        <div className="flex gap-2">
-          {PRESETS.map((preset) => (
-            <Button
-              key={preset.label}
-              size="small"
-              type={baseUrl === preset.baseUrl ? 'primary' : 'default'}
-              ghost={baseUrl === preset.baseUrl}
-              onClick={() => {
-                setBaseUrl(preset.baseUrl)
-                setModel(preset.model)
-              }}
-            >
-              {preset.label}
-            </Button>
-          ))}
+        <div>
+          <label className="block text-sm text-[var(--text-secondary)] mb-1">
+            {t('settings.provider')}
+          </label>
+          <Select
+            value={selectedProvider}
+            onChange={handleProviderChange}
+            className="w-full"
+            options={[
+              ...PRESETS.map((p) => ({ value: p.key, label: p.label })),
+              { value: CUSTOM_KEY, label: t('settings.custom') },
+            ]}
+          />
         </div>
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">

@@ -237,7 +237,10 @@ function ActionCard({
           </Checkbox>
         ))}
       </div>
-      {renderButton()}
+      <div className="flex items-center">
+        {renderButton()}
+        {renderUndoButton()}
+      </div>
     </div>
   )
 }

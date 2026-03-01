@@ -2,6 +2,7 @@
   "button": "AI Buddy",
   "mood": {
     "title": "How are you feeling?",
+    "hint": "AI Buddy gives suggestions based on your tasks and may modify priorities or add subtasks (with your approval)",
     "good": "Feeling good",
     "okay": "So-so",
     "low": "A bit tired"

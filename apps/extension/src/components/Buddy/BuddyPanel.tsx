@@ -53,6 +53,9 @@ function MoodSelector({ onSelect }: { onSelect: (mood: Mood) => void }) {
           </Button>
         ))}
       </div>
+      <div className="text-[11px] text-[var(--text-secondary)] text-center max-w-[280px] leading-relaxed opacity-70">
+        {t('mood.hint')}
+      </div>
     </div>
   )
 }
@@ -173,7 +176,8 @@ export function BuddyPanel({
       setLoading(true)
 
       abortRef.current?.abort()
-      abortRef.current = new AbortController()
+      const controller = new AbortController()
+      abortRef.current = controller
 
       try {
         const config = await getValidConfig()
@@ -186,10 +190,11 @@ export function BuddyPanel({
           focusTasks,
           allTasks,
           [],
-          abortRef.current.signal
+          controller.signal
         )
         setMessages([processReply(reply)])
       } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
         setMessages([{ role: 'assistant', content: `⚠️ ${errorMsg}` }])
       } finally {
@@ -211,7 +216,8 @@ export function BuddyPanel({
       setLoading(true)
 
       abortRef.current?.abort()
-      abortRef.current = new AbortController()
+      const controller = new AbortController()
+      abortRef.current = controller
 
       try {
         const config = await getValidConfig()
@@ -224,7 +230,7 @@ export function BuddyPanel({
           focusTasks,
           allTasks,
           newMessages,
-          abortRef.current!.signal
+          controller.signal
         )
         setMessages([...newMessages, processReply(reply)])
       } catch (err) {

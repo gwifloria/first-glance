@@ -5,7 +5,8 @@ import {
   StopOutlined,
   LinkOutlined,
   DisconnectOutlined,
-  MessageOutlined,
+  GithubOutlined,
+  SendOutlined,
   FileTextOutlined,
   LockOutlined,
   CoffeeOutlined,
@@ -18,6 +19,7 @@ import { ThemeToggle } from './ThemeToggle'
 
 const HELP_LINKS = {
   feedback: 'https://github.com/gwifloria/first-glance/issues',
+  community: 'https://t.me/firstglance_community',
   changelog: 'https://gwifloria.github.io/first-glance/changelog',
   buymeacoffee: 'https://buymeacoffee.com/gwifloria',
   privacy: 'https://gwifloria.github.io/first-glance/privacy',
@@ -146,11 +148,32 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       <Divider className="!my-2" />
 
       {/* 帮助链接 */}
-      <LinkItem
-        icon={<MessageOutlined />}
-        label={tSettings('help.feedback')}
-        href={HELP_LINKS.feedback}
-      />
+      <div className="flex">
+        <a
+          href={HELP_LINKS.feedback}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span className="text-[var(--text-secondary)]">
+            <GithubOutlined />
+          </span>
+          <span className="text-sm">GitHub</span>
+        </a>
+        <a
+          href={HELP_LINKS.community}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span className="text-[var(--text-secondary)]">
+            <SendOutlined />
+          </span>
+          <span className="text-sm">Telegram</span>
+        </a>
+      </div>
       <LinkItem
         icon={<FileTextOutlined />}
         label={tSettings('help.changelog')}

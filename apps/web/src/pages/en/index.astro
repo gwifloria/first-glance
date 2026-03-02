@@ -6,11 +6,11 @@ const chromeStoreUrl = 'https://chromewebstore.google.com/detail/first-glance/lb
 
 // Theme colors for the gallery
 const themes = [
-  { name: 'Milk', bg: '#fcfcfc', accent: '#f0f0f0' },
-  { name: 'Beige', bg: '#f7f1e4', accent: '#e2ddd3' },
-  { name: 'Pink', bg: '#fcfaf9', accent: '#d4a5a5' },
-  { name: 'Blue', bg: '#e8f0f5', accent: '#a2c1c0' },
-  { name: 'Dark', bg: '#292524', accent: '#44403c' },
+  { name: 'Milk', bg: '#fcfcfc', accent: '#f0f0f0', text: '#5d5555', pink: '#d4a5a5' },
+  { name: 'Beige', bg: '#f7f1e4', accent: '#e2ddd3', text: '#6b5e53', pink: '#c9a96e' },
+  { name: 'Pink', bg: '#fcfaf9', accent: '#faeaea', text: '#5d5555', pink: '#d4a5a5' },
+  { name: 'Blue', bg: '#e8f0f5', accent: '#c8dce6', text: '#4a5c6a', pink: '#7ba7c2' },
+  { name: 'Dark', bg: '#292524', accent: '#44403c', text: '#d6d3d1', pink: '#d4a5a5' },
 ]
 ---
 
@@ -33,6 +33,7 @@ const themes = [
         <a href="#story" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Story</a>
         <a href="#features" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Features</a>
         <a href="#chill-mode" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Chill Mode</a>
+        <a href="#ai-buddy" class="text-sm font-bold text-text-muted hover:text-text transition-colors">AI Buddy</a>
         <a href="/first-glance/en/changelog" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Changelog</a>
         <a href="/first-glance/" class="text-sm font-bold text-text-muted hover:text-text transition-colors">中文</a>
         <a href="https://github.com/gwifloria/first-glance" target="_blank" class="text-text-muted hover:text-text transition-colors" title="GitHub">
@@ -162,7 +163,7 @@ const themes = [
     </div>
   </header>
 
-  <!-- Section: Why First Glance -->
+  <!-- Section 2: Story -->
   <section id="story" class="snap-section py-20 px-6 bg-white flex items-center">
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-12 text-center">
@@ -195,151 +196,103 @@ const themes = [
     </div>
   </section>
 
-  <!-- Section 2: Features + Integrations -->
+  <!-- Section 3: How It Works (Steps) -->
   <section id="features" class="snap-section py-20 px-6 bg-white">
-    <div class="max-w-7xl mx-auto w-full">
-      <div class="grid lg:grid-cols-[1fr_320px] gap-12">
-        <!-- Left: Core Features -->
-        <div>
-          <div class="mb-8">
-            <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-2">Core Features</h2>
-            <p class="text-text-muted text-lg">A new tab page designed for focus</p>
-          </div>
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-3">Three Steps to Focus</h2>
+        <p class="text-text-muted text-lg">Your new tab is your task dashboard</p>
+      </div>
 
-          <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <!-- Feature 1: Focus/List Views -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border-pink">
-                <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">Focus / List Views</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                Focus mode shows only the current task. List mode displays all todos. Switch instantly to match your workflow.
-              </p>
-            </div>
+      <div class="relative">
+        <!-- Timeline line (desktop only) -->
+        <div class="timeline-line"></div>
 
-            <!-- Feature 2: Task Management -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-beige rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-beige-border">
-                <svg class="w-6 h-6 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">Task Management</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                View, add, complete, and delete tasks quickly. Smart grouping by Today/Tomorrow helps you stay on track.
-              </p>
-            </div>
-
-            <!-- Feature 3: Pomodoro Timer -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border-pink">
-                <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">Pomodoro Timer</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                Classic 25-minute focus + 5-minute break rhythm. Syncs across tabs so you never lose your timer.
-              </p>
-            </div>
-
-            <!-- Feature 4: Website Blocking -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-mint/20 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-mint/30">
-                <svg class="w-6 h-6 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">Website Blocking</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                Block distracting sites with a mindful pause screen. Hold 10 seconds to unlock—enough to make you think twice.
-              </p>
-            </div>
-
-            <!-- Feature 5: Guest Mode -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-border-light rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border">
-                <svg class="w-6 h-6 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">Guest Mode</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                No login required. Start instantly with local storage. Up to 3 tasks, perfect for a quick trial.
-              </p>
-            </div>
-
-            <!-- Feature 6: Multiple Themes -->
-            <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
-              <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border-pink">
-                <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold font-serif mb-2 text-text">5 Themes</h3>
-              <p class="text-sm text-text-muted leading-relaxed">
-                Milk, Beige, Pink, Blue, and Dark—each carefully designed. Find the style that fits you.
-              </p>
-              <div class="flex gap-2 mt-3">
-                {themes.map((theme) => (
-                  <div
-                    class="w-6 h-6 rounded-full border-2 border-border relative overflow-hidden"
-                    style={`background-color: ${theme.bg}`}
-                    title={theme.name}
-                  >
-                    <div
-                      class="absolute bottom-0 left-0 w-full h-1/2"
-                      style={`background-color: ${theme.accent}`}
-                    ></div>
-                  </div>
-                ))}
+        <!-- Step 1 -->
+        <div class="timeline-step mb-16">
+          <div class="timeline-dot">1</div>
+          <div>
+            <h3 class="text-xl font-serif font-bold text-text mb-2">Open a New Tab</h3>
+            <p class="text-text-muted mb-6">Your most important task and clock are right there.</p>
+            <div class="grid md:grid-cols-1 gap-4 max-w-md">
+              <!-- Card: Focus / List Views -->
+              <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+                <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border-pink">
+                  <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold font-serif mb-2 text-text">Focus / List Views</h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  Focus mode shows only the current task. List mode displays all todos. Switch instantly to match your workflow.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Right: Integrations -->
-        <div>
-          <div class="mb-8">
-            <h2 class="text-2xl font-serif font-medium text-text mb-2">Integrations</h2>
-            <p class="text-text-muted text-sm">Connect your favorite task management tools</p>
-          </div>
-
-          <div class="grid gap-4">
-            {integrations.map((item) => (
-              <div class={`p-5 rounded-2xl hover:shadow-lg transition-shadow group ${
-                item.status === 'supported'
-                  ? 'bg-background border border-border'
-                  : 'bg-background/60 border border-dashed border-border'
-              }`}>
-                <div class="flex items-start justify-between mb-3">
-                  {item.logo ? (
-                    <img src={item.logo} alt={item.name.en} class="w-7 h-7" />
-                  ) : (
-                    <div class={`text-2xl ${item.status === 'planned' ? 'opacity-50' : ''}`}>{item.icon}</div>
-                  )}
-                  <span class={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                    item.status === 'supported'
-                      ? 'bg-mint/20 text-mint border border-mint/30'
-                      : 'bg-border-light text-text-muted border border-border'
-                  }`}>
-                    {item.status === 'supported' ? '✓ Supported' : 'Planned'}
-                  </span>
+        <!-- Step 2 -->
+        <div class="timeline-step mb-16">
+          <div class="timeline-dot">2</div>
+          <div>
+            <h3 class="text-xl font-serif font-bold text-text mb-2">Manage Tasks</h3>
+            <p class="text-text-muted mb-6">View, add, complete tasks. Start a Pomodoro for deep work.</p>
+            <div class="grid md:grid-cols-2 gap-4 max-w-2xl">
+              <!-- Card: Task Management -->
+              <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+                <div class="w-12 h-12 bg-beige rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-beige-border">
+                  <svg class="w-6 h-6 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                  </svg>
                 </div>
-                <h3 class="text-base font-bold font-serif mb-1 text-text">{item.name.en}</h3>
-                <p class="text-sm text-text-muted leading-relaxed">{item.description.en}</p>
+                <h3 class="text-lg font-bold font-serif mb-2 text-text">Task Management</h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  View, add, complete, and delete tasks quickly. Smart grouping by Today/Tomorrow helps you stay on track.
+                </p>
               </div>
-            ))}
+              <!-- Card: Pomodoro Timer -->
+              <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+                <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-border-pink">
+                  <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold font-serif mb-2 text-text">Pomodoro Timer</h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  Classic 25-minute focus + 5-minute break rhythm. Syncs across tabs so you never lose your timer.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timeline-step">
+          <div class="timeline-dot">3</div>
+          <div>
+            <h3 class="text-xl font-serif font-bold text-text mb-2">Block Distractions</h3>
+            <p class="text-text-muted mb-6">Set up your block list. Don't let distractions ruin your focus.</p>
+            <div class="grid md:grid-cols-1 gap-4 max-w-md">
+              <!-- Card: Website Blocking -->
+              <div class="bg-background p-6 rounded-2xl border border-border hover:shadow-lg transition-shadow group">
+                <div class="w-12 h-12 bg-mint/20 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform border border-mint/30">
+                  <svg class="w-6 h-6 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold font-serif mb-2 text-text">Website Blocking</h3>
+                <p class="text-sm text-text-muted leading-relaxed">
+                  Block distracting sites with a mindful pause screen. Hold 10 seconds to unlock—enough to make you think twice.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Section 3: Chill Mode (Dark Background) -->
+  <!-- Section 4: Chill Mode (Dark Background) -->
   <section id="chill-mode" class="snap-section py-20 px-6 bg-text text-background relative overflow-hidden flex items-center">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10 paper-texture"></div>
@@ -358,7 +311,7 @@ const themes = [
           First Glance intercepts distracting sites with a mindful pause screen.
         </p>
         <div class="bg-white/5 p-6 rounded-xl border border-white/10">
-          <p class="italic font-serif text-lg mb-4 text-pink">"Seriously? This site? Now?"</p>
+          <p class="font-serif text-lg mb-4 text-pink">"Seriously? This site? Now?"</p>
           <div class="flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-pink">
             <span>Hold to Unlock</span>
             <div class="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
@@ -392,6 +345,200 @@ const themes = [
     </div>
   </section>
 
+  <!-- Section 5: AI Buddy -->
+  <section id="ai-buddy" class="snap-section py-20 px-6 warm-gradient relative overflow-hidden flex items-center">
+    <div class="absolute inset-0 paper-texture pointer-events-none opacity-40"></div>
+
+    <div class="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center relative z-10">
+      <!-- Left: Text -->
+      <div>
+        <div class="w-12 h-12 bg-pink-bg rounded-xl flex items-center justify-center mb-6 border border-border-pink">
+          <svg class="w-6 h-6 text-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+        </div>
+        <h3 class="text-3xl md:text-4xl font-serif font-bold text-pink mb-3">AI Buddy</h3>
+        <p class="text-lg text-text-muted mb-8 leading-relaxed">Recommends your next step based on how you feel</p>
+
+        <div class="space-y-5">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-pink-bg rounded-lg flex items-center justify-center flex-shrink-0 border border-border-pink text-pink font-bold text-sm">1</div>
+            <div>
+              <p class="text-text font-medium">Pick a mood kaomoji</p>
+              <p class="text-sm text-text-muted">Tell Buddy how you're feeling right now</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-pink-bg rounded-lg flex items-center justify-center flex-shrink-0 border border-border-pink text-pink font-bold text-sm">2</div>
+            <div>
+              <p class="text-text font-medium">Get personalized task suggestions</p>
+              <p class="text-sm text-text-muted">Based on your tasks and mood, get recommendations for what to do next</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-pink-bg rounded-lg flex items-center justify-center flex-shrink-0 border border-border-pink text-pink font-bold text-sm">3</div>
+            <div>
+              <p class="text-text font-medium">Set priority or break down subtasks</p>
+              <p class="text-sm text-text-muted">Take action right from the chat without breaking your flow</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-text-muted mt-8 flex items-center gap-2">
+          <svg class="w-4 h-4 text-mint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Works with any OpenAI-compatible API
+        </p>
+      </div>
+
+      <!-- Right: BuddyPanel Mockup -->
+      <div class="relative flex justify-center">
+        <div class="w-80 relative">
+          <!-- Mood Selection Panel -->
+          <div class="bg-white rounded-2xl shadow-xl border border-border overflow-hidden">
+            <!-- Header -->
+            <div class="px-5 py-3 border-b border-border-light flex items-center justify-between">
+              <span class="font-serif font-bold text-text">AI Buddy</span>
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-border-light flex items-center justify-center">
+                  <svg class="w-3.5 h-3.5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+                <div class="w-6 h-6 rounded-lg bg-border-light flex items-center justify-center">
+                  <svg class="w-3.5 h-3.5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5">
+              <p class="text-center text-text-muted text-sm mb-5">How are you feeling today?</p>
+              <div class="grid grid-cols-3 gap-3">
+                <div class="mood-card">
+                  <div class="text-2xl mb-1">(&#x25D5;&#x203F;&#x25D5;)</div>
+                  <div class="text-xs text-text-muted font-medium">Good</div>
+                </div>
+                <div class="mood-card active">
+                  <div class="text-2xl mb-1">[￣_￣]</div>
+                  <div class="text-xs text-pink font-medium">Okay</div>
+                </div>
+                <div class="mood-card">
+                  <div class="text-2xl mb-1">(&#xB4;-&#x3C9;-`)</div>
+                  <div class="text-xs text-text-muted font-medium">Low</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Preview (offset, semi-transparent) -->
+          <div class="mt-[-8px] ml-4 mr-4 opacity-80">
+            <div class="buddy-bubble shadow-md">
+              <p class="text-sm text-text leading-relaxed">
+                You're feeling okay today. How about starting with <span class="font-bold">organizing meeting notes</span>...
+              </p>
+              <div class="flex gap-2 mt-3">
+                <span class="px-3 py-1 bg-pink-bg text-pink text-xs font-bold rounded-full border border-border-pink">Set High Priority</span>
+                <span class="px-3 py-1 bg-pink-bg text-pink text-xs font-bold rounded-full border border-border-pink">Break Down</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decorative elements -->
+        <div class="absolute -top-6 -right-6 w-20 h-20 bg-mint/20 rounded-full mix-blend-multiply filter blur-2xl opacity-60"></div>
+        <div class="absolute -top-3 right-4 w-16 h-5 tape rounded"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Make It Yours -->
+  <section id="make-it-yours" class="snap-section py-20 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-serif font-medium text-text mb-3">Make It Yours</h2>
+        <p class="text-text-muted text-lg">Pick a theme, connect your tools, or just start</p>
+      </div>
+
+      <!-- Theme Gallery -->
+      <div class="mb-16">
+        <h3 class="text-lg font-serif font-bold text-text mb-6 text-center">5 Carefully Designed Themes</h3>
+        <div class="theme-scroll justify-center">
+          {themes.map((theme) => (
+            <div class="w-44 flex-shrink-0">
+              <!-- Mini browser mockup -->
+              <div class="rounded-xl overflow-hidden border border-border shadow-md hover:shadow-lg transition-shadow">
+                <!-- Browser bar -->
+                <div class="h-5 flex items-center gap-1.5 px-2" style={`background-color: ${theme.accent}`}>
+                  <div class="w-2 h-2 rounded-full" style={`background-color: ${theme.text}; opacity: 0.3`}></div>
+                  <div class="w-2 h-2 rounded-full" style={`background-color: ${theme.text}; opacity: 0.3`}></div>
+                  <div class="w-2 h-2 rounded-full" style={`background-color: ${theme.text}; opacity: 0.3`}></div>
+                </div>
+                <!-- Content -->
+                <div class="p-4 text-center" style={`background-color: ${theme.bg}`}>
+                  <div class="font-serif text-xl font-medium mb-2" style={`color: ${theme.text}`}>09:30</div>
+                  <div class="mx-auto w-24 h-6 rounded-lg flex items-center gap-2 px-2" style={`background-color: ${theme.accent}`}>
+                    <div class="w-3 h-3 rounded border-2 flex-shrink-0" style={`border-color: ${theme.pink}`}></div>
+                    <div class="flex-1 h-1.5 rounded-full" style={`background-color: ${theme.text}; opacity: 0.2`}></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Theme name + dot -->
+              <div class="flex items-center justify-center gap-2 mt-2">
+                <div class="w-3 h-3 rounded-full border border-border" style={`background-color: ${theme.pink}`}></div>
+                <span class="text-sm text-text-muted font-medium">{theme.name}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Integrations Bar -->
+      <div class="mb-12">
+        <h3 class="text-lg font-serif font-bold text-text mb-6 text-center">Connect Your Task Tools</h3>
+        <div class="flex flex-wrap justify-center gap-4">
+          {integrations.map((item) => (
+            <div class={`flex items-center gap-3 px-5 py-3 rounded-xl border ${
+              item.status === 'supported'
+                ? 'bg-background border-border'
+                : 'bg-background/60 border-dashed border-border'
+            }`}>
+              {item.logo ? (
+                <img src={item.logo} alt={item.name.en} class="w-5 h-5" />
+              ) : (
+                <span class={`text-lg ${item.status === 'planned' ? 'opacity-50' : ''}`}>{item.icon}</span>
+              )}
+              <span class="text-sm font-bold text-text">{item.name.en}</span>
+              <span class={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                item.status === 'supported'
+                  ? 'bg-mint/20 text-mint border border-mint/30'
+                  : 'bg-border-light text-text-muted border border-border'
+              }`}>
+                {item.status === 'supported' ? '✓' : 'Planned'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Guest Mode Callout -->
+      <div class="max-w-2xl mx-auto bg-border-light/50 border border-border rounded-xl px-6 py-4 flex items-center gap-4">
+        <div class="w-10 h-10 bg-background rounded-full flex items-center justify-center flex-shrink-0 border border-border">
+          <svg class="w-5 h-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+        </div>
+        <p class="text-sm text-text-muted leading-relaxed">
+          <span class="text-text font-medium">No account? No problem.</span> Guest mode supports up to 3 local tasks. No login required.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="bg-white border-t border-border py-12 px-6">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
@@ -403,7 +550,8 @@ const themes = [
       </div>
 
       <div class="flex gap-6 text-sm font-medium opacity-60">
-        <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="hover:opacity-100 transition-opacity">Feedback</a>
+        <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="hover:opacity-100 transition-opacity">GitHub</a>
+        <a href="https://t.me/firstglance_community" target="_blank" class="hover:opacity-100 transition-opacity">Telegram</a>
         <a href="/first-glance/privacy" class="hover:opacity-100 transition-opacity">Privacy</a>
         <a href="https://buymeacoffee.com/gwifloria" target="_blank" class="hover:opacity-100 transition-opacity">Buy me a coffee</a>
       </div>

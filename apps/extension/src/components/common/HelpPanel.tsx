@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Popover, Button, Divider } from 'antd'
 import {
   QuestionOutlined,
-  MessageOutlined,
+  SendOutlined,
   FileTextOutlined,
   GithubOutlined,
   LockOutlined,
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 const LINKS = {
   feedback: 'https://github.com/gwifloria/first-glance/issues',
+  community: 'https://t.me/firstglance_community',
   changelog: 'https://gwifloria.github.io/first-glance/changelog',
   github: 'https://github.com/gwifloria/first-glance',
   privacy: 'https://gwifloria.github.io/first-glance/privacy',
@@ -66,17 +67,37 @@ export function HelpPanel({ className }: HelpPanelProps) {
       <Divider className="!my-2" />
 
       {/* Links */}
-      <LinkItem
-        icon={<MessageOutlined />}
-        label={t('help.feedback')}
-        href={LINKS.feedback}
-      />
+      <div className="flex">
+        <a
+          href={LINKS.feedback}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span className="text-[var(--text-secondary)]">
+            <GithubOutlined />
+          </span>
+          <span className="text-sm">GitHub</span>
+        </a>
+        <a
+          href={LINKS.community}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span className="text-[var(--text-secondary)]">
+            <SendOutlined />
+          </span>
+          <span className="text-sm">Telegram</span>
+        </a>
+      </div>
       <LinkItem
         icon={<FileTextOutlined />}
         label={t('help.changelog')}
         href={LINKS.changelog}
       />
-      <LinkItem icon={<GithubOutlined />} label="GitHub" href={LINKS.github} />
       <LinkItem
         icon={<CoffeeOutlined />}
         label={t('help.buymeacoffee')}

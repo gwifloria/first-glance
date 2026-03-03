@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react'
-import { Popover, Button, Divider } from 'antd'
+import { useState } from 'react'
+import { Popover, Button, Divider, Tooltip } from 'antd'
 import {
   QuestionOutlined,
-  MessageOutlined,
+  SendOutlined,
   FileTextOutlined,
   GithubOutlined,
   LockOutlined,
@@ -12,34 +12,10 @@ import { useTranslation } from 'react-i18next'
 
 const LINKS = {
   feedback: 'https://github.com/gwifloria/first-glance/issues',
+  community: 'https://t.me/firstglance_community',
   changelog: 'https://gwifloria.github.io/first-glance/changelog',
-  github: 'https://github.com/gwifloria/first-glance',
   privacy: 'https://gwifloria.github.io/first-glance/privacy',
   buymeacoffee: 'https://buymeacoffee.com/gwifloria',
-}
-
-/** 链接项组件 */
-function LinkItem({
-  icon,
-  label,
-  href,
-}: {
-  icon: ReactNode
-  label: string
-  href: string
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
-      style={{ color: 'var(--text-primary)' }}
-    >
-      <span className="text-[var(--text-secondary)]">{icon}</span>
-      <span className="text-sm">{label}</span>
-    </a>
-  )
 }
 
 interface HelpPanelProps {
@@ -48,16 +24,27 @@ interface HelpPanelProps {
 
 /**
  * 帮助与反馈面板
- * 包含：版本信息、反馈入口、更新日志、GitHub、隐私政策
+ * 包含：版本信息、外链图标（更新日志、赞助、隐私、GitHub、Telegram）
  */
 export function HelpPanel({ className }: HelpPanelProps) {
   const { t } = useTranslation('settings')
   const [open, setOpen] = useState(false)
   const version = chrome.runtime.getManifest().version
 
+  const links = [
+    {
+      icon: <FileTextOutlined />,
+      href: LINKS.changelog,
+      tip: t('help.changelog'),
+    },
+    { icon: <LockOutlined />, href: LINKS.privacy, tip: t('help.privacy') },
+    { icon: <GithubOutlined />, href: LINKS.feedback, tip: 'GitHub' },
+    { icon: <SendOutlined />, href: LINKS.community, tip: 'Telegram' },
+  ]
+
   const content = (
-    <div className="w-56 py-1">
-      {/* Header: App name + version */}
+    <div className="w-48 py-1">
+      {/* Header */}
       <div className="px-3 py-2 text-center">
         <div className="font-bold text-[var(--text-primary)]">First Glance</div>
         <div className="text-xs text-[var(--text-secondary)]">v{version}</div>
@@ -65,34 +52,35 @@ export function HelpPanel({ className }: HelpPanelProps) {
 
       <Divider className="!my-2" />
 
-      {/* Links */}
-      <LinkItem
-        icon={<MessageOutlined />}
-        label={t('help.feedback')}
-        href={LINKS.feedback}
-      />
-      <LinkItem
-        icon={<FileTextOutlined />}
-        label={t('help.changelog')}
-        href={LINKS.changelog}
-      />
-      <LinkItem icon={<GithubOutlined />} label="GitHub" href={LINKS.github} />
-      <LinkItem
-        icon={<CoffeeOutlined />}
-        label={t('help.buymeacoffee')}
+      {/* Buy me a coffee */}
+      <a
         href={LINKS.buymeacoffee}
-      />
-      <LinkItem
-        icon={<LockOutlined />}
-        label={t('help.privacy')}
-        href={LINKS.privacy}
-      />
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors no-underline"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        <CoffeeOutlined />
+        <span className="text-xs">{t('help.buymeacoffee')}</span>
+      </a>
 
       <Divider className="!my-2" />
 
-      {/* Footer */}
-      <div className="px-3 py-1 text-xs text-center text-[var(--text-secondary)]">
-        © First Glance
+      {/* 工具图标 */}
+      <div className="px-3 py-2 flex items-center justify-center gap-2">
+        {links.map((item) => (
+          <Tooltip title={item.tip} key={item.href}>
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center w-7 h-7 rounded hover:bg-[var(--bg-secondary)] transition-colors hover:!text-[var(--text-primary)]"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {item.icon}
+            </a>
+          </Tooltip>
+        ))}
       </div>
     </div>
   )

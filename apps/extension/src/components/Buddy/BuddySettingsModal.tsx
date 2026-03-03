@@ -165,20 +165,6 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
         </div>
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">
-            {t('settings.provider')}
-          </label>
-          <Select
-            value={selectedProvider}
-            onChange={handleProviderChange}
-            className="w-full"
-            options={[
-              ...PRESETS.map((p) => ({ value: p.key, label: p.label })),
-              { value: CUSTOM_KEY, label: t('settings.custom') },
-            ]}
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-secondary)] mb-1">
             {t('settings.baseUrl')}
           </label>
           <Input

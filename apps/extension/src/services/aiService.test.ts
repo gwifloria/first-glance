@@ -29,6 +29,11 @@ describe('formatTask', () => {
     expect(formatTask(makeTask({ priority: 0 }))).toBe('- 测试任务')
   })
 
+  it('未映射的优先级值不输出优先级标签', () => {
+    // priority=2 不在 PRIORITY_LABEL 映射中，应跳过而非显示错误标签
+    expect(formatTask(makeTask({ priority: 2 as never }))).toBe('- 测试任务')
+  })
+
   it('带截止日期', () => {
     const result = formatTask(
       makeTask({ dueDate: '2026-03-15T00:00:00+08:00' })
@@ -183,6 +188,18 @@ describe('buildTaskSummary', () => {
     const topLines = focusSection.split('\n').filter((l) => l.startsWith('- '))
     expect(topLines.length).toBe(1)
     expect(focusSection).toContain('  - 小步骤')
+  })
+
+  it('focusTasks 全是子任务时焦点区无任务行', () => {
+    const parent = makeTask({ id: 'p1', title: '父任务' })
+    const child = makeTask({ id: 'c1', title: '子步骤', parentId: 'p1' })
+    // focusTasks 只包含子任务，父任务不在焦点中
+    const result = buildTaskSummary([child], [parent, child])
+    // 焦点区标题存在但没有顶层任务行
+    expect(result).toContain('【当前焦点任务】')
+    const focusSection = result.split('【其他待办任务】')[0]
+    const topLines = focusSection.split('\n').filter((l) => l.startsWith('- '))
+    expect(topLines.length).toBe(0)
   })
 
   it('无焦点时超过 15 个顶层任务截断', () => {

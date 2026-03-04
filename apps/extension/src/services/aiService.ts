@@ -25,8 +25,9 @@ export function formatTask(t: Task, lang: Lang = 'zh'): string {
   const priorityKey = lang === 'zh' ? '优先级' : 'Priority'
   const dueKey = lang === 'zh' ? '截止' : 'Due'
   const parts: string[] = [`- ${t.title}`]
-  if (t.priority > 0)
-    parts.push(`[${priorityKey}:${labels[t.priority] ?? labels[0]}]`)
+  const priorityLabel = labels[t.priority]
+  if (t.priority > 0 && priorityLabel)
+    parts.push(`[${priorityKey}:${priorityLabel}]`)
   if (t.dueDate) parts.push(`[${dueKey}:${t.dueDate.slice(0, 10)}]`)
   return parts.join(' ')
 }
@@ -151,7 +152,7 @@ const PROMPT_TEXT = {
   zh: {
     role: '你是一个任务规划助手，帮助用户决定下一步该做什么。',
     moodLabel: '用户当前情绪状态：',
-    moodValues: { good: '状态不错', okay: '一般', low: '有点累' } as Record<
+    moodValues: { good: '状态不错', okay: '一般般', low: '有点累' } as Record<
       Mood,
       string
     >,

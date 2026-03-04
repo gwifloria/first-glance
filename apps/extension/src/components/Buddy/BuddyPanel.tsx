@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Button, Input, Spin, message } from 'antd'
 import {
   CloseOutlined,
@@ -179,7 +179,7 @@ export function BuddyPanel({
   )
 
   // 核心：发送 AI 请求并返回处理后的消息
-  const lang = normalizeLang(i18n.language)
+  const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language])
   const fetchReply = useCallback(
     async (
       requestMood: Mood,
@@ -400,12 +400,14 @@ export function BuddyPanel({
               messages.length === 1 &&
               messages[0].role === 'assistant' &&
               !messages[0].actions?.length && (
-                <button
+                <Button
+                  type="text"
+                  size="small"
                   onClick={() => handleSend(t('suggestion.breakDown'))}
-                  className="self-start text-xs px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  className="self-start !text-xs !px-3 !py-1.5 !rounded-full !border !border-[var(--border)] !text-[var(--text-secondary)] hover:!bg-[var(--bg-secondary)] hover:!text-[var(--text-primary)]"
                 >
                   {t('suggestion.breakDown')}
-                </button>
+                </Button>
               )}
             <div ref={messagesEndRef} />
           </div>

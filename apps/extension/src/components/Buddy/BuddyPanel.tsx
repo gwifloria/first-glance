@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Button, Input, Spin, message } from 'antd'
 import {
   CloseOutlined,
@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { getSettings, subscribeSettings } from '@/services/settingsStorage'
-import { sendBuddyRequest } from '@/services/aiService'
+import { sendBuddyRequest, normalizeLang } from '@/services/aiService'
 import { extractActions, priorityToNumber } from '@/services/buddyActionParser'
 import type {
   Mood,
@@ -72,7 +72,7 @@ export function BuddyPanel({
   onClose,
   onOpenSettings,
 }: BuddyPanelProps) {
-  const { t } = useTranslation('buddy')
+  const { t, i18n } = useTranslation('buddy')
   const { data, actions, views } = useTaskContext()
 
   const [phase, setPhase] = useState<PanelPhase>('select-mood')
@@ -178,6 +178,31 @@ export function BuddyPanel({
     [data.tasks]
   )
 
+  // 核心：发送 AI 请求并返回处理后的消息
+  const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language])
+  const fetchReply = useCallback(
+    async (
+      requestMood: Mood,
+      history: BuddyMessageType[],
+      signal: AbortSignal
+    ): Promise<BuddyMessageType | null> => {
+      const config = await getValidConfig()
+      if (!config) return null
+      const { focusTasks, allTasks } = getTasksForAI()
+      const reply = await sendBuddyRequest({
+        config,
+        mood: requestMood,
+        focusTasks,
+        allTasks,
+        history,
+        signal,
+        lang,
+      })
+      return processReply(reply)
+    },
+    [getValidConfig, getTasksForAI, processReply, lang]
+  )
+
   // 选择 mood 后发起首次 AI 请求
   const handleMoodSelect = useCallback(
     async (selectedMood: Mood) => {
@@ -190,19 +215,8 @@ export function BuddyPanel({
       abortRef.current = controller
 
       try {
-        const config = await getValidConfig()
-        if (!config) return
-
-        const { focusTasks, allTasks } = getTasksForAI()
-        const reply = await sendBuddyRequest(
-          config,
-          selectedMood,
-          focusTasks,
-          allTasks,
-          [],
-          controller.signal
-        )
-        setMessages([processReply(reply)])
+        const msg = await fetchReply(selectedMood, [], controller.signal)
+        if (msg) setMessages([msg])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
@@ -211,7 +225,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [getValidConfig, getTasksForAI, processReply, t]
+    [fetchReply, t]
   )
 
   // 发送用户消息
@@ -230,19 +244,8 @@ export function BuddyPanel({
       abortRef.current = controller
 
       try {
-        const config = await getValidConfig()
-        if (!config) return
-
-        const { focusTasks, allTasks } = getTasksForAI()
-        const reply = await sendBuddyRequest(
-          config,
-          mood,
-          focusTasks,
-          allTasks,
-          newMessages,
-          controller.signal
-        )
-        setMessages([...newMessages, processReply(reply)])
+        const msg = await fetchReply(mood, newMessages, controller.signal)
+        if (msg) setMessages([...newMessages, msg])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
@@ -254,7 +257,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [mood, loading, messages, getValidConfig, getTasksForAI, processReply, t]
+    [mood, loading, messages, fetchReply, t]
   )
 
   // 执行操作建议，返回可选的 undo 函数
@@ -397,12 +400,14 @@ export function BuddyPanel({
               messages.length === 1 &&
               messages[0].role === 'assistant' &&
               !messages[0].actions?.length && (
-                <button
+                <Button
+                  type="text"
+                  size="small"
                   onClick={() => handleSend(t('suggestion.breakDown'))}
-                  className="self-start text-xs px-3 py-1.5 rounded-full border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  className="self-start !text-xs !px-3 !py-1.5 !rounded-full !border !border-[var(--border)] !text-[var(--text-secondary)] hover:!bg-[var(--bg-secondary)] hover:!text-[var(--text-primary)]"
                 >
                   {t('suggestion.breakDown')}
-                </button>
+                </Button>
               )}
             <div ref={messagesEndRef} />
           </div>

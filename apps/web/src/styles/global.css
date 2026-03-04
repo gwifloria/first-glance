@@ -186,60 +186,6 @@ html {
   border-radius: 12px;
 }
 
-/* Timeline (How It Works section) */
-.timeline-line {
-  position: absolute;
-  left: 28px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--color-pink) 0,
-    var(--color-pink) 6px,
-    transparent 6px,
-    transparent 12px
-  );
-}
-
-.timeline-step {
-  position: relative;
-  padding-left: 72px;
-}
-
-.timeline-dot {
-  position: absolute;
-  left: 16px;
-  top: 4px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--color-pink-bg);
-  border: 2px solid var(--color-pink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--color-pink);
-  z-index: 1;
-}
-
-@media (max-width: 767px) {
-  .timeline-line {
-    display: none;
-  }
-  .timeline-step {
-    padding-left: 0;
-  }
-  .timeline-dot {
-    position: relative;
-    left: 0;
-    top: 0;
-    margin-bottom: 12px;
-  }
-}
-
 /* Warm gradient for AI Buddy section */
 .warm-gradient {
   background: linear-gradient(

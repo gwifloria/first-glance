@@ -178,6 +178,31 @@ export function BuddyPanel({
     [data.tasks]
   )
 
+  // 核心：发送 AI 请求并返回处理后的消息
+  const lang = normalizeLang(i18n.language)
+  const fetchReply = useCallback(
+    async (
+      requestMood: Mood,
+      history: BuddyMessageType[],
+      signal: AbortSignal
+    ): Promise<BuddyMessageType | null> => {
+      const config = await getValidConfig()
+      if (!config) return null
+      const { focusTasks, allTasks } = getTasksForAI()
+      const reply = await sendBuddyRequest(
+        config,
+        requestMood,
+        focusTasks,
+        allTasks,
+        history,
+        signal,
+        lang
+      )
+      return processReply(reply)
+    },
+    [getValidConfig, getTasksForAI, processReply, lang]
+  )
+
   // 选择 mood 后发起首次 AI 请求
   const handleMoodSelect = useCallback(
     async (selectedMood: Mood) => {
@@ -190,21 +215,8 @@ export function BuddyPanel({
       abortRef.current = controller
 
       try {
-        const config = await getValidConfig()
-        if (!config) return
-
-        const { focusTasks, allTasks } = getTasksForAI()
-        const lang = normalizeLang(i18n.language)
-        const reply = await sendBuddyRequest(
-          config,
-          selectedMood,
-          focusTasks,
-          allTasks,
-          [],
-          controller.signal,
-          lang
-        )
-        setMessages([processReply(reply)])
+        const msg = await fetchReply(selectedMood, [], controller.signal)
+        if (msg) setMessages([msg])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
@@ -213,7 +225,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [getValidConfig, getTasksForAI, processReply, t, i18n.language]
+    [fetchReply, t]
   )
 
   // 发送用户消息
@@ -232,21 +244,8 @@ export function BuddyPanel({
       abortRef.current = controller
 
       try {
-        const config = await getValidConfig()
-        if (!config) return
-
-        const { focusTasks, allTasks } = getTasksForAI()
-        const lang = normalizeLang(i18n.language)
-        const reply = await sendBuddyRequest(
-          config,
-          mood,
-          focusTasks,
-          allTasks,
-          newMessages,
-          controller.signal,
-          lang
-        )
-        setMessages([...newMessages, processReply(reply)])
+        const msg = await fetchReply(mood, newMessages, controller.signal)
+        if (msg) setMessages([...newMessages, msg])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         const errorMsg = err instanceof Error ? err.message : t('error')
@@ -258,16 +257,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [
-      mood,
-      loading,
-      messages,
-      getValidConfig,
-      getTasksForAI,
-      processReply,
-      t,
-      i18n.language,
-    ]
+    [mood, loading, messages, fetchReply, t]
   )
 
   // 执行操作建议，返回可选的 undo 函数

@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { getSettings, subscribeSettings } from '@/services/settingsStorage'
-import { sendBuddyRequest } from '@/services/aiService'
+import { sendBuddyRequest, normalizeLang } from '@/services/aiService'
 import { extractActions, priorityToNumber } from '@/services/buddyActionParser'
 import type {
   Mood,
@@ -72,7 +72,7 @@ export function BuddyPanel({
   onClose,
   onOpenSettings,
 }: BuddyPanelProps) {
-  const { t } = useTranslation('buddy')
+  const { t, i18n } = useTranslation('buddy')
   const { data, actions, views } = useTaskContext()
 
   const [phase, setPhase] = useState<PanelPhase>('select-mood')
@@ -194,13 +194,15 @@ export function BuddyPanel({
         if (!config) return
 
         const { focusTasks, allTasks } = getTasksForAI()
+        const lang = normalizeLang(i18n.language)
         const reply = await sendBuddyRequest(
           config,
           selectedMood,
           focusTasks,
           allTasks,
           [],
-          controller.signal
+          controller.signal,
+          lang
         )
         setMessages([processReply(reply)])
       } catch (err) {
@@ -234,13 +236,15 @@ export function BuddyPanel({
         if (!config) return
 
         const { focusTasks, allTasks } = getTasksForAI()
+        const lang = normalizeLang(i18n.language)
         const reply = await sendBuddyRequest(
           config,
           mood,
           focusTasks,
           allTasks,
           newMessages,
-          controller.signal
+          controller.signal,
+          lang
         )
         setMessages([...newMessages, processReply(reply)])
       } catch (err) {

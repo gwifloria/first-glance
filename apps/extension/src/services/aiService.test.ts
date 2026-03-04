@@ -42,6 +42,24 @@ describe('formatTask', () => {
     )
     expect(result).toBe('- 测试任务 [优先级:高] [截止:2026-03-15]')
   })
+
+  it('英文模式 — 只有标题', () => {
+    expect(formatTask(makeTask({ title: 'Test task' }), 'en')).toBe(
+      '- Test task'
+    )
+  })
+
+  it('英文模式 — 带优先级和截止日期', () => {
+    const result = formatTask(
+      makeTask({
+        title: 'Test task',
+        priority: 5,
+        dueDate: '2026-03-15T00:00:00+08:00',
+      }),
+      'en'
+    )
+    expect(result).toBe('- Test task [Priority:High] [Due:2026-03-15]')
+  })
 })
 
 describe('buildChildrenMap', () => {
@@ -83,8 +101,12 @@ describe('buildChildrenMap', () => {
 })
 
 describe('buildTaskSummary', () => {
-  it('空任务列表', () => {
+  it('空任务列表（中文）', () => {
     expect(buildTaskSummary([], [])).toBe('当前没有待办任务。')
+  })
+
+  it('空任务列表（英文）', () => {
+    expect(buildTaskSummary([], [], 'en')).toBe('No tasks at the moment.')
   })
 
   it('无焦点任务 — 列出全部顶层任务', () => {
@@ -96,6 +118,17 @@ describe('buildTaskSummary', () => {
     expect(result).toContain('当前用户的任务列表：')
     expect(result).toContain('- 任务A')
     expect(result).toContain('- 任务B')
+  })
+
+  it('无焦点任务（英文）', () => {
+    const tasks = [
+      makeTask({ id: 't1', title: 'Task A' }),
+      makeTask({ id: 't2', title: 'Task B' }),
+    ]
+    const result = buildTaskSummary([], tasks, 'en')
+    expect(result).toContain("User's current task list:")
+    expect(result).toContain('- Task A')
+    expect(result).toContain('- Task B')
   })
 
   it('子任务不作为顶层项，而是缩进在父任务下', () => {
@@ -127,6 +160,19 @@ describe('buildTaskSummary', () => {
     expect(result).toContain('- 其他任务')
   })
 
+  it('有焦点任务时区分两个分区（英文）', () => {
+    const focus = [makeTask({ id: 't1', title: 'Focus task' })]
+    const all = [
+      makeTask({ id: 't1', title: 'Focus task' }),
+      makeTask({ id: 't2', title: 'Other task' }),
+    ]
+    const result = buildTaskSummary(focus, all, 'en')
+    expect(result).toContain('[Focus Tasks]')
+    expect(result).toContain('- Focus task')
+    expect(result).toContain('[Other Tasks]')
+    expect(result).toContain('- Other task')
+  })
+
   it('焦点中的子任务不作为独立焦点项', () => {
     const parent = makeTask({ id: 'p1', title: '大任务' })
     const child = makeTask({ id: 'c1', title: '小步骤', parentId: 'p1' })
@@ -149,6 +195,14 @@ describe('buildTaskSummary', () => {
     expect(result).toContain('任务0')
     expect(result).toContain('任务14')
     expect(result).not.toContain('- 任务15')
+  })
+
+  it('无焦点时超过 15 个顶层任务截断（英文）', () => {
+    const tasks = Array.from({ length: 20 }, (_, i) =>
+      makeTask({ id: `t${i}`, title: `Task ${i}` })
+    )
+    const result = buildTaskSummary([], tasks, 'en')
+    expect(result).toContain('...and 5 more tasks')
   })
 
   it('有焦点时其他任务超过 10 个截断', () => {

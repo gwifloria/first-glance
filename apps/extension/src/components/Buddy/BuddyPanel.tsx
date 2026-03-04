@@ -213,7 +213,7 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [getValidConfig, getTasksForAI, processReply, t]
+    [getValidConfig, getTasksForAI, processReply, t, i18n.language]
   )
 
   // 发送用户消息
@@ -258,7 +258,16 @@ export function BuddyPanel({
         setLoading(false)
       }
     },
-    [mood, loading, messages, getValidConfig, getTasksForAI, processReply, t]
+    [
+      mood,
+      loading,
+      messages,
+      getValidConfig,
+      getTasksForAI,
+      processReply,
+      t,
+      i18n.language,
+    ]
   )
 
   // 执行操作建议，返回可选的 undo 函数

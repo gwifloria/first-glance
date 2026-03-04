@@ -321,18 +321,31 @@ const ERROR_TEXT = {
   },
 } as const
 
+export interface BuddyRequestOptions {
+  config: AIConfig
+  mood: Mood
+  focusTasks: Task[]
+  allTasks: Task[]
+  history?: BuddyMessage[]
+  signal?: AbortSignal
+  lang?: Lang
+}
+
 /**
  * 发送 Buddy 请求到 OpenAI 兼容 API
  */
 export async function sendBuddyRequest(
-  config: AIConfig,
-  mood: Mood,
-  focusTasks: Task[],
-  allTasks: Task[],
-  history: BuddyMessage[] = [],
-  signal?: AbortSignal,
-  lang: Lang = 'zh'
+  options: BuddyRequestOptions
 ): Promise<string> {
+  const {
+    config,
+    mood,
+    focusTasks,
+    allTasks,
+    history = [],
+    signal,
+    lang = 'zh',
+  } = options
   const systemPrompt = buildSystemPrompt(mood, focusTasks, allTasks, lang)
   const txt = PROMPT_TEXT[lang]
   const errTxt = ERROR_TEXT[lang]

@@ -189,15 +189,15 @@ export function BuddyPanel({
       const config = await getValidConfig()
       if (!config) return null
       const { focusTasks, allTasks } = getTasksForAI()
-      const reply = await sendBuddyRequest(
+      const reply = await sendBuddyRequest({
         config,
-        requestMood,
+        mood: requestMood,
         focusTasks,
         allTasks,
         history,
         signal,
-        lang
-      )
+        lang,
+      })
       return processReply(reply)
     },
     [getValidConfig, getTasksForAI, processReply, lang]

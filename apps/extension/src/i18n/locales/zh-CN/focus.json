@@ -25,6 +25,8 @@
     "resting": "休息中",
     "focusLock": "专注锁定",
     "focusLockOn": "专注锁定已开启（点击关闭）",
-    "focusLockOff": "开启专注锁定（屏蔽所有网站）"
+    "focusLockOff": "开启专注锁定（屏蔽所有网站）",
+    "focusLockDesc": "开启后将屏蔽所有网站，帮助你保持专注。可随时点击锁定图标关闭。",
+    "focusLockConfirm": "开启"
   }
 }

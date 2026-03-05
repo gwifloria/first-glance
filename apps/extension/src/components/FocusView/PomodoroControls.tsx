@@ -1,8 +1,8 @@
 /**
  * 番茄时钟控制按钮
  */
-import { memo } from 'react'
-import { Button } from 'antd'
+import { memo, useState } from 'react'
+import { Button, Popover } from 'antd'
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -45,6 +45,50 @@ export const PomodoroControls = memo(function PomodoroControls({
   onToggleFocusLock,
 }: PomodoroControlsProps) {
   const { t } = useTranslation('focus')
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
+  const handleLockClick = () => {
+    if (focusLockActive) {
+      onToggleFocusLock()
+    } else {
+      setPopoverOpen(true)
+    }
+  }
+
+  const handleConfirm = () => {
+    setPopoverOpen(false)
+    onToggleFocusLock()
+  }
+
+  const lockPopoverContent = (
+    <div className="w-52">
+      <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-3">
+        {t('pomodoro.focusLockDesc')}
+      </p>
+      <div className="flex justify-end gap-2">
+        <Button size="small" onClick={() => setPopoverOpen(false)}>
+          {t('common:button.cancel')}
+        </Button>
+        <Button size="small" type="primary" onClick={handleConfirm}>
+          {t('pomodoro.focusLockConfirm')}
+        </Button>
+      </div>
+    </div>
+  )
+
+  const lockButton = (
+    <Button
+      type="text"
+      size="large"
+      icon={focusLockActive ? <LockOutlined /> : <UnlockOutlined />}
+      onClick={handleLockClick}
+      className={
+        focusLockActive
+          ? `${BTN_PRIMARY} !text-base`
+          : `${BTN_SECONDARY} !text-base`
+      }
+    />
+  )
 
   // 空闲模式：显示开始按钮 + Focus Lock 切换
   if (mode === 'idle') {
@@ -59,22 +103,16 @@ export const PomodoroControls = memo(function PomodoroControls({
         >
           {t('pomodoro.start')}
         </Button>
-        <Button
-          type="text"
-          size="large"
-          icon={focusLockActive ? <LockOutlined /> : <UnlockOutlined />}
-          onClick={onToggleFocusLock}
-          title={
-            focusLockActive
-              ? t('pomodoro.focusLockOn')
-              : t('pomodoro.focusLockOff')
-          }
-          className={
-            focusLockActive
-              ? `${BTN_PRIMARY} !text-base`
-              : `${BTN_SECONDARY} !text-base`
-          }
-        />
+        <Popover
+          content={lockPopoverContent}
+          title={t('pomodoro.focusLock')}
+          open={popoverOpen}
+          onOpenChange={(open) => !open && setPopoverOpen(false)}
+          trigger="click"
+          placement="bottom"
+        >
+          {lockButton}
+        </Popover>
       </div>
     )
   }

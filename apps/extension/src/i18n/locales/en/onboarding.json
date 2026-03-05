@@ -1,6 +1,5 @@
 {
   "welcome": {
-    "title": "Pick your theme",
-    "description": "Turn your new tab into a focus panel. Start by choosing a theme you love."
+    "hint": "Pick a theme to start your focus journey"
   }
 }

@@ -1,0 +1,65 @@
+name: Todoist API Health Check
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 02:00（北京时间 10:00）
+  workflow_dispatch:      # 支持手动触发
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Todoist API endpoints
+        id: check
+        run: |
+          FAILED_ENDPOINTS=""
+
+          check_endpoint() {
+            local name="$1"
+            local url="$2"
+            local status
+            status=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: Bearer probe_token" \
+              --max-time 10 \
+              "$url")
+            echo "$name → HTTP $status"
+            # 401 = 接口存在但未授权（正常）；其他均视为异常
+            if [ "$status" != "401" ]; then
+              FAILED_ENDPOINTS="$FAILED_ENDPOINTS\n- $name ($url) → HTTP $status"
+            fi
+          }
+
+          check_endpoint "GET /rest/v2/projects"   "https://api.todoist.com/rest/v2/projects"
+          check_endpoint "GET /rest/v2/tasks"      "https://api.todoist.com/rest/v2/tasks"
+          check_endpoint "POST /rest/v2/tasks"     "https://api.todoist.com/rest/v2/tasks"
+
+          if [ -n "$FAILED_ENDPOINTS" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            printf "endpoints<<EOF\n%b\nEOF" "$FAILED_ENDPOINTS" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create issue if any endpoint is down
+        if: steps.check.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "Todoist API 异常 — $(date -u '+%Y-%m-%d')" \
+            --label "bug" \
+            --body "$(cat <<'EOF'
+          ## Todoist API 健康检查失败
+
+          以下接口返回了非预期状态码（预期 401，实际异常）：
+
+          ${{ steps.check.outputs.endpoints }}
+
+          > 可能原因：接口地址变更、API 版本升级、服务不可用。
+          > 请检查 [Todoist API 文档](https://developer.todoist.com/rest/v2/) 和 `TodoistAdapter` 实现。
+
+          ---
+          *由 api-health workflow 自动创建*
+          EOF
+          )"

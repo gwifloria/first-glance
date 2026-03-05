@@ -10,6 +10,8 @@
     "placeholder": "输入域名，如 reddit.com",
     "hint": "访问这些网站时将被拦截，帮助你保持专注",
     "empty": "暂无屏蔽网站",
+    "emptyDesc": "访问屏蔽的网站时会自动跳回新标签页，帮你断掉打开的冲动。",
+    "suggestions": "快速添加",
     "invalidDomain": "请输入有效的域名",
     "duplicateDomain": "该域名已添加",
     "chillMode": {

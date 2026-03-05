@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { Popover, Button, Divider, Modal, Tooltip } from 'antd'
 import {
   SettingOutlined,
@@ -12,6 +12,12 @@ import {
   CoffeeOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import {
+  shouldShowOnboarding,
+  completeOnboarding,
+  shouldShowBlocksiteHint,
+  completeBlocksiteOnboarding,
+} from '@/utils/onboarding'
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
@@ -32,12 +38,14 @@ function MenuItem({
   onClick,
   disabled,
   accent,
+  badge,
 }: {
   icon: ReactNode
   label: string
   onClick?: () => void
   disabled?: boolean
   accent?: boolean
+  badge?: boolean
 }) {
   return (
     <button
@@ -53,7 +61,13 @@ function MenuItem({
       <span className={accent ? '' : 'text-[var(--text-secondary)]'}>
         {icon}
       </span>
-      <span className="text-sm">{label}</span>
+      <span className="text-sm flex-1">{label}</span>
+      {badge && (
+        <span className="flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[var(--accent)] opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]" />
+        </span>
+      )}
     </button>
   )
 }
@@ -69,13 +83,30 @@ interface SettingsPanelProps {
 export function SettingsPanel({ className }: SettingsPanelProps) {
   const { t: tSettings } = useTranslation('settings')
   const { t: tCommon } = useTranslation('common')
+  const { t: tOnboarding } = useTranslation('onboarding')
   const { isGuest, disconnect } = useAppMode()
   const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
   const [disconnectOpen, setDisconnectOpen] = useState(false)
   const [open, setOpen] = useState(false)
+  const [isOnboarding, setIsOnboarding] = useState(false)
+  const [blocksiteNotSeen, setBlocksiteNotSeen] = useState(false)
+
+  useEffect(() => {
+    shouldShowOnboarding().then((should) => setIsOnboarding(should))
+    shouldShowBlocksiteHint().then((should) => setBlocksiteNotSeen(should))
+  }, [])
 
   const version = chrome.runtime.getManifest().version
+
+  const handleBlocksiteOpen = () => {
+    setOpen(false)
+    setBlocksiteOpen(true)
+    if (blocksiteNotSeen) {
+      completeBlocksiteOnboarding()
+      setBlocksiteNotSeen(false)
+    }
+  }
 
   const content = (
     <div className="w-64 py-1">
@@ -85,6 +116,11 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           Appearance
         </div>
         <ThemeToggle size="lg" />
+        {isOnboarding && (
+          <p className="text-xs text-[var(--accent)] mt-2 leading-relaxed">
+            {tOnboarding('welcome.hint')}
+          </p>
+        )}
       </div>
 
       <Divider className="!my-2" />
@@ -115,10 +151,8 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       <MenuItem
         icon={<StopOutlined />}
         label={tSettings('blocksite.label')}
-        onClick={() => {
-          setOpen(false)
-          setBlocksiteOpen(true)
-        }}
+        onClick={handleBlocksiteOpen}
+        badge={blocksiteNotSeen}
       />
 
       <Divider className="!my-2" />
@@ -182,30 +216,47 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
     </div>
   )
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen)
+    if (nextOpen && isOnboarding) {
+      completeOnboarding()
+      setIsOnboarding(false)
+      setBlocksiteNotSeen(true)
+    }
+  }
+
   return (
     <>
-      <Popover
-        content={content}
-        trigger="click"
-        placement="bottomRight"
-        open={open}
-        onOpenChange={setOpen}
-        arrow={false}
-        styles={{
-          body: {
-            padding: 0,
-            backgroundColor: 'var(--bg-primary)',
-            border: '1px solid var(--border)',
-          },
-        }}
-      >
-        <Button
-          type="text"
-          size="small"
-          icon={<SettingOutlined />}
-          className={`!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] ${className}`}
-        />
-      </Popover>
+      <div className="relative">
+        {isOnboarding && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 z-10 pointer-events-none">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]" />
+          </span>
+        )}
+        <Popover
+          content={content}
+          trigger="click"
+          placement="bottomRight"
+          open={open}
+          onOpenChange={handleOpenChange}
+          arrow={false}
+          styles={{
+            body: {
+              padding: 0,
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border)',
+            },
+          }}
+        >
+          <Button
+            type="text"
+            size="small"
+            icon={<SettingOutlined />}
+            className={`!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] ${className}`}
+          />
+        </Popover>
+      </div>
 
       <Modal
         title={tCommon('disconnectConfirm.title')}

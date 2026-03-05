@@ -5,6 +5,18 @@ import { useTranslation } from 'react-i18next'
 import { getSettings, setSettings } from '@/services/settingsStorage'
 import { useChillMode } from '@/hooks'
 
+const SUGGESTED_SITES = [
+  'weibo.com',
+  'douyin.com',
+  'xiaohongshu.com',
+  'bilibili.com',
+  'zhihu.com',
+  'x.com',
+  'youtube.com',
+  'reddit.com',
+  'instagram.com',
+]
+
 /**
  * 域名格式校验
  * 支持：example.com, sub.example.com, *.example.com
@@ -139,9 +151,32 @@ export function BlocksiteSettings() {
       )}
 
       {blockedSites.length === 0 && (
-        <p className="text-xs text-[var(--text-secondary)]">
-          {t('blocksite.empty')}
-        </p>
+        <div className="rounded-lg border border-dashed border-[var(--border)] p-4 space-y-3">
+          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+            {t('blocksite.emptyDesc')}
+          </p>
+          <div>
+            <p className="text-xs text-[var(--text-secondary)] mb-2">
+              {t('blocksite.suggestions')}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {SUGGESTED_SITES.map((domain) => (
+                <button
+                  key={domain}
+                  onClick={async () => {
+                    if (blockedSites.includes(domain)) return
+                    const next = [...blockedSites, domain]
+                    await setSettings({ blockedSites: next })
+                    setBlockedSites(next)
+                  }}
+                  className="text-xs px-2 py-0.5 rounded-full border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
+                >
+                  {domain}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

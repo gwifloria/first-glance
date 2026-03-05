@@ -7,24 +7,28 @@ import type { AppSettings } from '@/types/settings'
 import { isChillModeActive } from './chillMode'
 
 const SETTINGS_KEY = 'app_settings'
-// 规则 ID 基础偏移量，避免与其他可能的规则冲突
 const RULE_ID_BASE = 1000
+const FOCUS_LOCK_RULE_ID = 999
+const BLOCKED_PAGE_PATH = '/src/newtab/index.html?blocked=1'
 
 /**
  * 加载设置并应用屏蔽规则
  */
 export async function loadAndApplyBlockingRules(): Promise<void> {
   try {
-    // 如果处于休息模式，不应用屏蔽规则
     if (await isChillModeActive()) {
       console.log('[Background] 休息模式中，跳过屏蔽规则')
       return
     }
 
-    const result = await chrome.storage.sync.get(SETTINGS_KEY)
-    const settings = result[SETTINGS_KEY] as AppSettings | undefined
+    const [syncResult, localResult] = await Promise.all([
+      chrome.storage.sync.get(SETTINGS_KEY),
+      chrome.storage.local.get('focus_lock'),
+    ])
+    const settings = syncResult[SETTINGS_KEY] as AppSettings | undefined
     const blockedSites = settings?.blockedSites || []
-    await updateBlockingRules(blockedSites)
+    const focusLock = !!localResult.focus_lock
+    await updateBlockingRules(blockedSites, focusLock)
   } catch (err) {
     console.error('[Background] 加载屏蔽规则失败:', err)
   }
@@ -34,62 +38,52 @@ export async function loadAndApplyBlockingRules(): Promise<void> {
  * 更新屏蔽规则
  */
 export async function updateBlockingRules(
-  blockedSites: string[]
+  blockedSites: string[],
+  focusLock = false
 ): Promise<void> {
   try {
-    // 获取当前规则以便清除
     const existingRules = await chrome.declarativeNetRequest.getDynamicRules()
     const removeRuleIds = existingRules.map((r) => r.id)
 
-    console.log('[Blocksite] Current rules:', existingRules)
-    console.log('[Blocksite] Blocked sites from settings:', blockedSites)
+    const addRules: chrome.declarativeNetRequest.Rule[] = []
 
-    // 如果没有要屏蔽的网站，只清除规则
-    if (blockedSites.length === 0) {
-      if (removeRuleIds.length > 0) {
-        await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds })
-        console.log('[Blocksite] Cleared all rules')
-      }
-      return
+    if (focusLock) {
+      addRules.push({
+        id: FOCUS_LOCK_RULE_ID,
+        priority: 2,
+        action: {
+          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
+          redirect: { extensionPath: BLOCKED_PAGE_PATH },
+        },
+        condition: {
+          urlFilter: '|http',
+          resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME],
+        },
+      })
     }
 
-    // 创建新规则
-    // urlFilter 语法：
-    // - || 匹配域名开始（包括子域名）
-    // - ^ 匹配分隔符（/、?、: 或字符串结尾），确保完整域名匹配
-    // 例如 ||xiaohongshu.com^ 会匹配：
-    // - https://xiaohongshu.com
-    // - https://www.xiaohongshu.com/explore
-    // - https://m.xiaohongshu.com
-    const addRules: chrome.declarativeNetRequest.Rule[] = blockedSites.map(
-      (domain, index) => ({
-        // 全量更新模式下使用简单递增 ID，加基础偏移避免与其他规则冲突
-        id: RULE_ID_BASE + index,
+    // urlFilter: || 匹配域名开始（含子域名），^ 匹配分隔符
+    blockedSites.forEach((domain, i) => {
+      addRules.push({
+        id: RULE_ID_BASE + i,
         priority: 1,
         action: {
           type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-          redirect: {
-            // 使用 newtab 页面 + 查询参数，避免单独 HTML 入口的打包问题
-            extensionPath: '/src/newtab/index.html?blocked=1',
-          },
+          redirect: { extensionPath: BLOCKED_PAGE_PATH },
         },
         condition: {
           urlFilter: `||${domain}^`,
           resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME],
         },
       })
-    )
+    })
 
-    console.log('[Blocksite] Adding rules:', JSON.stringify(addRules, null, 2))
+    if (addRules.length === 0 && removeRuleIds.length === 0) return
 
     await chrome.declarativeNetRequest.updateDynamicRules({
       removeRuleIds,
       addRules,
     })
-
-    // 验证规则已生效
-    const newRules = await chrome.declarativeNetRequest.getDynamicRules()
-    console.log('[Blocksite] Rules after update:', newRules)
   } catch (err) {
     console.error('[Blocksite] Failed to update rules:', err)
   }
@@ -107,27 +101,18 @@ export async function clearBlockingRules(): Promise<void> {
 }
 
 /**
- * 设置变化监听器的回调类型
- */
-export type SettingsChangeCallback = (blockedSites: string[]) => void
-
-/**
  * 获取设置变化处理函数
+ * settings 变化时调用 callback，focus_lock 由调用方单独监听
  */
 export function createSettingsChangeHandler(
-  callback: SettingsChangeCallback
+  callback: () => void
 ): (
   changes: { [key: string]: chrome.storage.StorageChange },
   areaName: string
 ) => void {
   return (changes, areaName) => {
-    if (areaName === 'sync' && changes[SETTINGS_KEY]) {
-      const newSettings = changes[SETTINGS_KEY].newValue as
-        | AppSettings
-        | undefined
-      if (newSettings) {
-        callback(newSettings.blockedSites || [])
-      }
+    if (areaName === 'sync' && changes[SETTINGS_KEY]?.newValue) {
+      callback()
     }
   }
 }

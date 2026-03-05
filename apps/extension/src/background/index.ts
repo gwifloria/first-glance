@@ -7,7 +7,6 @@ import {
   refreshTokenIfNeeded,
   initTokenRefreshAlarm,
   loadAndApplyBlockingRules,
-  updateBlockingRules,
   checkChillModeExpiry,
   createSettingsChangeHandler,
   createChillModeChangeHandler,
@@ -24,10 +23,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       extension_version: currentVersion,
       install_time: Date.now(),
     })
-    // 打开介绍页面
-    chrome.tabs.create({
-      url: 'https://gwifloria.github.io/first-glance/',
-    })
   } else if (details.reason === 'update') {
     const previousVersion = details.previousVersion
     console.log(`[Extension] 更新 v${previousVersion} -> v${currentVersion}`)
@@ -42,7 +37,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     })
   }
 
-  // 初始化时加载屏蔽规则
   await loadAndApplyBlockingRules()
 })
 
@@ -58,10 +52,8 @@ loadAndApplyBlockingRules()
 
 // ==================== 定时任务 ====================
 
-// 初始化 Token 刷新定时器
 initTokenRefreshAlarm()
 
-// 初始化 Chill Mode 定期检查（每分钟检查一次，作为 alarm 的备份）
 chrome.alarms.create('chillModeCheck', { periodInMinutes: 1 })
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
@@ -71,7 +63,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     alarm.name === 'chillModeExpire' ||
     alarm.name === 'chillModeCheck'
   ) {
-    // 两个 alarm 都触发过期检查，确保可靠性
     await checkChillModeExpiry()
     await loadAndApplyBlockingRules()
   }
@@ -79,23 +70,24 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 // ==================== Storage 变化监听 ====================
 
-// 设置变化监听器（带 500ms 防抖）
-let settingsDebounceTimer: ReturnType<typeof setTimeout> | null = null
-const handleSettingsChange = createSettingsChangeHandler((blockedSites) => {
-  if (settingsDebounceTimer) {
-    clearTimeout(settingsDebounceTimer)
-  }
-  settingsDebounceTimer = setTimeout(() => {
-    updateBlockingRules(blockedSites)
-    settingsDebounceTimer = null
+// 统一防抖：所有触发规则重载的事件共用同一个 timer
+let rulesDebounceTimer: ReturnType<typeof setTimeout> | null = null
+function scheduleRulesReload() {
+  if (rulesDebounceTimer) clearTimeout(rulesDebounceTimer)
+  rulesDebounceTimer = setTimeout(() => {
+    loadAndApplyBlockingRules()
+    rulesDebounceTimer = null
   }, 500)
-})
+}
 
-// Chill Mode 变化监听器
+const handleSettingsChange = createSettingsChangeHandler(scheduleRulesReload)
 const handleChillModeChange = createChillModeChangeHandler()
 
-// 统一的 storage 变化监听
 chrome.storage.onChanged.addListener((changes, areaName) => {
   handleSettingsChange(changes, areaName)
   handleChillModeChange(changes, areaName)
+
+  if (areaName === 'local' && changes.focus_lock) {
+    scheduleRulesReload()
+  }
 })

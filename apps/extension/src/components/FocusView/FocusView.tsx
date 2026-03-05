@@ -1,5 +1,6 @@
 import type { Quote } from '@/data/quotes'
 import { usePomodoro } from '@/hooks/usePomodoro'
+import { useFocusLock } from '@/hooks/useFocusLock'
 import { SettingsPanel } from '../common'
 import { Clock } from '../common/Clock'
 import { PomodoroControls } from './PomodoroControls'
@@ -14,6 +15,7 @@ interface FocusViewProps {
 
 export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   const pomodoro = usePomodoro()
+  const focusLock = useFocusLock()
 
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
@@ -44,6 +46,8 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onResume={pomodoro.resume}
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
+          focusLockActive={focusLock.isActive}
+          onToggleFocusLock={focusLock.toggle}
         />
         <FocusTaskList />
       </div>

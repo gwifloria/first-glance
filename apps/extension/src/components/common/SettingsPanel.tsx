@@ -12,7 +12,12 @@ import {
   CoffeeOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { shouldShowOnboarding, completeOnboarding } from '@/utils/onboarding'
+import {
+  shouldShowOnboarding,
+  completeOnboarding,
+  shouldShowBlocksiteHint,
+  completeBlocksiteOnboarding,
+} from '@/utils/onboarding'
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
@@ -33,12 +38,14 @@ function MenuItem({
   onClick,
   disabled,
   accent,
+  badge,
 }: {
   icon: ReactNode
   label: string
   onClick?: () => void
   disabled?: boolean
   accent?: boolean
+  badge?: boolean
 }) {
   return (
     <button
@@ -54,7 +61,13 @@ function MenuItem({
       <span className={accent ? '' : 'text-[var(--text-secondary)]'}>
         {icon}
       </span>
-      <span className="text-sm">{label}</span>
+      <span className="text-sm flex-1">{label}</span>
+      {badge && (
+        <span className="flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[var(--accent)] opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]" />
+        </span>
+      )}
     </button>
   )
 }
@@ -77,12 +90,23 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
   const [disconnectOpen, setDisconnectOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const [isOnboarding, setIsOnboarding] = useState(false)
+  const [blocksiteNotSeen, setBlocksiteNotSeen] = useState(false)
 
   useEffect(() => {
     shouldShowOnboarding().then((should) => setIsOnboarding(should))
+    shouldShowBlocksiteHint().then((should) => setBlocksiteNotSeen(should))
   }, [])
 
   const version = chrome.runtime.getManifest().version
+
+  const handleBlocksiteOpen = () => {
+    setOpen(false)
+    setBlocksiteOpen(true)
+    if (blocksiteNotSeen) {
+      completeBlocksiteOnboarding()
+      setBlocksiteNotSeen(false)
+    }
+  }
 
   const content = (
     <div className="w-64 py-1">
@@ -127,10 +151,8 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       <MenuItem
         icon={<StopOutlined />}
         label={tSettings('blocksite.label')}
-        onClick={() => {
-          setOpen(false)
-          setBlocksiteOpen(true)
-        }}
+        onClick={handleBlocksiteOpen}
+        badge={blocksiteNotSeen}
       />
 
       <Divider className="!my-2" />
@@ -199,6 +221,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
     if (nextOpen && isOnboarding) {
       completeOnboarding()
       setIsOnboarding(false)
+      setBlocksiteNotSeen(true)
     }
   }
 

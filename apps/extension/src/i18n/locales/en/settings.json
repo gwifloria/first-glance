@@ -10,6 +10,8 @@
     "placeholder": "Enter domain, e.g. reddit.com",
     "hint": "Access to these sites will be blocked to help you stay focused",
     "empty": "No blocked sites yet",
+    "emptyDesc": "Blocked sites automatically redirect back to your new tab, breaking the habit of mindless browsing.",
+    "suggestions": "Quick add",
     "invalidDomain": "Please enter a valid domain",
     "duplicateDomain": "This domain is already added",
     "chillMode": {

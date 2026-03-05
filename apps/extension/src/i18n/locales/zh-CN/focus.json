@@ -27,6 +27,7 @@
     "focusLockOn": "专注锁定已开启（点击关闭）",
     "focusLockOff": "开启专注锁定（屏蔽所有网站）",
     "focusLockDesc": "开启后将屏蔽所有网站，帮助你保持专注。可随时点击锁定图标关闭。",
-    "focusLockConfirm": "开启"
+    "focusLockConfirm": "开启",
+    "blocksiteHint": "还没有屏蔽干扰网站，专注前先设置"
   }
 }

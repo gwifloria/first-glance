@@ -170,14 +170,11 @@ export function FocusTaskList() {
 
   return (
     <div className="mt-6 w-full max-w-md">
-      <div className="flex items-center justify-center gap-2 mb-5">
-        <h2 className="text-xs font-medium tracking-[3px] text-center text-[var(--text-secondary)]">
-          {t('title')}
-        </h2>
-        {!isGuest && (
+      {!isGuest && (
+        <div className="flex justify-center mb-5">
           <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="min-h-[200px]">
         {loading ? (

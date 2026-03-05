@@ -22,6 +22,9 @@
     "skip": "Skip",
     "reset": "Reset",
     "working": "Focusing",
-    "resting": "Resting"
+    "resting": "Resting",
+    "focusLock": "Focus Lock",
+    "focusLockOn": "Focus Lock is ON (click to disable)",
+    "focusLockOff": "Enable Focus Lock (block all sites)"
   }
 }

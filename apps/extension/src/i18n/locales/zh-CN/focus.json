@@ -22,6 +22,9 @@
     "skip": "跳过",
     "reset": "重置",
     "working": "专注中",
-    "resting": "休息中"
+    "resting": "休息中",
+    "focusLock": "专注锁定",
+    "focusLockOn": "专注锁定已开启（点击关闭）",
+    "focusLockOff": "开启专注锁定（屏蔽所有网站）"
   }
 }

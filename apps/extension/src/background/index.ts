@@ -24,10 +24,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       extension_version: currentVersion,
       install_time: Date.now(),
     })
-    // 打开介绍页面
-    chrome.tabs.create({
-      url: 'https://gwifloria.github.io/first-glance/',
-    })
   } else if (details.reason === 'update') {
     const previousVersion = details.previousVersion
     console.log(`[Extension] 更新 v${previousVersion} -> v${currentVersion}`)
@@ -81,21 +77,36 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 // 设置变化监听器（带 500ms 防抖）
 let settingsDebounceTimer: ReturnType<typeof setTimeout> | null = null
-const handleSettingsChange = createSettingsChangeHandler((blockedSites) => {
-  if (settingsDebounceTimer) {
-    clearTimeout(settingsDebounceTimer)
+const handleSettingsChange = createSettingsChangeHandler(
+  (blockedSites, focusLock) => {
+    if (settingsDebounceTimer) {
+      clearTimeout(settingsDebounceTimer)
+    }
+    settingsDebounceTimer = setTimeout(() => {
+      updateBlockingRules(blockedSites, focusLock)
+      settingsDebounceTimer = null
+    }, 500)
   }
-  settingsDebounceTimer = setTimeout(() => {
-    updateBlockingRules(blockedSites)
-    settingsDebounceTimer = null
-  }, 500)
-})
+)
 
 // Chill Mode 变化监听器
 const handleChillModeChange = createChillModeChangeHandler()
+
+// Focus Lock 变化监听器（带 500ms 防抖）
+let focusLockDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
 // 统一的 storage 变化监听
 chrome.storage.onChanged.addListener((changes, areaName) => {
   handleSettingsChange(changes, areaName)
   handleChillModeChange(changes, areaName)
+
+  if (areaName === 'local' && changes.focus_lock) {
+    if (focusLockDebounceTimer) {
+      clearTimeout(focusLockDebounceTimer)
+    }
+    focusLockDebounceTimer = setTimeout(() => {
+      loadAndApplyBlockingRules()
+      focusLockDebounceTimer = null
+    }, 500)
+  }
 })

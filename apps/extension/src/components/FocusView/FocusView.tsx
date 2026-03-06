@@ -56,15 +56,26 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     [pomodoro]
   )
 
+  const handleBindTask = useCallback(
+    (task: Task) => {
+      modal.confirm({
+        title: t('pomodoro.bindConfirm.title'),
+        content: task.title,
+        okText: t('pomodoro.bindConfirm.confirm'),
+        cancelText: t('pomodoro.bindConfirm.cancel'),
+        onOk: () => pomodoro.bindTask(task.id),
+      })
+    },
+    [modal, t, pomodoro]
+  )
+
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
       {/* 背景纹理层 */}
       <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
 
       {/* Top bar */}
-      <div
-        className={`flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10 transition-opacity duration-500 ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
-      >
+      <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">
         <SettingsPanel />
       </div>
 
@@ -99,6 +110,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           immersive={isImmersive}
           currentTaskId={pomodoro.currentTaskId}
           onStartPomodoro={handleStartPomodoro}
+          onBindTask={handleBindTask}
           isIdle={pomodoro.mode === 'idle'}
         />
       </div>

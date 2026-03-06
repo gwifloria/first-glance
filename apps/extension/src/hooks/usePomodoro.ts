@@ -27,6 +27,7 @@ export interface PomodoroActions {
   reset: () => void
   skip: () => void
   startWithTask: (taskId: string) => void
+  bindTask: (taskId: string) => void
 }
 
 const DEFAULT_CONFIG: PomodoroConfig = {
@@ -282,6 +283,13 @@ export function usePomodoro(
     await storage.setPomodoro(newStored)
   }, [])
 
+  // 运行中绑定任务（不重置计时）
+  const bindTask = useCallback(async (taskId: string) => {
+    const stored = storageRef.current
+    if (!stored || stored.mode === 'idle') return
+    await storage.setPomodoro({ ...stored, currentTaskId: taskId })
+  }, [])
+
   return {
     ...state,
     start,
@@ -290,6 +298,7 @@ export function usePomodoro(
     reset,
     skip,
     startWithTask,
+    bindTask,
   }
 }
 

@@ -3,7 +3,6 @@ import { Button } from 'antd'
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
-  RedoOutlined,
   FileTextOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -85,13 +84,6 @@ function PomodoroSection({
             className="!text-[var(--text-secondary)] hover:!text-[var(--accent)]"
           />
         )}
-        <Button
-          type="text"
-          size="small"
-          icon={<RedoOutlined />}
-          onClick={pomodoro.reset}
-          className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]"
-        />
         {pomodoro.completedCount > 0 && (
           <span className="text-xs text-[var(--text-secondary)] ml-1">
             🍅×{pomodoro.completedCount}

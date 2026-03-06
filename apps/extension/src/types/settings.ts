@@ -1,4 +1,5 @@
 import type { AIConfig } from './buddy'
+import type { NotificationSound } from '@/services/soundEngine'
 
 /**
  * 应用设置
@@ -11,6 +12,8 @@ export interface AppSettings {
   blockedSites: string[]
   /** AI 助手配置 */
   aiConfig?: AIConfig
+  /** 番茄钟提示音 */
+  notificationSound: NotificationSound
 }
 
 /**
@@ -20,4 +23,5 @@ export const defaultSettings: AppSettings = {
   defaultProjectId: null,
   blockedSites: [],
   aiConfig: undefined,
+  notificationSound: 'bell',
 }

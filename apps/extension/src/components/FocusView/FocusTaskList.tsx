@@ -226,9 +226,9 @@ export function FocusTaskList({
   )
 
   return (
-    <div className="mt-6 w-full max-w-md">
+    <div className="mt-4 w-full max-w-md">
       {!isGuest && !immersive && (
-        <div className="flex justify-center mb-5">
+        <div className="flex justify-center mb-2">
           <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
         </div>
       )}

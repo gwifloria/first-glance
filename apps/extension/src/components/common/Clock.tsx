@@ -61,7 +61,6 @@ export function Clock({
   }
 
   if (variant === 'large') {
-    // 进度环 SVG - 番茄模式下显示
     const showRing =
       isPomodoroActive && pomodoroTotalDuration && pomodoroTotalDuration > 0
     const progress = showRing ? pomodoroTimeLeft / pomodoroTotalDuration! : 1
@@ -74,9 +73,23 @@ export function Clock({
         onClick={onClick}
         className={`flex flex-col items-center select-none text-center ${className}`}
       >
-        {showRing ? (
-          // 沉浸式模式：时间文字在进度环中心
-          <div className="relative flex items-center justify-center w-[300px] h-[300px] max-lg:w-[240px] max-lg:h-[240px] max-md:w-[200px] max-md:h-[200px]">
+        {/* 容器：高度随状态过渡，idle 自适应，pomodoro 时展开到 300px */}
+        <div
+          className={`relative flex items-center justify-center w-[300px] max-lg:w-[240px] max-md:w-[200px] transition-all duration-700 ease-in-out ${showRing ? 'h-[300px] max-lg:h-[240px] max-md:h-[200px]' : 'h-auto'}`}
+        >
+          {/* 普通时钟视图 */}
+          <div
+            className={`transition-all duration-700 ease-in-out ${showRing ? 'absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none' : 'opacity-100'}`}
+          >
+            <div className="text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 text-[var(--clock-primary)]">
+              {formattedTime}
+            </div>
+          </div>
+
+          {/* 番茄环视图 */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-700 ease-in-out ${showRing ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          >
             <svg
               className="absolute inset-0 -rotate-90"
               viewBox="0 0 300 300"
@@ -110,18 +123,13 @@ export function Clock({
             <div
               className={`relative z-10 text-[4.5rem] max-lg:text-[3.5rem] max-md:text-[2.75rem] leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 ${pomodoroColor}`}
             >
-              {displayTime}
+              {isPomodoroActive ? displayTime : ''}
             </div>
           </div>
-        ) : (
-          <div
-            className={`text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter transition-all duration-700 cursor-pointer hover:scale-105 ${isPomodoroActive ? pomodoroColor : 'text-[var(--clock-primary)]'}`}
-          >
-            {displayTime}
-          </div>
-        )}
+        </div>
+
         {showGreeting && (
-          <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-4 font-bold font-hand text-[var(--clock-primary)] opacity-90">
+          <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-2 font-bold font-hand text-[var(--clock-primary)] opacity-90 transition-opacity duration-700">
             {isPomodoroActive
               ? pomodoroMode === 'work'
                 ? t('focus:pomodoro.working')
@@ -138,7 +146,7 @@ export function Clock({
       className={`flex flex-col items-start select-none ${className}`}
       onClick={onClick}
     >
-      <div className="text-sm italic mb-1 opacity-80 font-hand text-[var(--text-secondary)]">
+      <div className="text-sm mb-1 opacity-60 font-hand text-[var(--text-secondary)]">
         {t('message.todayIsGift')}
       </div>
       <div

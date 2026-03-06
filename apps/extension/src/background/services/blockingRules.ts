@@ -8,7 +8,6 @@ import { isChillModeActive } from './chillMode'
 
 const SETTINGS_KEY = 'app_settings'
 const RULE_ID_BASE = 1000
-const FOCUS_LOCK_RULE_ID = 999
 const BLOCKED_PAGE_PATH = '/src/newtab/index.html?blocked=1'
 
 /**
@@ -21,14 +20,10 @@ export async function loadAndApplyBlockingRules(): Promise<void> {
       return
     }
 
-    const [syncResult, localResult] = await Promise.all([
-      chrome.storage.sync.get(SETTINGS_KEY),
-      chrome.storage.local.get('focus_lock'),
-    ])
+    const syncResult = await chrome.storage.sync.get(SETTINGS_KEY)
     const settings = syncResult[SETTINGS_KEY] as AppSettings | undefined
     const blockedSites = settings?.blockedSites || []
-    const focusLock = !!localResult.focus_lock
-    await updateBlockingRules(blockedSites, focusLock)
+    await updateBlockingRules(blockedSites)
   } catch (err) {
     console.error('[Background] 加载屏蔽规则失败:', err)
   }
@@ -38,29 +33,13 @@ export async function loadAndApplyBlockingRules(): Promise<void> {
  * 更新屏蔽规则
  */
 export async function updateBlockingRules(
-  blockedSites: string[],
-  focusLock = false
+  blockedSites: string[]
 ): Promise<void> {
   try {
     const existingRules = await chrome.declarativeNetRequest.getDynamicRules()
     const removeRuleIds = existingRules.map((r) => r.id)
 
     const addRules: chrome.declarativeNetRequest.Rule[] = []
-
-    if (focusLock) {
-      addRules.push({
-        id: FOCUS_LOCK_RULE_ID,
-        priority: 2,
-        action: {
-          type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-          redirect: { extensionPath: BLOCKED_PAGE_PATH },
-        },
-        condition: {
-          urlFilter: '|http',
-          resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME],
-        },
-      })
-    }
 
     // urlFilter: || 匹配域名开始（含子域名），^ 匹配分隔符
     blockedSites.forEach((domain, i) => {
@@ -102,7 +81,6 @@ export async function clearBlockingRules(): Promise<void> {
 
 /**
  * 获取设置变化处理函数
- * settings 变化时调用 callback，focus_lock 由调用方单独监听
  */
 export function createSettingsChangeHandler(
   callback: () => void

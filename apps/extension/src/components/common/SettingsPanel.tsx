@@ -10,6 +10,7 @@ import {
   FileTextOutlined,
   LockOutlined,
   CoffeeOutlined,
+  SoundOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import {
@@ -21,6 +22,7 @@ import {
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
+import { PomodoroSettingsModal } from '../FocusView/PomodoroSettingsModal'
 import { ThemeToggle } from './ThemeToggle'
 
 const HELP_LINKS = {
@@ -87,6 +89,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
   const { isGuest, disconnect } = useAppMode()
   const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
+  const [soundSettingsOpen, setSoundSettingsOpen] = useState(false)
   const [disconnectOpen, setDisconnectOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const [isOnboarding, setIsOnboarding] = useState(false)
@@ -153,6 +156,16 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
         label={tSettings('blocksite.label')}
         onClick={handleBlocksiteOpen}
         badge={blocksiteNotSeen}
+      />
+
+      {/* 提示音设置 */}
+      <MenuItem
+        icon={<SoundOutlined />}
+        label={tSettings('sound.label')}
+        onClick={() => {
+          setOpen(false)
+          setSoundSettingsOpen(true)
+        }}
       />
 
       <Divider className="!my-2" />
@@ -275,6 +288,11 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       <BlocksiteModal
         open={blocksiteOpen}
         onClose={() => setBlocksiteOpen(false)}
+      />
+
+      <PomodoroSettingsModal
+        open={soundSettingsOpen}
+        onClose={() => setSoundSettingsOpen(false)}
       />
     </>
   )

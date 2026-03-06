@@ -86,8 +86,4 @@ const handleChillModeChange = createChillModeChangeHandler()
 chrome.storage.onChanged.addListener((changes, areaName) => {
   handleSettingsChange(changes, areaName)
   handleChillModeChange(changes, areaName)
-
-  if (areaName === 'local' && changes.focus_lock) {
-    scheduleRulesReload()
-  }
 })

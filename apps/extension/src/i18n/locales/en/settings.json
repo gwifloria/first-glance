@@ -20,6 +20,9 @@
       "ended": "Chill mode ended"
     }
   },
+  "sound": {
+    "label": "Notification Sound"
+  },
   "help": {
     "feedback": "Send Feedback",
     "changelog": "Changelog",

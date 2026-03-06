@@ -3,6 +3,9 @@
  */
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { storage, type PomodoroStorage } from '@/services/storage'
+import { playNotificationSound } from '@/services/soundEngine'
+import { recordFocusSession } from '@/services/focusStats'
+import { getSettings } from '@/services/settingsStorage'
 
 export type PomodoroMode = 'idle' | 'work' | 'break'
 
@@ -68,11 +71,12 @@ function calculateTimeLeft(stored: PomodoroStorage): number {
 }
 
 export function usePomodoro(
-  config: Partial<PomodoroConfig> = {}
+  config?: Partial<PomodoroConfig>
 ): PomodoroState & PomodoroActions {
   const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
-    [config]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [config?.workDuration, config?.breakDuration]
   )
   const intervalRef = useRef<number | null>(null)
   const storageRef = useRef<PomodoroStorage | null>(null)
@@ -125,6 +129,24 @@ export function usePomodoro(
     const nextMode = stored.mode === 'work' ? 'break' : 'work'
     const nextDuration = getDurationSeconds(nextMode, stored.config)
 
+    // 防止多 tab 重复：5 秒内只有一个 tab 处理提示音和统计
+    const shouldNotify =
+      !stored.lastNotificationTime || now - stored.lastNotificationTime > 5000
+    if (shouldNotify) {
+      getSettings().then((settings) => {
+        playNotificationSound(settings.notificationSound)
+      })
+
+      // work 结束时记录专注数据（与提示音共用去重逻辑）
+      if (stored.mode === 'work') {
+        recordFocusSession({
+          timestamp: now,
+          duration: stored.config.workDuration,
+          taskId: stored.currentTaskId,
+        })
+      }
+    }
+
     const newStored: PomodoroStorage = {
       ...stored,
       mode: nextMode,
@@ -176,7 +198,11 @@ export function usePomodoro(
       const timeLeft = calculateTimeLeft(stored)
 
       if (timeLeft <= 0) {
-        // 使用 ref 避免依赖变化导致定时器重注册
+        // 立即清除定时器，防止 async switchToNextPhase 完成前重复调用
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
         switchToNextPhaseRef.current?.()
       } else {
         setState((prev) => ({ ...prev, timeLeft }))

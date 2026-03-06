@@ -2,7 +2,7 @@ import { defaultSettings, type AppSettings } from '@/types/settings'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
-const CURRENT_VERSION = 5
+const CURRENT_VERSION = 6
 
 // 旧版存储键（用于迁移）
 const LEGACY_SETTINGS_KEY = 'user_settings'
@@ -41,6 +41,7 @@ async function migrateLegacySettings(): Promise<void> {
   // 如果有旧版数据，迁移到新版
   if (legacySettings) {
     const migratedSettings: AppSettings = {
+      ...defaultSettings,
       defaultProjectId: legacySettings?.defaultProjectId ?? null,
       blockedSites: [],
     }
@@ -164,6 +165,14 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
     return {
       ...d,
       aiConfig: d.aiConfig ?? undefined,
+    }
+  },
+  // v5 -> v6: 添加提示音设置
+  6: (data) => {
+    const d = (data || {}) as Record<string, unknown>
+    return {
+      ...d,
+      notificationSound: d.notificationSound ?? 'bell',
     }
   },
 }

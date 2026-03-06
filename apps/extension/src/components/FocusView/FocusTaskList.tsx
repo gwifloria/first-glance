@@ -9,7 +9,6 @@ import { PlayCircleOutlined, AimOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
-import { RefreshButton } from '../common/RefreshButton'
 import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
@@ -227,12 +226,6 @@ export function FocusTaskList({
 
   return (
     <div className="mt-4 w-full max-w-md">
-      {!isGuest && !immersive && (
-        <div className="flex justify-center mb-2">
-          <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
-        </div>
-      )}
-
       <div className="min-h-[200px]">
         {loading ? (
           <div className="flex items-center justify-center h-[200px]">
@@ -272,6 +265,7 @@ export function FocusTaskList({
           canAddMore={canAddMore}
           taskCount={focusTasks.length}
           onCreate={handleCreate}
+          showRefresh={!isGuest}
         />
       )}
     </div>

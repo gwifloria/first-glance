@@ -16,8 +16,12 @@ interface ClockProps {
   // 番茄时钟模式
   pomodoroMode?: PomodoroMode
   pomodoroTimeLeft?: number
+  pomodoroTotalDuration?: number
   onClick?: () => void
 }
+
+const RING_RADIUS = 110
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
 
 /**
  * 时钟组件 - 支持普通时钟和番茄时钟模式
@@ -29,6 +33,7 @@ export function Clock({
   className = '',
   pomodoroMode,
   pomodoroTimeLeft = 0,
+  pomodoroTotalDuration,
   onClick,
 }: ClockProps) {
   const { t } = useTranslation('common')
@@ -56,6 +61,12 @@ export function Clock({
   }
 
   if (variant === 'large') {
+    // 进度环 SVG - 番茄模式下显示
+    const showRing =
+      isPomodoroActive && pomodoroTotalDuration && pomodoroTotalDuration > 0
+    const progress = showRing ? pomodoroTimeLeft / pomodoroTotalDuration! : 1
+    const dashOffset = RING_CIRCUMFERENCE * (1 - progress)
+
     return (
       <div
         role="timer"
@@ -63,11 +74,52 @@ export function Clock({
         onClick={onClick}
         className={`flex flex-col items-center select-none text-center ${className}`}
       >
-        <div
-          className={`text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter transition-all duration-700 cursor-pointer hover:scale-105 ${isPomodoroActive ? pomodoroColor : 'text-[var(--clock-primary)]'}`}
-        >
-          {displayTime}
-        </div>
+        {showRing ? (
+          // 沉浸式模式：时间文字在进度环中心
+          <div className="relative flex items-center justify-center w-[300px] h-[300px] max-lg:w-[240px] max-lg:h-[240px] max-md:w-[200px] max-md:h-[200px]">
+            <svg
+              className="absolute inset-0 -rotate-90"
+              viewBox="0 0 300 300"
+              width="300"
+              height="300"
+            >
+              {/* 背景环 */}
+              <circle
+                cx="150"
+                cy="150"
+                r={RING_RADIUS}
+                fill="none"
+                stroke="var(--bg-secondary)"
+                strokeWidth="5"
+                opacity="0.5"
+              />
+              {/* 进度环 */}
+              <circle
+                cx="150"
+                cy="150"
+                r={RING_RADIUS}
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth="5"
+                strokeDasharray={RING_CIRCUMFERENCE}
+                strokeDashoffset={dashOffset}
+                strokeLinecap="round"
+                style={{ transition: 'stroke-dashoffset 1s linear' }}
+              />
+            </svg>
+            <div
+              className={`relative z-10 text-[4.5rem] max-lg:text-[3.5rem] max-md:text-[2.75rem] leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 ${pomodoroColor}`}
+            >
+              {displayTime}
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter transition-all duration-700 cursor-pointer hover:scale-105 ${isPomodoroActive ? pomodoroColor : 'text-[var(--clock-primary)]'}`}
+          >
+            {displayTime}
+          </div>
+        )}
         {showGreeting && (
           <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-4 font-bold font-hand text-[var(--clock-primary)] opacity-90">
             {isPomodoroActive

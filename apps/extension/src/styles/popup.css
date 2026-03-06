@@ -1,0 +1,18 @@
+/* 覆盖 base.css 的全屏约束 */
+html,
+body,
+#root {
+  height: auto;
+  overflow: visible;
+}
+
+body {
+  min-width: 320px;
+  background: var(--bg-card);
+}
+
+/* dark 主题 popup 提亮背景，避免和浏览器工具栏融在一起 */
+.popup-dark {
+  --bg-card: #28282c;
+  --border: #3a3a3e;
+}

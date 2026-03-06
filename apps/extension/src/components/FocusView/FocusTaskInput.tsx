@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatDateStr } from '@/utils/date'
 import { getSettings } from '@/services/settingsStorage'
+import { RefreshButton } from '../common/RefreshButton'
 import type { Task } from '@/types'
 
 interface FocusTaskInputProps {
@@ -9,6 +10,7 @@ interface FocusTaskInputProps {
   canAddMore: boolean
   taskCount: number
   onCreate: (task: Partial<Task>) => Promise<Task | null>
+  showRefresh?: boolean
 }
 
 export function FocusTaskInput({
@@ -16,6 +18,7 @@ export function FocusTaskInput({
   canAddMore,
   taskCount,
   onCreate,
+  showRefresh,
 }: FocusTaskInputProps) {
   const { t } = useTranslation('focus')
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -59,19 +62,24 @@ export function FocusTaskInput({
 
   return (
     <div className="mt-8">
-      <input
-        type="text"
-        value={newTaskTitle}
-        onChange={(e) => setNewTaskTitle(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleCreateTask()}
-        placeholder={
-          isGuestMode && !canAddMore
-            ? t('placeholder.connectToAdd')
-            : t('placeholder.addFocus')
-        }
-        disabled={creating || (isGuestMode && !canAddMore)}
-        className="w-full text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
-      />
+      <div className="flex items-center gap-1">
+        <input
+          type="text"
+          value={newTaskTitle}
+          onChange={(e) => setNewTaskTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleCreateTask()}
+          placeholder={
+            isGuestMode && !canAddMore
+              ? t('placeholder.connectToAdd')
+              : t('placeholder.addFocus')
+          }
+          disabled={creating || (isGuestMode && !canAddMore)}
+          className="flex-1 text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
+        />
+        {showRefresh && (
+          <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)] opacity-40 hover:opacity-100 transition-opacity shrink-0" />
+        )}
+      </div>
       {/* 访客模式限制提示 */}
       {isGuestMode && (
         <div className="text-xs text-[var(--text-secondary)] text-center mt-2 opacity-60">

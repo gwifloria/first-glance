@@ -20,6 +20,9 @@
       "ended": "休息模式已结束"
     }
   },
+  "sound": {
+    "label": "提示音"
+  },
   "help": {
     "feedback": "反馈问题",
     "changelog": "更新日志",

@@ -28,22 +28,30 @@
     "reset": "重置",
     "working": "专注中",
     "resting": "休息中",
-    "focusLock": "专注锁定",
-    "focusLockOn": "专注锁定已开启（点击关闭）",
-    "focusLockOff": "开启专注锁定（屏蔽所有网站）",
-    "focusLockDesc": "开启后将屏蔽所有网站，帮助你保持专注。可随时点击锁定图标关闭。",
-    "focusLockConfirm": "开启",
     "bindTask": "专注这个任务",
     "bindConfirm": {
       "title": "专注这个任务？",
       "confirm": "确定",
       "cancel": "取消"
     },
-    "blocksiteHint": "还没有屏蔽干扰网站，专注前先设置",
     "taskDone": {
       "title": "番茄完成，任务搞定了吗？",
       "confirm": "已完成",
       "cancel": "还没好"
     }
+  },
+  "stats": {
+    "todayCount": "今日番茄",
+    "todayTime": "今日专注",
+    "weekCount": "本周番茄",
+    "weekTime": "本周专注"
+  },
+  "pomodoroSettings": {
+    "title": "番茄钟设置",
+    "notifSound": "提示音",
+    "bell": "清脆铃声",
+    "chime": "轻柔叮咚",
+    "wood": "木鱼",
+    "none": "关闭"
   }
 }

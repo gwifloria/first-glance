@@ -3,13 +3,13 @@ import { App } from 'antd'
 import { useTranslation } from 'react-i18next'
 import type { Quote } from '@/data/quotes'
 import { usePomodoro } from '@/hooks/usePomodoro'
-import { useFocusLock } from '@/hooks/useFocusLock'
 import { useTaskContext } from '@/contexts/TaskContext'
 import { SettingsPanel } from '../common'
 import { Clock } from '../common/Clock'
 import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
+import { StatsCard } from './StatsCard'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
 import type { Task } from '@/types'
 
@@ -22,9 +22,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   const { t } = useTranslation('focus')
   const { modal } = App.useApp()
   const pomodoro = usePomodoro()
-  const focusLock = useFocusLock()
   const { data, actions } = useTaskContext()
-
   const isImmersive = pomodoro.mode !== 'idle'
   const prevModeRef = useRef(pomodoro.mode)
 
@@ -80,7 +78,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <div
-        className={`transition-opacity duration-500 ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
+        className={`transition-opacity duration-700 ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
       >
         <FocusFloatButton onSwitchView={onSwitchView} />
       </div>
@@ -103,8 +101,6 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onResume={pomodoro.resume}
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
-          focusLockActive={focusLock.isActive}
-          onToggleFocusLock={focusLock.toggle}
         />
         <FocusTaskList
           immersive={isImmersive}
@@ -113,11 +109,16 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onBindTask={handleBindTask}
           isIdle={pomodoro.mode === 'idle'}
         />
+        <div
+          className={`transition-all duration-700 ease-in-out ${isImmersive ? 'opacity-0 max-h-0 pointer-events-none' : 'opacity-100 max-h-40'}`}
+        >
+          <StatsCard />
+        </div>
       </div>
 
       {/* Quote */}
       <div
-        className={`text-center pb-8 px-6 max-lg:pb-4 max-lg:px-4 relative z-10 transition-opacity duration-500 ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
+        className={`text-center pb-8 px-6 max-lg:pb-4 max-lg:px-4 relative z-10 transition-opacity duration-700 ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
       >
         <p
           className="text-lg max-md:text-base text-[var(--text-primary)] italic opacity-70 max-w-3xl mx-auto"

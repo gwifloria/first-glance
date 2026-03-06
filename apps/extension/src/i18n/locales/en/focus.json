@@ -3,8 +3,7 @@
   "popup": {
     "openNewtab": "Open new tab",
     "startPomodoro": "Start Pomodoro",
-    "noTasks": "No focus tasks",
-    "noTasksHint": "Add in new tab"
+    "noTasks": "No focus tasks"
   },
   "empty": "No high priority tasks today",
   "button": {

@@ -171,16 +171,8 @@ function PopupTaskList({
 
   if (displayTasks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-20 gap-1">
-        <span className="text-sm text-[var(--text-secondary)]">
-          {t('popup.noTasks')}
-        </span>
-        <button
-          onClick={openNewTab}
-          className="text-xs text-[var(--accent)] hover:underline cursor-pointer bg-transparent border-none"
-        >
-          {t('popup.noTasksHint')} →
-        </button>
+      <div className="flex items-center justify-center h-16 text-[var(--text-secondary)] text-sm">
+        {t('popup.noTasks')}
       </div>
     )
   }

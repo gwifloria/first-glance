@@ -5,7 +5,7 @@ import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
 import { Button, Checkbox, message, Popover, Spin } from 'antd'
-import { PlayCircleOutlined } from '@ant-design/icons'
+import { PlayCircleOutlined, AimOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
@@ -22,7 +22,9 @@ interface FocusTaskItemProps {
   onComplete: (task: Task) => void
   onCompleteChild: (task: Task) => void
   onStartPomodoro?: (task: Task) => void
+  onBindTask?: (task: Task) => void
   isIdle?: boolean
+  isFocusingUnbound?: boolean
   isHighlighted?: boolean
 }
 
@@ -34,7 +36,9 @@ const FocusTaskItem = memo(function FocusTaskItem({
   onComplete,
   onCompleteChild,
   onStartPomodoro,
+  onBindTask,
   isIdle,
+  isFocusingUnbound,
   isHighlighted,
 }: FocusTaskItemProps) {
   const { t } = useTranslation('focus')
@@ -125,7 +129,7 @@ const FocusTaskItem = memo(function FocusTaskItem({
           </Popover>
         )}
       </div>
-      {/* 番茄按钮：只在 idle 模式 hover 时显示 */}
+      {/* idle 模式：hover 显示开始番茄按钮 */}
       {isIdle && onStartPomodoro && (
         <Button
           type="text"
@@ -136,6 +140,17 @@ const FocusTaskItem = memo(function FocusTaskItem({
           title={t('pomodoro.start')}
         />
       )}
+      {/* focusing 且未绑定任务：hover 显示绑定按钮 */}
+      {isFocusingUnbound && onBindTask && (
+        <Button
+          type="text"
+          size="small"
+          icon={<AimOutlined />}
+          onClick={() => onBindTask(task)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+          title={t('pomodoro.bindTask')}
+        />
+      )}
     </div>
   )
 })
@@ -144,6 +159,7 @@ interface FocusTaskListProps {
   immersive?: boolean
   currentTaskId?: string | null
   onStartPomodoro?: (task: Task) => void
+  onBindTask?: (task: Task) => void
   isIdle?: boolean
 }
 
@@ -151,6 +167,7 @@ export function FocusTaskList({
   immersive,
   currentTaskId,
   onStartPomodoro,
+  onBindTask,
   isIdle,
 }: FocusTaskListProps) {
   const { t } = useTranslation('focus')
@@ -192,6 +209,7 @@ export function FocusTaskList({
   // 只在初始加载时显示 skeleton，连接过程中保持显示原内容
   const loading = tasksLoading && tasks.length === 0
   const canAddMore = isGuest ? focusTasks.length < MAX_LOCAL_TASKS : true
+  const focusingUnbound = !!immersive && !currentTaskId
 
   const handleCreate = useCallback(
     async (taskData: Partial<Task>): Promise<Task | null> => {
@@ -236,9 +254,11 @@ export function FocusTaskList({
                 onComplete={completeTask}
                 onCompleteChild={completeTask}
                 onStartPomodoro={onStartPomodoro}
+                onBindTask={onBindTask}
                 isIdle={isIdle}
+                isFocusingUnbound={focusingUnbound}
                 isHighlighted={
-                  immersive && currentTaskId ? task.id === currentTaskId : false
+                  currentTaskId ? task.id === currentTaskId : false
                 }
               />
             ))}

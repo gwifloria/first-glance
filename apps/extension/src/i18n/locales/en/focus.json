@@ -28,6 +28,11 @@
     "focusLockOff": "Enable Focus Lock (block all sites)",
     "focusLockDesc": "Blocks all websites to keep you focused. Click the lock icon anytime to turn it off.",
     "focusLockConfirm": "Enable",
-    "blocksiteHint": "No blocked sites yet — set up before focusing"
+    "blocksiteHint": "No blocked sites yet — set up before focusing",
+    "taskDone": {
+      "title": "Pomodoro done — did you finish the task?",
+      "confirm": "Mark complete",
+      "cancel": "Not yet"
+    }
   }
 }

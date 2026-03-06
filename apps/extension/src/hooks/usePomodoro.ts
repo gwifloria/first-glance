@@ -14,8 +14,10 @@ export interface PomodoroConfig {
 export interface PomodoroState {
   mode: PomodoroMode
   timeLeft: number // 剩余秒数（计算得出）
+  totalDuration: number // 当前阶段总秒数
   isRunning: boolean
   completedCount: number // 完成的番茄数
+  currentTaskId: string | null // 当前绑定的任务 ID
 }
 
 export interface PomodoroActions {
@@ -24,6 +26,7 @@ export interface PomodoroActions {
   resume: () => void
   reset: () => void
   skip: () => void
+  startWithTask: (taskId: string) => void
 }
 
 const DEFAULT_CONFIG: PomodoroConfig = {
@@ -77,8 +80,10 @@ export function usePomodoro(
   const [state, setState] = useState<PomodoroState>({
     mode: 'idle',
     timeLeft: mergedConfig.workDuration * 60,
+    totalDuration: mergedConfig.workDuration * 60,
     isRunning: false,
     completedCount: 0,
+    currentTaskId: null,
   })
 
   // 从存储状态更新本地状态
@@ -88,8 +93,10 @@ export function usePomodoro(
         setState({
           mode: 'idle',
           timeLeft: mergedConfig.workDuration * 60,
+          totalDuration: mergedConfig.workDuration * 60,
           isRunning: false,
           completedCount: 0,
+          currentTaskId: null,
         })
         storageRef.current = null
         return
@@ -99,8 +106,10 @@ export function usePomodoro(
       setState({
         mode: stored.mode,
         timeLeft: calculateTimeLeft(stored),
+        totalDuration: getDurationSeconds(stored.mode, stored.config),
         isRunning: stored.isRunning,
         completedCount: stored.completedCount,
+        currentTaskId: stored.currentTaskId ?? null,
       })
     },
     [mergedConfig.workDuration]
@@ -126,6 +135,8 @@ export function usePomodoro(
           ? stored.completedCount + 1
           : stored.completedCount,
       lastNotificationTime: now,
+      // work→break 时保留 currentTaskId；break→work 时清空
+      currentTaskId: stored.mode === 'work' ? stored.currentTaskId : null,
     }
 
     await storage.setPomodoro(newStored)
@@ -188,10 +199,29 @@ export function usePomodoro(
       startTime: Date.now(),
       pausedTimeLeft: null,
       lastNotificationTime: null,
+      currentTaskId: null,
       config: mergedConfig,
     }
     await storage.setPomodoro(newStored)
   }, [mergedConfig])
+
+  // 绑定任务并开始工作
+  const startWithTask = useCallback(
+    async (taskId: string) => {
+      const newStored: PomodoroStorage = {
+        mode: 'work',
+        isRunning: true,
+        completedCount: storageRef.current?.completedCount ?? 0,
+        startTime: Date.now(),
+        pausedTimeLeft: null,
+        lastNotificationTime: null,
+        currentTaskId: taskId,
+        config: mergedConfig,
+      }
+      await storage.setPomodoro(newStored)
+    },
+    [mergedConfig]
+  )
 
   // 暂停
   const pause = useCallback(async () => {
@@ -246,6 +276,8 @@ export function usePomodoro(
         stored.mode === 'work'
           ? stored.completedCount + 1
           : stored.completedCount,
+      // work→break 保留 currentTaskId；break→work 清空
+      currentTaskId: stored.mode === 'work' ? stored.currentTaskId : null,
     }
     await storage.setPomodoro(newStored)
   }, [])
@@ -257,6 +289,7 @@ export function usePomodoro(
     resume,
     reset,
     skip,
+    startWithTask,
   }
 }
 

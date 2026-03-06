@@ -4,7 +4,8 @@ import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import type { Task } from '@/types'
-import { Checkbox, message, Popover, Spin } from 'antd'
+import { Button, Checkbox, message, Popover, Spin } from 'antd'
+import { PlayCircleOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
@@ -20,6 +21,9 @@ interface FocusTaskItemProps {
   children?: Task[]
   onComplete: (task: Task) => void
   onCompleteChild: (task: Task) => void
+  onStartPomodoro?: (task: Task) => void
+  isIdle?: boolean
+  isHighlighted?: boolean
 }
 
 const FocusTaskItem = memo(function FocusTaskItem({
@@ -29,6 +33,9 @@ const FocusTaskItem = memo(function FocusTaskItem({
   children: childTasks,
   onComplete,
   onCompleteChild,
+  onStartPomodoro,
+  isIdle,
+  isHighlighted,
 }: FocusTaskItemProps) {
   const { t } = useTranslation('focus')
   const { completing, handleComplete } = useTaskCompletion(onComplete, {
@@ -53,9 +60,10 @@ const FocusTaskItem = memo(function FocusTaskItem({
   return (
     <div
       className={`
-        flex items-center gap-5 py-4 px-5 bg-[var(--bg-card)] rounded-xl shadow-sm
+        group flex items-center gap-5 py-4 px-5 bg-[var(--bg-card)] rounded-xl shadow-sm
         transition-all duration-300 ease-out
         ${completing ? 'animate-[taskComplete_0.4s_ease-out_forwards]' : ''}
+        ${isHighlighted ? 'ring-2 ring-[var(--accent)] ring-opacity-60 scale-[1.02]' : ''}
       `}
     >
       <TaskCheckbox
@@ -71,7 +79,7 @@ const FocusTaskItem = memo(function FocusTaskItem({
           </span>
         )}
         <span
-          className={`text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
+          className={`text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${isHighlighted ? 'text-2xl font-bold' : ''} ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
         >
           {renderMarkdownLinks(task.title)}
         </span>
@@ -117,11 +125,34 @@ const FocusTaskItem = memo(function FocusTaskItem({
           </Popover>
         )}
       </div>
+      {/* 番茄按钮：只在 idle 模式 hover 时显示 */}
+      {isIdle && onStartPomodoro && (
+        <Button
+          type="text"
+          size="small"
+          icon={<PlayCircleOutlined />}
+          onClick={() => onStartPomodoro(task)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+          title={t('pomodoro.start')}
+        />
+      )}
     </div>
   )
 })
 
-export function FocusTaskList() {
+interface FocusTaskListProps {
+  immersive?: boolean
+  currentTaskId?: string | null
+  onStartPomodoro?: (task: Task) => void
+  isIdle?: boolean
+}
+
+export function FocusTaskList({
+  immersive,
+  currentTaskId,
+  onStartPomodoro,
+  isIdle,
+}: FocusTaskListProps) {
   const { t } = useTranslation('focus')
   const { t: tCommon } = useTranslation('common')
   const { isGuest } = useAppMode()
@@ -130,6 +161,14 @@ export function FocusTaskList() {
   const { tasks, loading: tasksLoading, taskMap } = data
   const { completeTask, createTask } = actions
   const { focusTasks } = views
+
+  // 沉浸模式 + 有绑定任务时，只显示该任务
+  const displayTasks = useMemo(() => {
+    if (immersive && currentTaskId) {
+      return focusTasks.filter((t) => t.id === currentTaskId)
+    }
+    return focusTasks
+  }, [immersive, currentTaskId, focusTasks])
 
   // 从所有 tasks 中构建子任务计数 map 和子任务列表 map
   const { childCountMap, childrenMap } = useMemo(() => {
@@ -170,7 +209,7 @@ export function FocusTaskList() {
 
   return (
     <div className="mt-6 w-full max-w-md">
-      {!isGuest && (
+      {!isGuest && !immersive && (
         <div className="flex justify-center mb-5">
           <RefreshButton className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]" />
         </div>
@@ -181,13 +220,13 @@ export function FocusTaskList() {
           <div className="flex items-center justify-center h-[200px]">
             <Spin />
           </div>
-        ) : focusTasks.length === 0 ? (
+        ) : displayTasks.length === 0 ? (
           <div className="text-center text-[var(--text-secondary)] text-lg">
             {t('empty')}
           </div>
         ) : (
           <div className="space-y-4">
-            {focusTasks.map((task) => (
+            {displayTasks.map((task) => (
               <FocusTaskItem
                 key={task.id}
                 task={task}
@@ -196,18 +235,25 @@ export function FocusTaskList() {
                 children={childrenMap.get(task.id)}
                 onComplete={completeTask}
                 onCompleteChild={completeTask}
+                onStartPomodoro={onStartPomodoro}
+                isIdle={isIdle}
+                isHighlighted={
+                  immersive && currentTaskId ? task.id === currentTaskId : false
+                }
               />
             ))}
           </div>
         )}
       </div>
 
-      <FocusTaskInput
-        isGuestMode={isGuest}
-        canAddMore={canAddMore}
-        taskCount={focusTasks.length}
-        onCreate={handleCreate}
-      />
+      {!immersive && (
+        <FocusTaskInput
+          isGuestMode={isGuest}
+          canAddMore={canAddMore}
+          taskCount={focusTasks.length}
+          onCreate={handleCreate}
+        />
+      )}
     </div>
   )
 }

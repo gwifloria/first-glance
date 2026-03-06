@@ -19,6 +19,7 @@ export interface PomodoroStorage {
   startTime: number | null // 当前阶段开始的时间戳
   pausedTimeLeft: number | null // 暂停时的剩余秒数
   lastNotificationTime: number | null // 上次播放提示音的时间戳（防止多 tab 重复播放）
+  currentTaskId: string | null // 当前绑定的任务 ID
   config: {
     workDuration: number // 分钟
     breakDuration: number // 分钟

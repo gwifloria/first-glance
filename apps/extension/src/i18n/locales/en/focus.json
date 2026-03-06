@@ -1,5 +1,11 @@
 {
   "title": "TODAY'S FOCUS",
+  "popup": {
+    "openNewtab": "Open new tab",
+    "startPomodoro": "Start Pomodoro",
+    "noTasks": "No focus tasks",
+    "noTasksHint": "Add in new tab"
+  },
   "empty": "No high priority tasks today",
   "button": {
     "viewTasks": "View task list ({{count}} tasks)"

@@ -1,5 +1,11 @@
 {
   "title": "TODAY'S FOCUS",
+  "popup": {
+    "openNewtab": "打开新标签页",
+    "startPomodoro": "开始番茄钟",
+    "noTasks": "暂无专注任务",
+    "noTasksHint": "在新标签页中添加"
+  },
   "empty": "今天没有高优先级任务",
   "button": {
     "viewTasks": "查看任务列表（{{count}}个任务）"

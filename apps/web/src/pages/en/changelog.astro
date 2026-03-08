@@ -35,21 +35,18 @@ function formatDate(dateStr: string): string {
   <!-- Background Texture -->
   <div class="fixed inset-0 paper-texture pointer-events-none z-0"></div>
 
-  <!-- Pink decorative blob -->
-  <div class="fixed top-[-100px] right-[-100px] w-[500px] h-[500px] bg-pink-light rounded-full mix-blend-multiply filter blur-3xl opacity-40 pointer-events-none z-0"></div>
-
   <!-- Navigation -->
-  <nav class="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border">
+  <nav class="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-border">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
       <a href="/first-glance/en" class="flex items-center gap-3 group">
         <img src="/first-glance/favicon.png" alt="First Glance" class="w-9 h-9 rounded-xl group-hover:rotate-3 transition-transform" />
-        <span class="font-serif font-bold text-lg tracking-tight text-text">First Glance</span>
+        <span class="font-hand-en font-bold text-xl tracking-tight text-ink">First Glance</span>
       </a>
 
       <div class="hidden md:flex items-center gap-8">
-        <a href="/first-glance/en" class="text-sm font-bold text-text-muted hover:text-text transition-colors">Home</a>
-        <a href="/first-glance/en/changelog" class="text-sm font-bold text-pink transition-colors">Changelog</a>
-        <a href="/first-glance/changelog" class="text-sm font-bold text-text-muted hover:text-text transition-colors">中文</a>
+        <a href="/first-glance/en" class="text-sm font-bold text-ink-light hover:text-ink transition-colors">Home</a>
+        <a href="/first-glance/en/changelog" class="text-sm font-bold text-tape-pink transition-colors">Changelog</a>
+        <a href="/first-glance/changelog" class="text-sm font-bold text-ink-light hover:text-ink transition-colors">中文</a>
       </div>
     </div>
   </nav>
@@ -58,42 +55,42 @@ function formatDate(dateStr: string): string {
   <main class="pt-24 pb-20 px-6 min-h-screen">
     <div class="max-w-3xl mx-auto">
       <div class="text-center mb-16">
-        <h1 class="text-3xl md:text-4xl font-serif font-medium text-text mb-4">Changelog</h1>
-        <p class="text-text-muted text-lg">Version history of First Glance</p>
+        <h1 class="text-3xl md:text-4xl font-hand-en font-bold text-ink mb-4">Changelog</h1>
+        <p class="text-ink-light text-lg">Version history of First Glance</p>
       </div>
 
       {releases.length === 0 ? (
         <div class="text-center py-12">
           <div class="text-4xl mb-4">( ´_ゝ`)</div>
-          <p class="text-text-muted">No releases yet</p>
+          <p class="text-ink-light">No releases yet</p>
         </div>
       ) : (
         <div class="space-y-8">
           {releases.map((release: any, index: number) => (
             <article class="relative pl-8 border-l-2 border-border pb-8 last:pb-0">
               <!-- Timeline dot -->
-              <div class={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 ${index === 0 ? 'bg-pink border-pink' : 'bg-background border-border'}`}></div>
+              <div class={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 ${index === 0 ? 'bg-tape-pink border-tape-pink' : 'bg-cream border-border'}`}></div>
 
               <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
-                  <h2 class="text-xl font-bold font-serif text-text">{release.name || release.tag_name}</h2>
+                  <h2 class="text-xl font-bold font-hand-en text-ink">{release.name || release.tag_name}</h2>
                   {release.prerelease && (
-                    <span class="px-2 py-0.5 text-xs font-bold bg-pink-bg text-pink rounded-full border border-border-pink">
+                    <span class="px-2 py-0.5 text-xs font-bold bg-pink-bg text-tape-pink rounded-full border border-border-pink">
                       Pre-release
                     </span>
                   )}
                 </div>
 
-                <time class="text-sm text-text-muted block mb-4">
+                <time class="text-sm text-ink-muted block mb-4">
                   {formatDate(release.published_at)}
                 </time>
 
                 {release.body && (
-                  <div class="prose prose-sm max-w-none text-text-muted" set:html={
+                  <div class="prose prose-sm max-w-none text-ink-light" set:html={
                     release.body
                       .replace(/\r\n/g, '\n')
-                      .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-text mt-4 mb-2">$1</h3>')
-                      .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-text mt-4 mb-2">$1</h2>')
+                      .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-ink mt-4 mb-2">$1</h3>')
+                      .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-ink mt-4 mb-2">$1</h2>')
                       .replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
                       .replace(/\n\n/g, '<br/><br/>')
                   } />
@@ -102,7 +99,7 @@ function formatDate(dateStr: string): string {
                 <a
                   href={release.html_url}
                   target="_blank"
-                  class="inline-flex items-center gap-2 mt-4 text-sm font-bold text-pink hover:underline"
+                  class="inline-flex items-center gap-2 mt-4 text-sm font-bold text-tape-pink hover:underline"
                 >
                   View on GitHub
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,23 +115,21 @@ function formatDate(dateStr: string): string {
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-border py-12 px-6">
+  <footer class="bg-cream border-t border-border py-12 px-6">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="flex items-center gap-2 opacity-50">
-        <div class="w-5 h-5 rounded-full border border-current flex items-center justify-center">
-          <div class="w-1.5 h-1.5 bg-current rounded-full"></div>
-        </div>
-        <span class="font-serif font-bold text-sm text-text">First Glance</span>
+        <img src="/first-glance/favicon.png" alt="" class="w-5 h-5 rounded" />
+        <span class="font-hand-en font-bold text-sm text-ink">First Glance</span>
       </div>
 
-      <div class="flex gap-6 text-sm font-medium opacity-60">
+      <div class="flex gap-6 text-sm font-bold opacity-60">
         <a href="https://github.com/gwifloria/first-glance/issues" target="_blank" class="hover:opacity-100 transition-opacity">Feedback</a>
         <a href="https://github.com/gwifloria/first-glance" target="_blank" class="hover:opacity-100 transition-opacity">GitHub</a>
         <a href="/first-glance/privacy" class="hover:opacity-100 transition-opacity">Privacy</a>
       </div>
 
-      <div class="text-xs font-bold uppercase tracking-widest text-text/40">
-        &copy; 2025 Wonderland
+      <div class="text-xs font-bold uppercase tracking-widest text-ink/40">
+        &copy; 2025–2026 gwifloria
       </div>
     </div>
   </footer>

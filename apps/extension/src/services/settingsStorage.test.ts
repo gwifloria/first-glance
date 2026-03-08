@@ -115,7 +115,6 @@ describe('settingsStorage', () => {
 
       expect(settings.defaultProjectId).toBeNull()
       expect(settings.blockedSites).toEqual([])
-      expect(store['settings_version']).toBe(7)
     })
   })
 

@@ -43,3 +43,6 @@ npm-debug.log*
 # Bundle analyzer
 stats.html
 
+# Screenshots
+apps/web/screenshots/
+

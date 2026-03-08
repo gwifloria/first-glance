@@ -1,74 +1,128 @@
 @import 'tailwindcss';
 
-/* Custom colors - Warm pink palette (wonderland-nexus style) */
+/* Vibrant Journal color palette */
 @theme {
   /* Background tones */
-  --color-background: #fcfaf9;
-  --color-background-alt: #fdfcfc;
+  --color-cream: #f9f5eb;
+  --color-cream-light: #fdf9f0;
+  --color-cream-dark: #ede8d8;
+  --color-background: #f9f5eb;
+  --color-background-alt: #fdf9f0;
   --color-card: #ffffff;
+  /* Ink tones */
+  --color-ink: #2c3e50;
+  --color-ink-light: #5d6d7e;
+  --color-ink-muted: #85929e;
+  --color-text: #2c3e50;
+  --color-text-muted: #5d6d7e;
+  --color-text-light: #85929e;
   /* Border tones */
-  --color-border: #ebdcd9;
-  --color-border-light: #f2efee;
-  --color-border-pink: #faeaea;
-  /* Text tones */
-  --color-text: #5d5555;
-  --color-text-muted: #8a807e;
-  --color-text-light: #9c9492;
-  /* Pink accent (primary) */
-  --color-pink: #d4a5a5;
-  --color-pink-light: #ffeaea;
-  --color-pink-bg: #fff0f0;
-  /* Secondary accents */
-  --color-mint: #a2c1c0;
-  --color-gold: #e9ca89;
-  --color-beige: #f7f1e4;
-  --color-beige-border: #e2ddd3;
-  /* Legacy mappings for compatibility */
-  --color-cream: #f7f1e4;
-  --color-cream-light: #fcfaf9;
-  --color-cream-dark: #ebdcd9;
-  --color-stone: #5d5555;
-  --color-stone-light: #8a807e;
-  --color-stone-dark: #3d3535;
-  --color-sage: #a2c1c0;
-  --color-accent: #5d5555;
-  --color-accent-warm: #d4a5a5;
-  --color-accent-blue: #a2c1c0;
+  --color-border: #e0d8c8;
+  --color-border-light: #ede8d8;
+  /* Accent colors */
+  --color-tape-pink: #e57373;
+  --color-tape-blue: #80cbc4;
+  --color-highlight: #fff59d;
+  --color-sticker-green: #a5d6a7;
+  --color-pink: #e57373;
+  --color-pink-light: #fce4e4;
+  --color-pink-bg: #fdf2f2;
+  --color-mint: #80cbc4;
+  --color-border-pink: #f5d0cd;
+  /* Legacy compat */
+  --color-accent: #e57373;
+  --color-accent-warm: #e57373;
+  --color-accent-blue: #80cbc4;
+  --color-stone: #2c3e50;
+  --color-stone-light: #5d6d7e;
+  --color-stone-dark: #1a252f;
 }
 
 /* Font families */
 .font-sans {
-  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-}
-
-.font-serif {
-  font-family: 'Noto Serif SC', 'STSong', serif;
+  font-family: 'Noto Sans SC', 'Nunito', 'PingFang SC', sans-serif;
 }
 
 .font-hand {
-  font-family: 'ZCOOL XiaoWei', 'Ma Shan Zheng', cursive;
+  font-family: 'ZCOOL KuaiLe', 'Patrick Hand', cursive;
 }
 
-/* Smooth scroll with snap */
+.font-hand-en {
+  font-family: 'Patrick Hand', 'ZCOOL KuaiLe', cursive;
+}
+
+.font-body {
+  font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+}
+
+/* Scroll snap (proximity = gentle, not jarring) */
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
 }
 
-/* Full-height sections with snap */
-.snap-section {
+.snap-section,
+.snap-section-hero {
   scroll-snap-align: start;
   min-height: 100vh;
-  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* Paper texture */
+/* Hero needs top padding for fixed nav */
+.snap-section-hero {
+  padding-top: 4rem;
+}
+
+/* Grid background (replaces paper-texture dots) */
 .paper-texture {
-  background-image: radial-gradient(
-    rgba(68, 64, 60, 0.04) 1px,
-    transparent 1px
-  );
+  background-image:
+    linear-gradient(rgba(44, 62, 80, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 62, 80, 0.04) 1px, transparent 1px);
   background-size: 20px 20px;
+}
+
+/* Highlighter / marker effect */
+.highlight {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    var(--color-highlight) 55%,
+    var(--color-highlight) 90%,
+    transparent 90%
+  );
+  padding: 0 4px;
+}
+
+.highlight-pink {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    var(--color-pink-light) 55%,
+    var(--color-pink-light) 90%,
+    transparent 90%
+  );
+  padding: 0 4px;
+}
+
+/* Washi tape decorations */
+.tape {
+  background: rgba(229, 115, 115, 0.5);
+  transform: rotate(-2deg);
+}
+
+.tape-blue {
+  background: linear-gradient(
+    135deg,
+    rgba(128, 222, 234, 0.6) 0%,
+    rgba(128, 222, 234, 0.4) 100%
+  );
+  transform: rotate(2deg);
+}
+
+.tape-right {
+  transform: rotate(2deg);
 }
 
 /* Animations */
@@ -99,13 +153,6 @@ html {
   animation: border-spin 12s linear infinite;
 }
 
-/* Focus ring */
-.focus-ring:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* Float delayed animation */
 @keyframes float-delayed {
   0%,
   100% {
@@ -120,7 +167,6 @@ html {
   animation: float-delayed 7s ease-in-out infinite 1s;
 }
 
-/* Pulse soft animation */
 @keyframes pulse-soft {
   0%,
   100% {
@@ -135,7 +181,6 @@ html {
   animation: pulse-soft 3s ease-in-out infinite;
 }
 
-/* Fade in up animation */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -151,6 +196,12 @@ html {
   animation: fade-in-up 0.8s ease-out forwards;
 }
 
+/* Focus ring */
+.focus-ring:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* Glass panel effect */
 .glass-panel {
   background: rgba(255, 255, 255, 0.6);
@@ -163,36 +214,55 @@ html {
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.05),
     0 8px 10px -6px rgba(0, 0, 0, 0.01),
-    inset 0 0 0 1px rgba(68, 64, 60, 0.05);
+    inset 0 0 0 1px rgba(44, 62, 80, 0.05);
 }
 
-/* Tape decoration */
-.tape {
-  background: linear-gradient(
-    135deg,
-    rgba(233, 202, 137, 0.7) 0%,
-    rgba(233, 202, 137, 0.5) 100%
-  );
-  transform: rotate(-2deg);
+/* Sticky note card */
+.sticky-note {
+  background: #fffef5;
+  border: 1px solid #ede8d8;
+  border-radius: 4px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
 }
 
-.tape-right {
-  transform: rotate(2deg);
+/* Colored underlines */
+.underline-pink {
+  text-decoration: underline;
+  text-decoration-color: var(--color-tape-pink);
+  text-decoration-thickness: 2.5px;
+  text-underline-offset: 4px;
+}
+
+.underline-blue {
+  text-decoration: underline;
+  text-decoration-color: var(--color-tape-blue);
+  text-decoration-thickness: 2.5px;
+  text-underline-offset: 4px;
+}
+
+/* Grid background inside mockups */
+.mockup-grid {
+  background-image:
+    linear-gradient(rgba(44, 62, 80, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 62, 80, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 /* Dashed border style */
 .border-dashed-custom {
-  border: 2px dashed var(--color-stone-light);
+  border: 2px dashed var(--color-ink-light);
   border-radius: 12px;
 }
 
-/* Warm gradient for AI Buddy section */
+/* Cross pattern for dark sections */
+.cross-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* AI Buddy section background — flat, no gradient */
 .warm-gradient {
-  background: linear-gradient(
-    180deg,
-    var(--color-pink-bg) 0%,
-    var(--color-background) 100%
-  );
+  background: var(--color-background);
 }
 
 /* Theme gallery horizontal scroll */
@@ -236,4 +306,33 @@ html {
 .mood-card.active {
   border-color: var(--color-pink);
   background: var(--color-pink-bg);
+}
+
+/* Hold-to-unlock button with hover progress bar */
+.hold-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hold-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: var(--color-highlight);
+  border-radius: inherit;
+  transition: width 0s;
+}
+
+.hold-btn:hover::before {
+  width: 100%;
+  transition: width 0.5s linear;
+}
+
+.hold-btn:hover {
+  border-color: var(--color-highlight);
 }

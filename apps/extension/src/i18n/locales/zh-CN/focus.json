@@ -26,6 +26,11 @@
     "startWork": "开始番茄",
     "skip": "跳过",
     "reset": "重置",
+    "finish": "结束",
+    "skipConfirm": "跳过当前阶段？",
+    "finishConfirm": "结束本次番茄钟？",
+    "confirmYes": "确定",
+    "confirmNo": "取消",
     "working": "专注中",
     "resting": "休息中",
     "bindTask": "专注这个任务",
@@ -44,7 +49,10 @@
     "todayCount": "今日番茄",
     "todayTime": "今日专注",
     "weekCount": "本周番茄",
-    "weekTime": "本周专注"
+    "weekTime": "本周专注",
+    "noData": "还没有专注记录",
+    "chartTooltip": "{{count}} 个番茄 · {{duration}}",
+    "days": ["一", "二", "三", "四", "五", "六", "日"]
   },
   "pomodoroSettings": {
     "title": "番茄钟设置",

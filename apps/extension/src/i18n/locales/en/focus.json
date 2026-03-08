@@ -26,6 +26,11 @@
     "startWork": "Start Pomodoro",
     "skip": "Skip",
     "reset": "Reset",
+    "finish": "End",
+    "skipConfirm": "Skip this phase?",
+    "finishConfirm": "End this session?",
+    "confirmYes": "Yes",
+    "confirmNo": "Cancel",
     "working": "Focusing",
     "resting": "Resting",
     "bindTask": "Focus on this task",
@@ -44,7 +49,10 @@
     "todayCount": "Today",
     "todayTime": "Focus",
     "weekCount": "This week",
-    "weekTime": "Focus"
+    "weekTime": "Focus",
+    "noData": "No focus sessions yet",
+    "chartTooltip": "{{count}} pomodoro · {{duration}}",
+    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
   },
   "pomodoroSettings": {
     "title": "Pomodoro Settings",

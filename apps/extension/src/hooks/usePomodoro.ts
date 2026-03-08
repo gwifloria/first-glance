@@ -283,7 +283,7 @@ export function usePomodoro(
     await storage.setPomodoro(newStored)
   }, [])
 
-  // 重置
+  // 结束番茄钟，回到 idle（已完成的番茄数已记录到 focusStats，不受影响）
   const reset = useCallback(async () => {
     await storage.clearPomodoro()
   }, [])

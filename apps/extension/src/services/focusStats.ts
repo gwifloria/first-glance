@@ -82,6 +82,36 @@ export function getWeekStats(data: FocusStatsData): DailyStats {
   return computeStats(filtered)
 }
 
+export interface DailyStatsWithDate {
+  date: Date // 当天日期
+  dayOfWeek: number // 0=周一, 6=周日
+  count: number
+  totalMinutes: number
+}
+
+/** 返回本周（周一到周日）每天的统计数据 */
+export function getWeekDailyStats(data: FocusStatsData): DailyStatsWithDate[] {
+  const now = new Date()
+  const weekStart = getStartOfWeek(now)
+  const result: DailyStatsWithDate[] = []
+
+  for (let i = 0; i < 7; i++) {
+    const dayStart = weekStart + i * 24 * 60 * 60 * 1000
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000
+    const daySessions = data.sessions.filter(
+      (s) => s.timestamp >= dayStart && s.timestamp < dayEnd
+    )
+    result.push({
+      date: new Date(dayStart),
+      dayOfWeek: i,
+      count: daySessions.length,
+      totalMinutes: daySessions.reduce((sum, s) => sum + s.duration, 0),
+    })
+  }
+
+  return result
+}
+
 export function subscribeFocusStats(
   callback: (data: FocusStatsData) => void
 ): () => void {

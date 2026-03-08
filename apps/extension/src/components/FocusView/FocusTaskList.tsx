@@ -237,29 +237,36 @@ export function FocusTaskList({
           </div>
         ) : (
           <div className="space-y-4">
-            {displayTasks.map((task) => (
-              <FocusTaskItem
+            {displayTasks.map((task, index) => (
+              <div
                 key={task.id}
-                task={task}
-                parentTitle={getParentTitle(task, taskMap)}
-                childInfo={childCountMap.get(task.id)}
-                children={childrenMap.get(task.id)}
-                onComplete={completeTask}
-                onCompleteChild={completeTask}
-                onStartPomodoro={onStartPomodoro}
-                onBindTask={onBindTask}
-                isIdle={isIdle}
-                isFocusingUnbound={focusingUnbound}
-                isHighlighted={
-                  currentTaskId ? task.id === currentTaskId : false
-                }
-              />
+                className="animate-[fadeSlideIn_0.3s_ease-out_both]"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <FocusTaskItem
+                  task={task}
+                  parentTitle={getParentTitle(task, taskMap)}
+                  childInfo={childCountMap.get(task.id)}
+                  children={childrenMap.get(task.id)}
+                  onComplete={completeTask}
+                  onCompleteChild={completeTask}
+                  onStartPomodoro={onStartPomodoro}
+                  onBindTask={onBindTask}
+                  isIdle={isIdle}
+                  isFocusingUnbound={focusingUnbound}
+                  isHighlighted={
+                    currentTaskId ? task.id === currentTaskId : false
+                  }
+                />
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {!immersive && (
+      <div
+        className={`transition-all duration-500 ease-in-out overflow-hidden ${immersive ? 'max-h-0 opacity-0' : 'max-h-24 opacity-100'}`}
+      >
         <FocusTaskInput
           isGuestMode={isGuest}
           canAddMore={canAddMore}
@@ -267,7 +274,7 @@ export function FocusTaskList({
           onCreate={handleCreate}
           showRefresh={!isGuest}
         />
-      )}
+      </div>
     </div>
   )
 }

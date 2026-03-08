@@ -51,6 +51,9 @@
   },
   "pomodoroSettings": {
     "title": "Pomodoro Settings",
+    "workDuration": "Work Duration",
+    "breakDuration": "Break Duration",
+    "minutes": "min",
     "notifSound": "Notification Sound",
     "bell": "Bell",
     "chime": "Chime",

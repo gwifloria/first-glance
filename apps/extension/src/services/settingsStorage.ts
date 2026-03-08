@@ -2,7 +2,7 @@ import { defaultSettings, type AppSettings } from '@/types/settings'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
-const CURRENT_VERSION = 6
+const CURRENT_VERSION = 7
 
 // 旧版存储键（用于迁移）
 const LEGACY_SETTINGS_KEY = 'user_settings'
@@ -173,6 +173,15 @@ const migrations: Record<number, (data: unknown) => Record<string, unknown>> = {
     return {
       ...d,
       notificationSound: d.notificationSound ?? 'bell',
+    }
+  },
+  // v6 -> v7: 添加番茄钟时长设置
+  7: (data) => {
+    const d = (data || {}) as Record<string, unknown>
+    return {
+      ...d,
+      workDuration: d.workDuration ?? 25,
+      breakDuration: d.breakDuration ?? 5,
     }
   },
 }

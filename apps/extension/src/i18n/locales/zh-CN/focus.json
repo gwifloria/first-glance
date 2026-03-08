@@ -51,6 +51,9 @@
   },
   "pomodoroSettings": {
     "title": "番茄钟设置",
+    "workDuration": "工作时长",
+    "breakDuration": "休息时长",
+    "minutes": "分钟",
     "notifSound": "提示音",
     "bell": "清脆铃声",
     "chime": "轻柔叮咚",

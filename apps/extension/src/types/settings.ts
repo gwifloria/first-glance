@@ -14,6 +14,10 @@ export interface AppSettings {
   aiConfig?: AIConfig
   /** 番茄钟提示音 */
   notificationSound: NotificationSound
+  /** 番茄钟工作时长（分钟） */
+  workDuration: number
+  /** 番茄钟休息时长（分钟） */
+  breakDuration: number
 }
 
 /**
@@ -24,4 +28,6 @@ export const defaultSettings: AppSettings = {
   blockedSites: [],
   aiConfig: undefined,
   notificationSound: 'bell',
+  workDuration: 25,
+  breakDuration: 5,
 }

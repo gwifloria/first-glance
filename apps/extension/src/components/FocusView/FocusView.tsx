@@ -9,7 +9,6 @@ import { Clock } from '../common/Clock'
 import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
-import { StatsCard } from './StatsCard'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
 import type { Task } from '@/types'
 
@@ -78,7 +77,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <div
-        className={`transition-opacity duration-700 ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
+        className={`transition-opacity duration-[1.5s] ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
       >
         <FocusFloatButton onSwitchView={onSwitchView} />
       </div>
@@ -95,30 +94,28 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
         <PomodoroControls
           mode={pomodoro.mode}
           isRunning={pomodoro.isRunning}
-          completedCount={pomodoro.completedCount}
           onStart={pomodoro.start}
           onPause={pomodoro.pause}
           onResume={pomodoro.resume}
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
         />
-        <FocusTaskList
-          immersive={isImmersive}
-          currentTaskId={pomodoro.currentTaskId}
-          onStartPomodoro={handleStartPomodoro}
-          onBindTask={handleBindTask}
-          isIdle={pomodoro.mode === 'idle'}
-        />
         <div
-          className={`transition-all duration-700 ease-in-out ${isImmersive ? 'opacity-0 max-h-0 pointer-events-none' : 'opacity-100 max-h-40'}`}
+          className={`transition-opacity ease-in-out ${isImmersive ? 'opacity-40 duration-[2s]' : 'opacity-100 duration-[1.5s]'}`}
         >
-          <StatsCard />
+          <FocusTaskList
+            immersive={isImmersive}
+            currentTaskId={pomodoro.currentTaskId}
+            onStartPomodoro={handleStartPomodoro}
+            onBindTask={handleBindTask}
+            isIdle={pomodoro.mode === 'idle'}
+          />
         </div>
       </div>
 
       {/* Quote */}
       <div
-        className={`text-center pb-8 px-6 max-lg:pb-4 max-lg:px-4 relative z-10 transition-opacity duration-700 ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none' : ''}`}
+        className={`text-center pb-8 px-6 max-lg:pb-4 max-lg:px-4 relative z-10 transition-opacity ease-in-out ${isImmersive ? 'opacity-0 pointer-events-none duration-[1.5s]' : 'duration-[1.5s]'}`}
       >
         <p
           className="text-lg max-md:text-base text-[var(--text-primary)] italic opacity-70 max-w-3xl mx-auto"

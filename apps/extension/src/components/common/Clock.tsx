@@ -73,28 +73,33 @@ export function Clock({
         onClick={onClick}
         className={`flex flex-col items-center select-none text-center ${className}`}
       >
-        {/* 容器：高度随状态过渡，idle 自适应，pomodoro 时展开到 300px */}
+        {/* 容器：高度随状态过渡，idle 自适应，pomodoro 时按视口高度缩放 */}
         <div
-          className={`relative flex items-center justify-center w-[300px] max-lg:w-[240px] max-md:w-[200px] transition-all duration-700 ease-in-out ${showRing ? 'h-[300px] max-lg:h-[240px] max-md:h-[200px]' : 'h-auto'}`}
+          className="relative flex items-center justify-center transition-all duration-[1.5s] ease-in-out"
+          style={{
+            width: 'clamp(180px, 30vh, 300px)',
+            height: showRing ? 'clamp(180px, 30vh, 300px)' : 'auto',
+          }}
         >
           {/* 普通时钟视图 */}
           <div
-            className={`transition-all duration-700 ease-in-out ${showRing ? 'absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`transition-all duration-[1.5s] ease-in-out ${showRing ? 'absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
-            <div className="text-[10rem] max-lg:text-[7rem] max-md:text-[5rem] leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 text-[var(--clock-primary)]">
+            <div
+              className="leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 text-[var(--clock-primary)]"
+              style={{ fontSize: 'clamp(4.5rem, 12vh, 10rem)' }}
+            >
               {formattedTime}
             </div>
           </div>
 
           {/* 番茄环视图 */}
           <div
-            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-700 ease-in-out ${showRing ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-[1.5s] ease-in-out ${showRing ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <svg
-              className="absolute inset-0 -rotate-90"
+              className="absolute inset-0 -rotate-90 w-full h-full"
               viewBox="0 0 300 300"
-              width="300"
-              height="300"
             >
               {/* 背景环 */}
               <circle
@@ -104,7 +109,12 @@ export function Clock({
                 fill="none"
                 stroke="var(--bg-secondary)"
                 strokeWidth="5"
-                opacity="0.5"
+                className={
+                  pomodoroMode === 'work'
+                    ? 'animate-[breathe_4s_ease-in-out_infinite]'
+                    : ''
+                }
+                style={{ transformOrigin: '150px 150px', opacity: 0.5 }}
               />
               {/* 进度环 */}
               <circle
@@ -117,11 +127,20 @@ export function Clock({
                 strokeDasharray={RING_CIRCUMFERENCE}
                 strokeDashoffset={dashOffset}
                 strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 1s linear' }}
+                className={
+                  pomodoroMode === 'work'
+                    ? 'animate-[ringGlow_4s_ease-in-out_infinite]'
+                    : ''
+                }
+                style={{
+                  transformOrigin: '150px 150px',
+                  transition: 'stroke-dashoffset 1s linear',
+                }}
               />
             </svg>
             <div
-              className={`relative z-10 text-[4.5rem] max-lg:text-[3.5rem] max-md:text-[2.75rem] leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 ${pomodoroColor}`}
+              className={`relative z-10 leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 ${pomodoroColor}`}
+              style={{ fontSize: 'clamp(2.5rem, 5vh, 4.5rem)' }}
             >
               {isPomodoroActive ? displayTime : ''}
             </div>
@@ -129,7 +148,7 @@ export function Clock({
         </div>
 
         {showGreeting && (
-          <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-2 font-bold font-hand text-[var(--clock-primary)] opacity-90 transition-opacity duration-700">
+          <div className="text-3xl max-lg:text-2xl max-md:text-xl mt-2 font-bold font-hand text-[var(--clock-primary)] opacity-90 transition-opacity duration-[1.5s]">
             {isPomodoroActive
               ? pomodoroMode === 'work'
                 ? t('focus:pomodoro.working')

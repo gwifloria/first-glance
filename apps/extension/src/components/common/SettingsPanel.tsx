@@ -10,7 +10,7 @@ import {
   FileTextOutlined,
   LockOutlined,
   CoffeeOutlined,
-  SoundOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import {
@@ -158,10 +158,10 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
         badge={blocksiteNotSeen}
       />
 
-      {/* 提示音设置 */}
+      {/* 番茄钟设置 */}
       <MenuItem
-        icon={<SoundOutlined />}
-        label={tSettings('sound.label')}
+        icon={<ClockCircleOutlined />}
+        label={tSettings('pomodoro.label')}
         onClick={() => {
           setOpen(false)
           setSoundSettingsOpen(true)

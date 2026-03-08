@@ -1,9 +1,10 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { App } from 'antd'
 import { useTranslation } from 'react-i18next'
 import type { Quote } from '@/data/quotes'
 import { usePomodoro } from '@/hooks/usePomodoro'
 import { useTaskContext } from '@/contexts/TaskContext'
+import { getSettings, subscribeSettings } from '@/services/settingsStorage'
 import { SettingsPanel } from '../common'
 import { Clock } from '../common/Clock'
 import { PomodoroControls } from './PomodoroControls'
@@ -20,7 +21,28 @@ interface FocusViewProps {
 export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   const { t } = useTranslation('focus')
   const { modal } = App.useApp()
-  const pomodoro = usePomodoro()
+
+  const [pomodoroConfig, setPomodoroConfig] = useState<{
+    workDuration: number
+    breakDuration: number
+  }>({ workDuration: 25, breakDuration: 5 })
+
+  useEffect(() => {
+    getSettings().then((s) =>
+      setPomodoroConfig({
+        workDuration: s.workDuration,
+        breakDuration: s.breakDuration,
+      })
+    )
+    return subscribeSettings((s) =>
+      setPomodoroConfig({
+        workDuration: s.workDuration,
+        breakDuration: s.breakDuration,
+      })
+    )
+  }, [])
+
+  const pomodoro = usePomodoro(pomodoroConfig)
   const { data, actions } = useTaskContext()
   const isImmersive = pomodoro.mode !== 'idle'
   const prevModeRef = useRef(pomodoro.mode)

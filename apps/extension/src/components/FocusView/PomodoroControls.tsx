@@ -2,7 +2,7 @@
  * 番茄时钟控制按钮
  */
 import { memo } from 'react'
-import { Button, Popconfirm } from 'antd'
+import { Button } from 'antd'
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { PomodoroMode } from '@/hooks/usePomodoro'
 import { TodayTomatoCount } from './TodayTomatoCount'
+import { LongPressButton } from '../common/LongPressButton'
 
 // 按钮样式常量
 const BTN_PRIMARY = '!text-[var(--text-secondary)] hover:!text-[var(--accent)]'
@@ -78,39 +79,21 @@ export const PomodoroControls = memo(function PomodoroControls({
             </Button>
           )}
 
-          {/* 跳过 */}
-          <Popconfirm
-            title={t('pomodoro.skipConfirm')}
+          {/* 跳过（长按确认） */}
+          <LongPressButton
             onConfirm={onSkip}
-            okText={t('pomodoro.confirmYes')}
-            cancelText={t('pomodoro.confirmNo')}
-          >
-            <Button
-              type="text"
-              size="small"
-              icon={<ForwardOutlined />}
-              className={BTN_SECONDARY}
-            >
-              {t('pomodoro.skip')}
-            </Button>
-          </Popconfirm>
+            icon={<ForwardOutlined />}
+            label={t('pomodoro.skip')}
+            className={BTN_SECONDARY}
+          />
 
-          {/* 结束 */}
-          <Popconfirm
-            title={t('pomodoro.finishConfirm')}
+          {/* 结束（长按确认） */}
+          <LongPressButton
             onConfirm={onReset}
-            okText={t('pomodoro.confirmYes')}
-            cancelText={t('pomodoro.confirmNo')}
-          >
-            <Button
-              type="text"
-              size="small"
-              icon={<PoweroffOutlined />}
-              className={BTN_SECONDARY}
-            >
-              {t('pomodoro.finish')}
-            </Button>
-          </Popconfirm>
+            icon={<PoweroffOutlined />}
+            label={t('pomodoro.finish')}
+            className={BTN_SECONDARY}
+          />
         </>
       )}
 

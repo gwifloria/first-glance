@@ -20,8 +20,8 @@
       "ended": "Chill mode ended"
     }
   },
-  "sound": {
-    "label": "Notification Sound"
+  "pomodoro": {
+    "label": "Pomodoro"
   },
   "help": {
     "feedback": "Send Feedback",

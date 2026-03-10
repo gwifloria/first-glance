@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { PomodoroMode } from '@/hooks/usePomodoro'
 import { TodayTomatoCount } from './TodayTomatoCount'
+import { TomatoIcon } from './TomatoIcon'
 import { LongPressButton } from '../common/LongPressButton'
 
 // 按钮样式常量
@@ -46,7 +47,7 @@ export const PomodoroControls = memo(function PomodoroControls({
         <Button
           type="text"
           size="large"
-          icon={<PlayCircleOutlined />}
+          icon={<TomatoIcon size={18} />}
           onClick={onStart}
           className={`${BTN_PRIMARY} !text-base`}
         >

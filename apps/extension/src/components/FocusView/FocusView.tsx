@@ -129,17 +129,13 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
         />
-        <div
-          className={`transition-opacity ease-in-out ${isImmersive ? 'opacity-40 duration-[2s]' : 'opacity-100 duration-[1.5s]'}`}
-        >
-          <FocusTaskList
-            immersive={isImmersive}
-            currentTaskId={pomodoro.currentTaskId}
-            onStartPomodoro={handleStartPomodoro}
-            onBindTask={handleBindTask}
-            isIdle={pomodoro.mode === 'idle'}
-          />
-        </div>
+        <FocusTaskList
+          immersive={isImmersive}
+          currentTaskId={pomodoro.currentTaskId}
+          onStartPomodoro={handleStartPomodoro}
+          onBindTask={handleBindTask}
+          isIdle={pomodoro.mode === 'idle'}
+        />
       </div>
 
       {/* Quote */}

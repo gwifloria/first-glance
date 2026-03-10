@@ -13,8 +13,119 @@ import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
 
+// 层层收窄：每级左右 margin 都 >= 上一级，但左右不对称
+// 角度统一方向递减，像一叠便签被轻轻推歪
+const RANK_OFFSETS = [
+  { marginLeft: '0%', marginRight: '0%', rotate: '-1.2deg' },
+  { marginLeft: '5%', marginRight: '10%', rotate: '-0.7deg' },
+  { marginLeft: '12%', marginRight: '8%', rotate: '-0.3deg' },
+  { marginLeft: '15%', marginRight: '14%', rotate: '-0.1deg' },
+  { marginLeft: '18%', marginRight: '12%', rotate: '0deg' },
+]
+
+const CONTENT_POPOVER_CLASS =
+  'max-w-[320px] max-h-[240px] overflow-y-auto text-sm leading-relaxed text-[var(--text-primary)] [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:my-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--bg-secondary)] [&_code]:px-1 [&_code]:rounded [&_s]:line-through [&_del]:line-through'
+
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(
+      /<(?!\/?(?:p|br|strong|em|b|i|ul|ol|li|s|del|a|h[1-6]|span|code)\b)[^>]+>/gi,
+      ''
+    )
+    .trim()
+}
+
+function stripTags(html: string): string {
+  return html.replace(/<[^>]*>/g, '')
+}
+
+// 番茄钟 / 绑定任务的 hover 按钮
+function ActionButtons({
+  task,
+  isIdle,
+  isFocusingUnbound,
+  onStartPomodoro,
+  onBindTask,
+  className = '',
+}: {
+  task: Task
+  isIdle?: boolean
+  isFocusingUnbound?: boolean
+  onStartPomodoro?: (task: Task) => void
+  onBindTask?: (task: Task) => void
+  className?: string
+}) {
+  const { t } = useTranslation('focus')
+  return (
+    <div className={`flex items-center gap-1 ${className}`}>
+      {isIdle && onStartPomodoro && (
+        <Button
+          type="text"
+          size="small"
+          icon={<PlayCircleOutlined />}
+          onClick={() => onStartPomodoro(task)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+          title={t('pomodoro.start')}
+        />
+      )}
+      {isFocusingUnbound && onBindTask && (
+        <Button
+          type="text"
+          size="small"
+          icon={<AimOutlined />}
+          onClick={() => onBindTask(task)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+          title={t('pomodoro.bindTask')}
+        />
+      )}
+    </div>
+  )
+}
+
+// 子任务 Popover 内容
+function SubtaskPopoverContent({
+  task,
+  childTasks,
+  onCompleteChild,
+}: {
+  task: Task
+  childTasks?: Task[]
+  onCompleteChild: (task: Task) => void
+}) {
+  return (
+    <div className="max-w-[200px] space-y-1.5">
+      {childTasks?.map((child) => (
+        <div key={child.id} className="flex items-center gap-1.5">
+          <TaskCheckbox
+            completing={false}
+            onComplete={() => onCompleteChild(child)}
+            variant="default"
+          />
+          <span
+            className={`text-xs truncate ${child.status === 2 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
+          >
+            {child.title}
+          </span>
+        </div>
+      ))}
+      {task.items?.map((item) => (
+        <div key={item.id} className="flex items-center gap-1.5">
+          <Checkbox checked={item.status !== 0} disabled />
+          <span
+            className={`text-xs truncate ${item.status !== 0 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
+          >
+            {item.title}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 interface FocusTaskItemProps {
   task: Task
+  rank: number
   parentTitle?: string
   childInfo?: { total: number; completed: number }
   children?: Task[]
@@ -29,6 +140,7 @@ interface FocusTaskItemProps {
 
 const FocusTaskItem = memo(function FocusTaskItem({
   task,
+  rank,
   parentTitle,
   childInfo,
   children: childTasks,
@@ -45,7 +157,6 @@ const FocusTaskItem = memo(function FocusTaskItem({
     delayBefore: false,
   })
 
-  // 合并 checklist items 和 child tasks 的计数
   const subtaskCount = useMemo(() => {
     let total = 0
     let completed = 0
@@ -60,96 +171,170 @@ const FocusTaskItem = memo(function FocusTaskItem({
     return total > 0 ? { total, completed } : null
   }, [task.items, childInfo])
 
-  return (
-    <div
-      className={`
-        group flex items-center gap-5 py-4 px-5 bg-[var(--bg-card)] rounded-xl shadow-sm
-        transition-all duration-300 ease-out
-        ${completing ? 'animate-[taskComplete_0.4s_ease-out_forwards]' : ''}
-        ${isHighlighted ? 'ring-2 ring-[var(--accent)] ring-opacity-60 scale-[1.02]' : ''}
-      `}
-    >
-      <TaskCheckbox
-        completing={completing}
-        onComplete={() => handleComplete(task)}
-        variant="focus"
-        disabled={completing}
-      />
-      <div className="flex-1 flex flex-col">
-        {parentTitle && (
-          <span className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5 inline-flex items-center gap-0.5 bg-[var(--bg-secondary)] rounded px-1.5 py-0.5 w-fit">
-            <span className="opacity-60">↳</span> {parentTitle}
-          </span>
-        )}
-        <span
-          className={`text-xl text-[var(--text-primary)] transition-all duration-200 font-hand ${isHighlighted ? 'text-2xl font-bold' : ''} ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
-        >
-          {renderMarkdownLinks(task.title)}
-        </span>
-        {subtaskCount && (
-          <Popover
-            placement="bottomLeft"
-            trigger="click"
-            content={
-              <div className="max-w-[200px] space-y-1.5">
-                {childTasks?.map((child) => (
-                  <div key={child.id} className="flex items-center gap-1.5">
-                    <TaskCheckbox
-                      completing={false}
-                      onComplete={() => onCompleteChild(child)}
-                      variant="default"
+  const sanitizedContent = useMemo(() => {
+    if (!task.content) return ''
+    return sanitizeHtml(task.content)
+  }, [task.content])
+
+  const offset = RANK_OFFSETS[Math.min(rank, RANK_OFFSETS.length - 1)]
+  const completingClass = completing
+    ? 'animate-[taskComplete_0.4s_ease-out_forwards]'
+    : ''
+  const actionProps = {
+    task,
+    isIdle,
+    isFocusingUnbound,
+    onStartPomodoro,
+    onBindTask,
+  }
+
+  // Hero 卡片
+  if (rank === 0) {
+    return (
+      <div
+        className={`group py-6 px-6 bg-[var(--bg-card)] transition-all duration-300 ease-out ${completingClass} ${isHighlighted ? 'ring-2 ring-[var(--accent)] ring-opacity-60' : ''}`}
+        style={{
+          marginLeft: offset.marginLeft,
+          marginRight: offset.marginRight,
+          transform: `rotate(${offset.rotate})`,
+        }}
+      >
+        <div className="flex items-start gap-5">
+          <div className="pt-1">
+            <TaskCheckbox
+              completing={completing}
+              onComplete={() => handleComplete(task)}
+              variant="focus"
+              disabled={completing}
+            />
+          </div>
+          <div className="flex-1 flex flex-col">
+            {parentTitle && (
+              <span className="text-xs text-[var(--text-secondary)] leading-tight mb-1 inline-flex items-center gap-0.5">
+                <span className="opacity-60">↳</span> {parentTitle}
+              </span>
+            )}
+            <span
+              className={`text-2xl font-semibold text-[var(--text-primary)] transition-all duration-200 font-hand leading-snug ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
+            >
+              {renderMarkdownLinks(task.title)}
+            </span>
+            {sanitizedContent && (
+              <Popover
+                placement="bottomLeft"
+                trigger="hover"
+                content={
+                  <div
+                    className={CONTENT_POPOVER_CLASS}
+                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                  />
+                }
+              >
+                <p className="text-sm text-[var(--text-secondary)] mt-2 line-clamp-1 leading-relaxed cursor-default">
+                  {stripTags(sanitizedContent)}
+                </p>
+              </Popover>
+            )}
+            {subtaskCount && (
+              <Popover
+                placement="bottomLeft"
+                trigger="click"
+                content={
+                  <SubtaskPopoverContent
+                    task={task}
+                    childTasks={childTasks}
+                    onCompleteChild={onCompleteChild}
+                  />
+                }
+              >
+                <div className="flex items-center gap-2 mt-3 cursor-pointer group/progress">
+                  <div className="flex-1 h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden max-w-[120px]">
+                    <div
+                      className="h-full bg-[var(--accent)] rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(subtaskCount.completed / subtaskCount.total) * 100}%`,
+                      }}
                     />
-                    <span
-                      className={`text-xs truncate ${child.status === 2 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
-                    >
-                      {child.title}
-                    </span>
                   </div>
-                ))}
-                {task.items?.map((item) => (
-                  <div key={item.id} className="flex items-center gap-1.5">
-                    <Checkbox checked={item.status !== 0} disabled />
-                    <span
-                      className={`text-xs truncate ${item.status !== 0 ? 'line-through text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}
-                    >
-                      {item.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            }
+                  <span className="text-xs text-[var(--text-secondary)] group-hover/progress:text-[var(--text-primary)] transition-colors">
+                    {t('subtaskProgress', {
+                      completed: subtaskCount.completed,
+                      total: subtaskCount.total,
+                    })}
+                  </span>
+                </div>
+              </Popover>
+            )}
+          </div>
+          <ActionButtons {...actionProps} />
+        </div>
+      </div>
+    )
+  }
+
+  // 第二个任务：中号卡片
+  if (rank === 1) {
+    return (
+      <div
+        className={`group flex items-center gap-4 py-3 px-4 bg-[var(--bg-card)] transition-all duration-300 ease-out ${completingClass} ${isHighlighted ? 'ring-2 ring-[var(--accent)] ring-opacity-60' : ''}`}
+        style={{
+          marginLeft: offset.marginLeft,
+          marginRight: offset.marginRight,
+          transform: `rotate(${offset.rotate})`,
+        }}
+      >
+        <TaskCheckbox
+          completing={completing}
+          onComplete={() => handleComplete(task)}
+          variant="focus"
+          disabled={completing}
+        />
+        <div className="flex-1 flex flex-col">
+          {parentTitle && (
+            <span className="text-xs text-[var(--text-secondary)] leading-tight mb-0.5 inline-flex items-center gap-0.5">
+              <span className="opacity-60">↳</span> {parentTitle}
+            </span>
+          )}
+          <span
+            className={`text-base text-[var(--text-primary)] transition-all duration-200 font-hand ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
           >
-            <span className="text-xs text-[var(--text-secondary)] mt-0.5 cursor-pointer hover:text-[var(--text-primary)] transition-colors">
+            {renderMarkdownLinks(task.title)}
+          </span>
+          {subtaskCount && (
+            <span className="text-xs text-[var(--text-secondary)] mt-0.5">
               {t('subtaskProgress', {
                 completed: subtaskCount.completed,
                 total: subtaskCount.total,
               })}
             </span>
-          </Popover>
-        )}
+          )}
+        </div>
+        <ActionButtons {...actionProps} />
       </div>
-      {/* idle 模式：hover 显示开始番茄按钮 */}
-      {isIdle && onStartPomodoro && (
-        <Button
-          type="text"
-          size="small"
-          icon={<PlayCircleOutlined />}
-          onClick={() => onStartPomodoro(task)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-          title={t('pomodoro.start')}
-        />
-      )}
-      {/* focusing 且未绑定任务：hover 显示绑定按钮 */}
-      {isFocusingUnbound && onBindTask && (
-        <Button
-          type="text"
-          size="small"
-          icon={<AimOutlined />}
-          onClick={() => onBindTask(task)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-          title={t('pomodoro.bindTask')}
-        />
-      )}
+    )
+  }
+
+  // 第三个及之后：无背景，只有 checkbox + 文字
+  return (
+    <div
+      className={`group flex items-center gap-3 py-1.5 px-3 transition-all duration-300 ease-out opacity-50 hover:opacity-80 ${completingClass}`}
+      style={{
+        marginLeft: offset.marginLeft,
+        marginRight: offset.marginRight,
+      }}
+    >
+      <TaskCheckbox
+        completing={completing}
+        onComplete={() => handleComplete(task)}
+        variant="default"
+        disabled={completing}
+      />
+      <span
+        className={`text-sm text-[var(--text-primary)] transition-all duration-200 ${completing ? 'line-through text-[var(--text-secondary)]' : ''}`}
+      >
+        {renderMarkdownLinks(task.title)}
+      </span>
+      <ActionButtons {...actionProps} className="ml-auto" />
     </div>
   )
 })
@@ -178,7 +363,6 @@ export function FocusTaskList({
   const { completeTask, createTask } = actions
   const { focusTasks } = views
 
-  // 沉浸模式 + 有绑定任务时，只显示该任务
   const displayTasks = useMemo(() => {
     if (immersive && currentTaskId) {
       return focusTasks.filter((t) => t.id === currentTaskId)
@@ -186,7 +370,6 @@ export function FocusTaskList({
     return focusTasks
   }, [immersive, currentTaskId, focusTasks])
 
-  // 从所有 tasks 中构建子任务计数 map 和子任务列表 map
   const { childCountMap, childrenMap } = useMemo(() => {
     const countMap = new Map<string, { total: number; completed: number }>()
     const listMap = new Map<string, Task[]>()
@@ -205,7 +388,6 @@ export function FocusTaskList({
     return { childCountMap: countMap, childrenMap: listMap }
   }, [tasks])
 
-  // 只在初始加载时显示 skeleton，连接过程中保持显示原内容
   const loading = tasksLoading && tasks.length === 0
   const canAddMore = isGuest ? focusTasks.length < MAX_LOCAL_TASKS : true
   const focusingUnbound = !!immersive && !currentTaskId
@@ -225,7 +407,7 @@ export function FocusTaskList({
   )
 
   return (
-    <div className="mt-4 w-full max-w-md">
+    <div className="mt-4 w-full max-w-lg">
       <div className="min-h-[200px]">
         {loading ? (
           <div className="flex items-center justify-center h-[200px]">
@@ -236,15 +418,26 @@ export function FocusTaskList({
             {t('empty')}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {displayTasks.map((task, index) => (
               <div
                 key={task.id}
                 className="animate-[fadeSlideIn_0.3s_ease-out_both]"
                 style={{ animationDelay: `${index * 60}ms` }}
               >
+                {index === 0 && displayTasks.length > 1 && (
+                  <div className="text-xs font-bold tracking-[0.2em] uppercase text-[var(--text-secondary)] text-center mb-2 opacity-50">
+                    {t('label.currentFocus')}
+                  </div>
+                )}
+                {index === 1 && (
+                  <div className="text-xs font-bold tracking-[0.2em] uppercase text-[var(--text-secondary)] text-center mb-2 mt-2 opacity-50">
+                    {t('label.upNext')}
+                  </div>
+                )}
                 <FocusTaskItem
                   task={task}
+                  rank={index}
                   parentTitle={getParentTitle(task, taskMap)}
                   childInfo={childCountMap.get(task.id)}
                   children={childrenMap.get(task.id)}

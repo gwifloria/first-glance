@@ -91,7 +91,14 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
       {/* 背景纹理层 */}
-      <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
+      <div className="absolute inset-0 pointer-events-none opacity-60 paper-texture" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.06) 100%)',
+        }}
+      />
 
       {/* Top bar */}
       <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">

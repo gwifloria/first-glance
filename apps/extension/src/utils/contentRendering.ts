@@ -42,10 +42,10 @@ function sanitizeHtml(html: string): string {
       /<(?!\/?(?:p|br|strong|em|b|i|ul|ol|li|s|del|a|h[1-6]|span|code|mark)\b)[^>]+>/gi,
       ''
     )
-    .replace(/\s+on\w+\s*=\s*"[^"]*"/gi, '')
-    .replace(/\s+on\w+\s*=\s*'[^']*'/gi, '')
-    .replace(/href\s*=\s*"javascript:[^"]*"/gi, 'href="#"')
-    .replace(/href\s*=\s*'javascript:[^']*'/gi, "href='#'")
+    .replace(/\s*on\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\s*on\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/href\s*=\s*["']?javascript:[^"'\s>]*/gi, 'href="#"')
+    .replace(/href\s*=\s*["']?data:[^"'\s>]*/gi, 'href="#"')
     .trim()
 }
 

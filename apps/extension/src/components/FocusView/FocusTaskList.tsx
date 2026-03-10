@@ -104,7 +104,7 @@ function SubtaskPopoverContent({
   onCompleteChild: (task: Task) => void
 }) {
   return (
-    <div className="max-w-[200px] space-y-1.5">
+    <div className="max-w-[200px] space-y-1.5 card-surface">
       {childTasks?.map((child) => (
         <div key={child.id} className="flex items-center gap-1.5">
           <TaskCheckbox
@@ -230,7 +230,7 @@ const FocusTaskItem = memo(function FocusTaskItem({
 
   return (
     <div
-      className={`group relative ${completingClass}`}
+      className={`group relative ${completingClass} ${isCompact ? '' : 'card-surface'}`}
       style={{
         padding: `${style.py}px ${style.px}px`,
         marginLeft: offset.marginLeft,

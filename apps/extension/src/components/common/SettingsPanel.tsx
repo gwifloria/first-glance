@@ -7,10 +7,10 @@ import {
   DisconnectOutlined,
   GithubOutlined,
   SendOutlined,
-  FileTextOutlined,
   LockOutlined,
   CoffeeOutlined,
   ClockCircleOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import {
@@ -26,6 +26,7 @@ import { PomodoroSettingsModal } from '../FocusView/PomodoroSettingsModal'
 import { ThemeToggle } from './ThemeToggle'
 
 const HELP_LINKS = {
+  website: 'https://www.gwifloria.space/',
   feedback: 'https://github.com/gwifloria/first-glance/issues',
   community: 'https://t.me/firstglance_community',
   changelog: 'https://gwifloria.github.io/first-glance/changelog',
@@ -192,9 +193,9 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
         <div className="flex items-center gap-1">
           {[
             {
-              icon: <FileTextOutlined />,
-              href: HELP_LINKS.changelog,
-              tip: tSettings('help.changelog'),
+              icon: <GlobalOutlined />,
+              href: HELP_LINKS.website,
+              tip: 'gwifloria.space',
             },
             {
               icon: <LockOutlined />,

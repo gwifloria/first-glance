@@ -195,12 +195,12 @@ function PopupTaskList({
 
 function PopupContent() {
   const { t } = useTranslation('focus')
-  const { themeType } = useTheme()
+  const { theme } = useTheme()
   const pomodoro = usePomodoro()
 
   return (
     <div
-      className={`w-[320px] flex flex-col bg-[var(--bg-card)] text-[var(--text-primary)] ${themeType === 'dark' ? 'popup-dark' : ''}`}
+      className={`w-[320px] flex flex-col bg-[var(--bg-card)] text-[var(--text-primary)] ${theme.isDark ? 'popup-dark' : ''}`}
       style={{ fontFamily: 'var(--font-primary)' }}
     >
       <PomodoroSection pomodoro={pomodoro} />

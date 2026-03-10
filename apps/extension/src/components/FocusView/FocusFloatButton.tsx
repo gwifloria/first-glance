@@ -27,11 +27,11 @@ export function FocusFloatButton({ onSwitchView }: FocusFloatButtonProps) {
       type="default"
       shape="round"
       onClick={onSwitchView}
-      className="todo-float-btn"
+      className="todo-float-btn !text-[var(--text-secondary)]"
       aria-label={t('button.viewTasks', { count: todayCount })}
     >
       Todo
-      <span className="bg-[var(--accent)] text-white text-xs px-2 py-0.5 rounded-full">
+      <span className="bg-[var(--accent)] text-[var(--accent-contrast)] text-xs px-2 py-0.5 rounded-full">
         {todayCount}
       </span>
     </Button>

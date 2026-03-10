@@ -1,12 +1,16 @@
 import type { ThemeConfig } from 'antd'
 import type { Theme } from './index'
+import { contrastText } from '@/utils/color'
 
 /**
  * 根据应用主题生成 Ant Design 主题配置
  */
 export function createAntdTheme(theme: Theme): ThemeConfig {
   const { colors } = theme
-  const isDark = theme.type === 'modern'
+  const isDark = theme.isDark ?? theme.type === 'modern'
+  // antd 组件主要渲染在卡片/modal 内，使用卡片上的文字颜色
+  const textOnCard = colors.textOnCard ?? colors.textPrimary
+  const textSecondaryOnCard = colors.textSecondaryOnCard ?? colors.textSecondary
 
   return {
     token: {
@@ -18,8 +22,8 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
       colorBgContainer: colors.bgCard,
       colorBgElevated: colors.bgCard,
       colorBgLayout: colors.bgPrimary,
-      colorText: colors.textPrimary,
-      colorTextSecondary: colors.textSecondary,
+      colorText: textOnCard,
+      colorTextSecondary: textSecondaryOnCard,
       colorBorder: colors.border,
       colorBorderSecondary: colors.border,
       colorError: colors.danger,
@@ -41,8 +45,8 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         defaultHoverBg: colors.accentLight,
         defaultHoverBorderColor: colors.accent,
         defaultHoverColor: colors.textPrimary,
-        // 主按钮
-        primaryColor: isDark ? '#18181b' : '#fff',
+        // 主按钮：根据 accent 亮度自动计算对比色
+        primaryColor: contrastText(colors.accent),
         // 文本按钮
         textHoverBg: isDark
           ? 'rgba(255, 255, 255, 0.08)'
@@ -55,30 +59,30 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
       Modal: {
         contentBg: colors.bgCard,
         headerBg: colors.bgCard,
-        titleColor: colors.textPrimary,
+        titleColor: textOnCard,
         borderRadiusLG: 16,
       },
       Input: {
         activeBg: 'transparent',
         hoverBg: 'transparent',
         colorBgContainer: colors.bgSecondary,
-        colorText: colors.textPrimary,
-        colorTextPlaceholder: colors.textSecondary,
+        colorText: textOnCard,
+        colorTextPlaceholder: textSecondaryOnCard,
         activeBorderColor: colors.accent,
         hoverBorderColor: colors.border,
       },
       Select: {
         colorBgContainer: colors.bgCard,
         colorBgElevated: colors.bgCard,
-        colorText: colors.textPrimary,
+        colorText: textOnCard,
         optionSelectedBg: colors.accentLight,
-        optionSelectedColor: colors.textPrimary,
+        optionSelectedColor: textOnCard,
         optionActiveBg: isDark
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
       },
       Form: {
-        labelColor: colors.textPrimary,
+        labelColor: textOnCard,
         itemMarginBottom: 16,
       },
       Empty: {

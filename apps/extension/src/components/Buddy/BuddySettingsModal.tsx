@@ -149,6 +149,9 @@ export function BuddySettingsModal({ open, onClose }: BuddySettingsModalProps) {
       style={{ maxWidth: 400 }}
     >
       <div className="flex flex-col gap-4 mt-4">
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed m-0">
+          {t('settings.privacyNote')}
+        </p>
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">
             {t('settings.provider')}

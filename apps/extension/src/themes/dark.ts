@@ -3,6 +3,7 @@ import type { Theme } from './index'
 export const darkTheme: Theme = {
   name: '暗黑',
   type: 'modern',
+  isDark: true,
   colors: {
     bgPrimary: '#09090b',
     bgSecondary: '#18181b',

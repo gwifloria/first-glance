@@ -61,7 +61,7 @@ export const NavItem = memo(function NavItem({
                 text-xs font-normal
                 ${
                   active
-                    ? 'bg-[var(--accent)] text-white min-w-[18px] h-[18px] leading-[18px] rounded-[9px] px-1.5 text-center'
+                    ? 'bg-[var(--accent)] text-[var(--accent-contrast)] min-w-[18px] h-[18px] leading-[18px] rounded-[9px] px-1.5 text-center'
                     : 'text-[var(--text-secondary)]'
                 }
               `}

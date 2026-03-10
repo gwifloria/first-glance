@@ -7,8 +7,10 @@ import {
   pinkTheme,
   blueTheme,
   darkTheme,
+  twilightTheme,
 } from '@/themes'
 import { getTheme, setTheme, subscribeTheme } from '@/services/themeStorage'
+import { contrastText } from '@/utils/color'
 import { ThemeContext } from './ThemeContext'
 
 const themes: Record<ThemeType, Theme> = {
@@ -17,6 +19,7 @@ const themes: Record<ThemeType, Theme> = {
   pink: pinkTheme,
   blue: blueTheme,
   dark: darkTheme,
+  twilight: twilightTheme,
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -57,6 +60,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // 强调色
     root.style.setProperty('--accent', theme.colors.accent)
     root.style.setProperty('--accent-light', theme.colors.accentLight)
+    root.style.setProperty(
+      '--accent-contrast',
+      contrastText(theme.colors.accent)
+    )
     root.style.setProperty('--border', theme.colors.border)
     // 时钟色
     root.style.setProperty('--clock-primary', theme.colors.clockPrimary)
@@ -116,9 +123,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--font-secondary', theme.font.secondary)
     root.style.setProperty('--font-heading', theme.font.heading)
 
+    // 双表面 CSS 变量（深色背景 + 浅色卡片的主题）
+    if (theme.colors.textOnCard) {
+      root.style.setProperty('--text-on-card', theme.colors.textOnCard)
+      root.style.setProperty(
+        '--text-on-card-secondary',
+        theme.colors.textSecondaryOnCard ?? theme.colors.textSecondary
+      )
+      root.style.setProperty(
+        '--border-on-card',
+        theme.colors.borderOnCard ?? theme.colors.border
+      )
+    } else {
+      root.style.removeProperty('--text-on-card')
+      root.style.removeProperty('--text-on-card-secondary')
+      root.style.removeProperty('--border-on-card')
+    }
+
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme
     root.classList.toggle('theme-with-texture', theme.showTexture)
     root.classList.toggle('theme-with-tape', theme.showTape)
+    root.classList.toggle(
+      'theme-dark-texture',
+      theme.showTexture && (theme.isDark ?? false)
+    )
   }, [theme])
 
   return (

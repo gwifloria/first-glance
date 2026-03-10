@@ -2,6 +2,19 @@
  * 任务内容渲染工具：markdown/HTML 解析、HTML 净化、纯文本摘要
  */
 
+// 只允许安全协议的 URL，其余返回 #
+export function sanitizeUrl(url: string): string {
+  const trimmed = url.trim().toLowerCase()
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('mailto:')
+  ) {
+    return url.trim()
+  }
+  return '#'
+}
+
 // 简单 markdown → HTML 转换
 function markdownToHtml(text: string): string {
   return (
@@ -23,11 +36,11 @@ function markdownToHtml(text: string): string {
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/~~(.+?)~~/g, '<s>$1</s>')
       .replace(/`(.+?)`/g, '<code>$1</code>')
-      // 链接
-      .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-      )
+      // 链接（校验协议）
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
+        const safeUrl = sanitizeUrl(url)
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`
+      })
       // 换行
       .replace(/\n/g, '<br>')
       .trim()
@@ -44,6 +57,7 @@ function sanitizeHtml(html: string): string {
     )
     .replace(/\s*on\w+\s*=\s*"[^"]*"/gi, '')
     .replace(/\s*on\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/\s*on\w+\s*=\s*[^\s"'>]+/gi, '')
     .replace(/href\s*=\s*["']?javascript:[^"'\s>]*/gi, 'href="#"')
     .replace(/href\s*=\s*["']?data:[^"'\s>]*/gi, 'href="#"')
     .trim()

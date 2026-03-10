@@ -325,7 +325,7 @@ export function BuddyMessage({
   if (role === 'user') {
     return (
       <div className="flex justify-end">
-        <div className="text-sm leading-relaxed py-2 px-3 rounded-xl bg-[var(--accent)] text-white max-w-[85%]">
+        <div className="text-sm leading-relaxed py-2 px-3 rounded-xl bg-[var(--accent)] text-[var(--accent-contrast)] max-w-[85%]">
           {content}
         </div>
       </div>

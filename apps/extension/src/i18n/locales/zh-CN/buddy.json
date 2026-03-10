@@ -49,6 +49,7 @@
     "modelPlaceholder": "gpt-4o-mini",
     "provider": "服务商",
     "custom": "自定义",
+    "privacyNote": "你的 API Key 仅保存在本地浏览器中，请求直接发送至你配置的 API 地址，不经过任何第三方服务器。",
     "test": "测试连接",
     "testing": "测试中...",
     "testSuccess": "连接成功",

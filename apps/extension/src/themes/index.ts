@@ -1,6 +1,7 @@
 export interface Theme {
   name: string
   type: 'journal' | 'modern'
+  isDark?: boolean
   colors: {
     bgPrimary: string
     bgSecondary: string
@@ -9,6 +10,9 @@ export interface Theme {
     bgCard: string
     textPrimary: string
     textSecondary: string
+    textOnCard?: string
+    textSecondaryOnCard?: string
+    borderOnCard?: string
     accent: string
     accentLight: string
     border: string
@@ -60,10 +64,11 @@ export interface Theme {
   showTape: boolean
 }
 
-export type ThemeType = 'milk' | 'beige' | 'pink' | 'blue' | 'dark'
+export type ThemeType = 'milk' | 'beige' | 'pink' | 'blue' | 'dark' | 'twilight'
 
 export { milkTheme } from './milk'
 export { beigeTheme } from './beige'
 export { pinkTheme } from './pink'
 export { blueTheme } from './blue'
 export { darkTheme } from './dark'
+export { twilightTheme } from './twilight'

@@ -26,7 +26,14 @@ function resolveTheme(raw: unknown): ThemeType {
     return THEME_MIGRATION[raw]
   }
 
-  const validThemes: ThemeType[] = ['milk', 'beige', 'pink', 'blue', 'dark']
+  const validThemes: ThemeType[] = [
+    'milk',
+    'beige',
+    'pink',
+    'blue',
+    'dark',
+    'twilight',
+  ]
   if (validThemes.includes(raw as ThemeType)) {
     return raw as ThemeType
   }

@@ -49,6 +49,7 @@
     "modelPlaceholder": "gpt-4o-mini",
     "provider": "Provider",
     "custom": "Custom",
+    "privacyNote": "Your API Key is stored locally in your browser. Requests are sent directly to the API URL you configure — no third-party servers involved.",
     "test": "Test Connection",
     "testing": "Testing...",
     "testSuccess": "Connection successful",

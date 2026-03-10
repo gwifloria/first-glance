@@ -129,7 +129,7 @@ export function BlocksiteSettings() {
         <button
           onClick={handleAdd}
           disabled={!inputValue.trim()}
-          className="px-3 py-1 bg-[var(--accent)] text-white rounded-r-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1 bg-[var(--accent)] text-[var(--accent-contrast)] rounded-r-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <PlusOutlined />
         </button>

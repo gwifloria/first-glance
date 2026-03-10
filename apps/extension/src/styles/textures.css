@@ -68,3 +68,36 @@
     0 10px 30px rgba(0, 0, 0, 0.08),
     inset 0 -1px 0 rgba(0, 0, 0, 0.02);
 }
+
+/* 卡片内部颜色覆盖（暮色蓝等双表面主题） */
+.card-surface {
+  --text-primary: var(--text-on-card, var(--text-primary));
+  --text-secondary: var(--text-on-card-secondary, var(--text-secondary));
+  --border: var(--border-on-card, var(--border));
+}
+
+/* 深色纹理主题：浅色点阵 */
+:root.theme-dark-texture .dot-grid {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.06) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 24px 24px;
+}
+
+:root.theme-dark-texture .dot-grid-loose {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.05) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 32px 32px;
+}
+
+:root.theme-dark-texture .notebook-shadow {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.15),
+    0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}

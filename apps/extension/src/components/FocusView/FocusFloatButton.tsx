@@ -27,7 +27,7 @@ export function FocusFloatButton({ onSwitchView }: FocusFloatButtonProps) {
       type="default"
       shape="round"
       onClick={onSwitchView}
-      className="todo-float-btn"
+      className="todo-float-btn !text-[var(--text-secondary)]"
       aria-label={t('button.viewTasks', { count: todayCount })}
     >
       Todo

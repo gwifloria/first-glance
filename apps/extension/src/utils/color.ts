@@ -7,5 +7,5 @@ export function contrastText(hex: string): string {
   const g = (n >> 8) & 0xff
   const b = n & 0xff
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  return luminance > 0.55 ? '#18181b' : '#ffffff'
+  return luminance > 0.75 ? '#18181b' : '#ffffff'
 }

@@ -80,7 +80,7 @@ jobs:
       - name: Create zip
         run: |
           cd apps/extension/build
-          zip -r ../../../first-glance-${{ github.ref_name }}.zip . -x '.vite/*'
+          zip -r ../../../first-glance-${{ github.ref_name }}.zip . -x '.vite/*' -x '*.DS_Store'
 
       - name: Upload to Chrome Web Store
         run: npx chrome-webstore-upload-cli upload --source first-glance-${{ github.ref_name }}.zip --auto-publish

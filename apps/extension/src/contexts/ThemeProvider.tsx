@@ -118,6 +118,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme
     root.classList.toggle('theme-with-texture', theme.showTexture)
+    root.classList.toggle('theme-with-tape', theme.showTape)
   }, [theme])
 
   return (

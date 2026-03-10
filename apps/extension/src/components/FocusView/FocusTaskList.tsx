@@ -15,14 +15,13 @@ import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
 
-// 层层收窄：每级左右 margin 都 >= 上一级，但左右不对称
-// 角度统一方向递减，像一叠便签被轻轻推歪
+// 层层收窄：每级左右 margin 递增，视觉上形成层叠感
 const RANK_OFFSETS = [
-  { marginLeft: '0%', marginRight: '0%', rotate: '-1.2deg' },
-  { marginLeft: '5%', marginRight: '10%', rotate: '-0.7deg' },
-  { marginLeft: '12%', marginRight: '8%', rotate: '-0.3deg' },
-  { marginLeft: '15%', marginRight: '14%', rotate: '-0.1deg' },
-  { marginLeft: '18%', marginRight: '12%', rotate: '0deg' },
+  { marginLeft: '0%', marginRight: '0%' },
+  { marginLeft: '5%', marginRight: '10%' },
+  { marginLeft: '12%', marginRight: '8%' },
+  { marginLeft: '15%', marginRight: '14%' },
+  { marginLeft: '18%', marginRight: '12%' },
 ]
 
 const CONTENT_POPOVER_CLASS =
@@ -231,17 +230,17 @@ const FocusTaskItem = memo(function FocusTaskItem({
 
   return (
     <div
-      className={`group ${completingClass}`}
+      className={`group relative ${completingClass}`}
       style={{
         padding: `${style.py}px ${style.px}px`,
         marginLeft: offset.marginLeft,
         marginRight: offset.marginRight,
-        transform: isCompact ? 'none' : `rotate(${offset.rotate})`,
         backgroundColor: isCompact ? 'transparent' : 'var(--bg-card)',
         opacity: style.opacity,
         transition: TRANSITION_CARD,
       }}
     >
+      {isHero && <div className="card-tape" />}
       <div
         className="flex items-center"
         style={{ gap: `${style.gap}px`, transition: `gap ${T}` }}

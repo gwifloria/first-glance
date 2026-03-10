@@ -18,6 +18,11 @@
     "unlock": "Connect to unlock more tasks"
   },
   "subtaskProgress": "{{completed}}/{{total}} subtasks done",
+  "childTaskRemaining": "{{count}} subtasks left",
+  "label": {
+    "currentFocus": "Current Focus",
+    "upNext": "Up Next"
+  },
   "pomodoro": {
     "start": "Start Pomodoro",
     "pause": "Pause",

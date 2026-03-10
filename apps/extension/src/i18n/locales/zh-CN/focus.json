@@ -18,6 +18,11 @@
     "unlock": "连接服务解锁更多任务"
   },
   "subtaskProgress": "{{completed}}/{{total}} 子任务完成",
+  "childTaskRemaining": "{{count}} 个子任务待完成",
+  "label": {
+    "currentFocus": "当前专注",
+    "upNext": "接下来"
+  },
   "pomodoro": {
     "start": "开始番茄",
     "pause": "暂停",

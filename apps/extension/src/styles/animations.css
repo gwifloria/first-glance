@@ -14,15 +14,51 @@
 @keyframes taskComplete {
   0% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateX(0);
+    max-height: 500px;
+    margin-bottom: 12px;
   }
-  50% {
-    opacity: 0.6;
-    transform: scale(0.98);
+  35% {
+    opacity: 0.5;
+    transform: translateX(0);
+    max-height: 500px;
+    margin-bottom: 12px;
+  }
+  55% {
+    opacity: 0;
+    transform: translateX(16px);
+    max-height: 500px;
+    margin-bottom: 12px;
   }
   100% {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translateX(16px);
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* 任务完成时的删除线动画 */
+.task-strike-through {
+  position: relative;
+}
+.task-strike-through::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--text-secondary);
+  animation: strikeThrough 0.35s ease-out forwards;
+}
+@keyframes strikeThrough {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
   }
 }
 

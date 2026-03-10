@@ -50,7 +50,7 @@ export const TaskItem = memo(function TaskItem({
         group flex items-start justify-between py-3 px-3 -mx-3 rounded-lg
         transition-all duration-200 ease-out
         hover:bg-black/[0.02] hover:-translate-y-0.5
-        ${completing ? 'animate-[taskComplete_0.4s_ease-out_forwards]' : ''}
+        ${completing ? 'animate-[taskComplete_0.8s_ease-in-out_forwards] overflow-hidden' : ''}
       `}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -82,7 +82,7 @@ export const TaskItem = memo(function TaskItem({
           <div
             className={`
               text-sm text-[var(--text-primary)] leading-relaxed break-words mb-1 font-hand
-              ${completing ? 'line-through text-[var(--text-secondary)]' : ''}
+              ${completing ? 'task-strike-through text-[var(--text-secondary)]' : ''}
             `}
           >
             {renderMarkdownLinks(task.title)}

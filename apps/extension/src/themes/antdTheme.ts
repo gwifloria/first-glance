@@ -12,6 +12,9 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
     token: {
       // 颜色
       colorPrimary: colors.accent,
+      colorLink: colors.accent,
+      colorLinkHover: colors.accent,
+      colorLinkActive: colors.accent,
       colorBgContainer: colors.bgCard,
       colorBgElevated: colors.bgCard,
       colorBgLayout: colors.bgPrimary,

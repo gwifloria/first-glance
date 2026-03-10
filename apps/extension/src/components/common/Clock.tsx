@@ -86,7 +86,7 @@ export function Clock({
             className={`transition-all duration-[1.5s] ease-in-out ${showRing ? 'absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
             <div
-              className="leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 text-[var(--clock-primary)]"
+              className="leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 text-[var(--clock-primary)] font-hand"
               style={{ fontSize: 'clamp(4.5rem, 12vh, 10rem)' }}
             >
               {formattedTime}
@@ -139,7 +139,7 @@ export function Clock({
               />
             </svg>
             <div
-              className={`relative z-10 leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 ${pomodoroColor}`}
+              className={`relative z-10 leading-none font-medium tracking-tighter cursor-pointer hover:scale-105 transition-all duration-700 font-hand ${pomodoroColor}`}
               style={{ fontSize: 'clamp(2.5rem, 5vh, 4.5rem)' }}
             >
               {isPomodoroActive ? displayTime : ''}

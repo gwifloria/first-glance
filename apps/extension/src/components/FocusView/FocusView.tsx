@@ -91,7 +91,14 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   return (
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
       {/* 背景纹理层 */}
-      <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture" />
+      <div className="absolute inset-0 pointer-events-none opacity-60 paper-texture" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.06) 100%)',
+        }}
+      />
 
       {/* Top bar */}
       <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">
@@ -122,17 +129,13 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
         />
-        <div
-          className={`transition-opacity ease-in-out ${isImmersive ? 'opacity-40 duration-[2s]' : 'opacity-100 duration-[1.5s]'}`}
-        >
-          <FocusTaskList
-            immersive={isImmersive}
-            currentTaskId={pomodoro.currentTaskId}
-            onStartPomodoro={handleStartPomodoro}
-            onBindTask={handleBindTask}
-            isIdle={pomodoro.mode === 'idle'}
-          />
-        </div>
+        <FocusTaskList
+          immersive={isImmersive}
+          currentTaskId={pomodoro.currentTaskId}
+          onStartPomodoro={handleStartPomodoro}
+          onBindTask={handleBindTask}
+          isIdle={pomodoro.mode === 'idle'}
+        />
       </div>
 
       {/* Quote */}

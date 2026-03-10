@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { sanitizeUrl } from '@/utils/contentRendering'
 
 /**
  * 将文本中的 Markdown 链接 [text](url) 转换为可点击的 <a> 标签
@@ -24,7 +25,7 @@ export function renderMarkdownLinks(text: string): ReactNode {
     parts.push(
       <a
         key={keyIndex++}
-        href={url}
+        href={sanitizeUrl(url)}
         target="_blank"
         rel="noopener noreferrer"
         className="text-[var(--accent)] hover:underline"

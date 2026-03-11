@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { CHILL_MODE_DURATION_MS } from '@/constants'
 
 export interface ChillModeState {
   active: boolean
@@ -6,13 +7,14 @@ export interface ChillModeState {
 }
 
 /**
- * 格式化剩余时间为 MM:SS 格式
+ * 格式化剩余时间：>1 分钟显示 "Xmin"，≤1 分钟显示 "M:SS"
  */
 function formatRemainingTime(expiresAt: number, now: number): string {
   const remaining = Math.max(0, expiresAt - now)
   const minutes = Math.floor(remaining / 60000)
   const seconds = Math.floor((remaining % 60000) / 1000)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+  if (minutes >= 1) return `${minutes}min`
+  return `0:${seconds.toString().padStart(2, '0')}`
 }
 
 /**
@@ -83,11 +85,18 @@ export function useChillMode() {
     return formatRemainingTime(chillMode.expiresAt, now)
   }, [chillMode, now])
 
+  // 计算剩余比例 (1=刚开始, 0=即将结束)
+  const remainingPercent = useMemo(() => {
+    if (!chillMode) return 0
+    const remaining = Math.max(0, chillMode.expiresAt - now)
+    return Math.min(1, remaining / CHILL_MODE_DURATION_MS)
+  }, [chillMode, now])
+
   // 结束 chill mode
   const endChillMode = useCallback(async () => {
     await chrome.storage.local.remove('chill_mode')
     setChillMode(null)
   }, [])
 
-  return { isActive, remainingTime, endChillMode }
+  return { isActive, remainingTime, remainingPercent, endChillMode }
 }

@@ -8,7 +8,7 @@ import { isChillModeActive } from './chillMode'
 
 const SETTINGS_KEY = 'app_settings'
 const RULE_ID_BASE = 1000
-const BLOCKED_PAGE_URL = `${chrome.runtime.getURL('/src/newtab/index.html')}?blocked=1#\\0`
+const BLOCKED_PAGE_URL = `${chrome.runtime.getURL('/src/newtab/index.html')}?blocked=1#\\1`
 
 /**
  * 加载设置并应用屏蔽规则
@@ -41,7 +41,7 @@ export async function updateBlockingRules(
 
     const addRules: chrome.declarativeNetRequest.Rule[] = []
 
-    // regexFilter: 匹配域名（含子域名），\0 捕获完整 URL 传入 hash
+    // regexFilter: 外层捕获组 \1 = 完整 URL，写入 hash 供 BlockedPage 读取
     blockedSites.forEach((domain, i) => {
       const escaped = domain.replace(/[.]/g, '\\.')
       addRules.push({
@@ -52,7 +52,7 @@ export async function updateBlockingRules(
           redirect: { regexSubstitution: BLOCKED_PAGE_URL },
         },
         condition: {
-          regexFilter: `^https?://(.*\\.)?${escaped}(/.*)?$`,
+          regexFilter: `^(https?://(.*\\.)?${escaped}(/.*)?)$`,
           resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME],
         },
       })

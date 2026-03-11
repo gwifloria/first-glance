@@ -10,10 +10,10 @@ export interface Integration {
 export const integrations: Integration[] = [
   {
     id: 'dida',
-    name: { zh: '滴答清单 (TickTick)', en: 'TickTick (滴答清单)' },
+    name: { zh: '滴答清单 / TickTick', en: 'TickTick / Dida365' },
     description: {
-      zh: '连接你的滴答清单账号，任务自动同步。在新标签页管理，变更实时生效。',
-      en: 'Connect your TickTick account for automatic task sync. Manage from new tab, changes sync instantly.',
+      zh: '支持中国版（滴答清单）和国际版（TickTick），任务自动同步，变更实时生效。',
+      en: 'Supports both international (TickTick) and Chinese (Dida365) versions. Auto sync, changes apply instantly.',
     },
     status: 'supported',
     icon: '✅',

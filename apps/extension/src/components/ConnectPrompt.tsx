@@ -13,10 +13,9 @@ interface ConnectPromptProps {
   onCancel: () => void
 }
 
-/** 滴答清单 Logo - 蓝色圆环 + 橙色对勾 */
-const DidaListLogo = () => (
+/** 滴答清单/TickTick Logo - 蓝色圆环 + 橙色对勾 */
+const DidaCompatLogo = () => (
   <svg viewBox="0 0 48 48" className="w-8 h-8">
-    {/* 蓝色圆弧（右上有缺口） */}
     <circle
       cx="24"
       cy="24"
@@ -28,7 +27,6 @@ const DidaListLogo = () => (
       strokeDasharray="108 18"
       transform="rotate(-45 24 24)"
     />
-    {/* 橙色对勾 */}
     <path
       d="M14 24L21 31L35 17"
       stroke="#FBBC04"
@@ -56,18 +54,19 @@ const SERVICE_CONFIG: Record<
   ServiceProvider,
   {
     nameKey: string
-    descKey: string
     Logo: React.FC
   }
 > = {
   didaList: {
     nameKey: 'serviceSelector.didaList',
-    descKey: 'serviceSelector.didaListDesc',
-    Logo: DidaListLogo,
+    Logo: DidaCompatLogo,
+  },
+  ticktick: {
+    nameKey: 'serviceSelector.ticktick',
+    Logo: DidaCompatLogo,
   },
   todoist: {
     nameKey: 'serviceSelector.todoist',
-    descKey: 'serviceSelector.todoistDesc',
     Logo: TodoistLogo,
   },
 }
@@ -109,7 +108,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
 
         <div className="flex flex-col gap-3">
           {availableProviders.map((provider) => {
-            const { Logo, nameKey, descKey } = SERVICE_CONFIG[provider]
+            const { Logo, nameKey } = SERVICE_CONFIG[provider]
             return (
               <Button
                 key={provider}
@@ -118,18 +117,13 @@ export const ConnectPrompt = memo(function ConnectPrompt({
                 onClick={() => onConnect(provider)}
                 loading={connectingProvider === provider}
                 disabled={isConnecting && connectingProvider !== provider}
-                className="!h-14 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
+                className="!h-12 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
               >
                 <div className="mr-3 flex-shrink-0">
                   <Logo />
                 </div>
-                <div className="text-left">
-                  <div className="font-medium text-[var(--text-primary)]">
-                    {t(nameKey)}
-                  </div>
-                  <div className="text-xs text-[var(--text-secondary)]">
-                    {t(descKey)}
-                  </div>
+                <div className="font-medium text-[var(--text-primary)]">
+                  {t(nameKey)}
                 </div>
               </Button>
             )

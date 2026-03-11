@@ -1,8 +1,6 @@
 /**
- * 滴答清单 API 端点配置
+ * 滴答清单/TickTick 共用 API 端点路径
  */
-export const DIDA_API_BASE = 'https://api.dida365.com/open/v1'
-
 export const endpoints = {
   // 项目相关
   projects: '/project',

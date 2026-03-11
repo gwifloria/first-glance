@@ -80,7 +80,7 @@ apps/
 │       │   ├── settingsStorage  # 用户设置持久化
 │       │   ├── auth / authManager / todoistAuth  # OAuth 认证
 │       │   └── storage.ts       # Chrome Storage 封装
-│       ├── themes/            # 5 种主题定义
+│       ├── themes/            # 6 种主题定义
 │       ├── i18n/              # 国际化（zh-CN、en）
 │       ├── utils/             # 工具函数
 │       │   └── taskFilters/   # 任务筛选/排序/分组
@@ -117,8 +117,8 @@ apps/
 - `usePersistedState<T>`: 通用持久化状态 Hook，封装 chrome.storage 读写
 
 ### 主题系统
-- 5 种主题：milk、beige、pink、blue、dark
-- CSS 变量动态注入
+- 6 种主题：milk、beige、pink、blue、dark、twilight（暮色蓝）
+- CSS 变量动态注入 + 双表面颜色系统（textOnCard/borderOnCard）
 - 支持纹理和贴纸装饰（Journal 风格）
 
 ### 网站屏蔽机制
@@ -206,6 +206,6 @@ apps/
 - 文档: https://developer.dida365.com/docs
 
 ### Todoist
-- Base URL: `https://api.todoist.com/rest/v2`
+- Base URL: `https://api.todoist.com/api/v1`
 - OAuth: `https://todoist.com/oauth/authorize`
-- 文档: https://developer.todoist.com/rest/v2/
+- 文档: https://developer.todoist.com/api/v1/

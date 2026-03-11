@@ -9,6 +9,7 @@ import {
 } from '@/constants'
 
 interface ChillModePanelProps {
+  originalUrl?: string
   onStateChange?: (state: {
     isHolding: boolean
     stageIndex: number
@@ -16,7 +17,10 @@ interface ChillModePanelProps {
   }) => void
 }
 
-export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
+export function ChillModePanel({
+  originalUrl,
+  onStateChange,
+}: ChillModePanelProps) {
   const { t } = useTranslation('blocked')
 
   const [showUnlockOption, setShowUnlockOption] = useState(false)
@@ -42,8 +46,13 @@ export function ChillModePanel({ onStateChange }: ChillModePanelProps) {
     })
     // 等待 background 清除屏蔽规则后再导航
     await new Promise((resolve) => setTimeout(resolve, 100))
-    window.history.back()
-  }, [])
+    // 优先跳转到被屏蔽的原始 URL，否则回退到上一页
+    if (originalUrl) {
+      window.location.href = originalUrl
+    } else {
+      window.history.back()
+    }
+  }, [originalUrl])
 
   const handleHoldStart = useCallback(() => {
     setIsHolding(true)

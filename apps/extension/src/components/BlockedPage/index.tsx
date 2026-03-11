@@ -100,6 +100,12 @@ function GoHomeButton({
 export function BlockedPage() {
   const { t } = useTranslation('blocked')
 
+  // 从 hash 中提取被屏蔽的原始 URL（由 blockingRules regexSubstitution 写入）
+  const originalUrl = useMemo(() => {
+    const raw = window.location.hash.slice(1)
+    return raw && /^https?:\/\//.test(raw) ? raw : ''
+  }, [])
+
   const [isHovering, setIsHovering] = useState(false)
   const [chillState, setChillState] = useState({
     isHolding: false,
@@ -173,7 +179,10 @@ export function BlockedPage() {
         </p>
 
         {/* Chill Mode */}
-        <ChillModePanel onStateChange={setChillState} />
+        <ChillModePanel
+          originalUrl={originalUrl}
+          onStateChange={setChillState}
+        />
       </div>
     </div>
   )

@@ -70,7 +70,8 @@
 }
 
 /* 卡片内部颜色覆盖（暮色蓝等双表面主题） */
-.card-surface {
+.card-surface,
+.ant-modal-content {
   --text-primary: var(--text-on-card, var(--text-primary));
   --text-secondary: var(--text-on-card-secondary, var(--text-secondary));
   --border: var(--border-on-card, var(--border));

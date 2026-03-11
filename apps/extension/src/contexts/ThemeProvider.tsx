@@ -134,10 +134,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         '--border-on-card',
         theme.colors.borderOnCard ?? theme.colors.border
       )
+      root.style.setProperty(
+        '--bg-secondary-on-card',
+        theme.colors.bgSecondaryOnCard ?? theme.colors.bgSecondary
+      )
     } else {
       root.style.removeProperty('--text-on-card')
       root.style.removeProperty('--text-on-card-secondary')
       root.style.removeProperty('--border-on-card')
+      root.style.removeProperty('--bg-secondary-on-card')
     }
 
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme

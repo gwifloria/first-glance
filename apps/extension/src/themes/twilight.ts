@@ -8,7 +8,7 @@ export const twilightTheme: Theme = {
     bgPrimary: '#2C3E50',
     bgSecondary: '#34495E',
     bgSidebar: '#243342',
-    bgContent: '#2C3E50',
+    bgContent: '#f9f5eb',
     bgCard: '#f9f5eb',
     textPrimary: '#f0ebe1',
     textSecondary: 'rgba(240, 235, 225, 0.5)',

@@ -37,7 +37,7 @@ export function ListLayout({ onFocus }: ListLayoutProps) {
 
       {/* 右侧内容区域 - 纸张容器 */}
       <div className="flex-1 p-6 max-lg:p-3 min-h-0 relative z-10">
-        <div className="h-full bg-[var(--bg-content)] rounded-2xl overflow-hidden relative notebook-shadow">
+        <div className="h-full bg-[var(--bg-content)] rounded-2xl overflow-hidden relative notebook-shadow card-surface">
           {/* 点阵背景 - 通过 CSS 类控制显示 */}
           <div className="absolute inset-0 pointer-events-none dot-grid z-0" />
 

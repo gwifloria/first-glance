@@ -54,23 +54,19 @@ const SERVICE_CONFIG: Record<
   ServiceProvider,
   {
     nameKey: string
-    descKey: string
     Logo: React.FC
   }
 > = {
   didaList: {
     nameKey: 'serviceSelector.didaList',
-    descKey: 'serviceSelector.didaListDesc',
     Logo: DidaCompatLogo,
   },
   ticktick: {
     nameKey: 'serviceSelector.ticktick',
-    descKey: 'serviceSelector.ticktickDesc',
     Logo: DidaCompatLogo,
   },
   todoist: {
     nameKey: 'serviceSelector.todoist',
-    descKey: 'serviceSelector.todoistDesc',
     Logo: TodoistLogo,
   },
 }
@@ -112,7 +108,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
 
         <div className="flex flex-col gap-3">
           {availableProviders.map((provider) => {
-            const { Logo, nameKey, descKey } = SERVICE_CONFIG[provider]
+            const { Logo, nameKey } = SERVICE_CONFIG[provider]
             return (
               <Button
                 key={provider}
@@ -121,18 +117,13 @@ export const ConnectPrompt = memo(function ConnectPrompt({
                 onClick={() => onConnect(provider)}
                 loading={connectingProvider === provider}
                 disabled={isConnecting && connectingProvider !== provider}
-                className="!h-14 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
+                className="!h-12 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
               >
                 <div className="mr-3 flex-shrink-0">
                   <Logo />
                 </div>
-                <div className="text-left">
-                  <div className="font-medium text-[var(--text-primary)]">
-                    {t(nameKey)}
-                  </div>
-                  <div className="text-xs text-[var(--text-secondary)]">
-                    {t(descKey)}
-                  </div>
+                <div className="font-medium text-[var(--text-primary)]">
+                  {t(nameKey)}
                 </div>
               </Button>
             )

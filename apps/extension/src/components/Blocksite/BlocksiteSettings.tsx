@@ -142,7 +142,7 @@ export function BlocksiteSettings() {
               key={domain}
               closable
               onClose={() => handleRemove(domain)}
-              className="!bg-[var(--bg-secondary)] !border-[var(--border)] !text-[var(--text-primary)]"
+              className="!border-[var(--border)]"
             >
               {domain}
             </Tag>

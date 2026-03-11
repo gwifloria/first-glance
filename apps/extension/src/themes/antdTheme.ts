@@ -11,6 +11,8 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
   // antd 组件主要渲染在卡片/modal 内，使用卡片上的文字颜色
   const textOnCard = colors.textOnCard ?? colors.textPrimary
   const textSecondaryOnCard = colors.textSecondaryOnCard ?? colors.textSecondary
+  // antd 组件的输入框/标签等背景色（卡片上的次级背景）
+  const bgSecondaryOnCard = colors.bgSecondaryOnCard ?? colors.bgSecondary
 
   return {
     token: {
@@ -65,7 +67,7 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
       Input: {
         activeBg: 'transparent',
         hoverBg: 'transparent',
-        colorBgContainer: colors.bgSecondary,
+        colorBgContainer: bgSecondaryOnCard,
         colorText: textOnCard,
         colorTextPlaceholder: textSecondaryOnCard,
         activeBorderColor: colors.accent,
@@ -91,6 +93,10 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         handleColor: colors.accent,
         handleLineWidth: 2,
         handleLineWidthHover: 3,
+      },
+      Tag: {
+        defaultBg: bgSecondaryOnCard,
+        defaultColor: textOnCard,
       },
       Form: {
         labelColor: textOnCard,

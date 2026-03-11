@@ -15,6 +15,7 @@ export const twilightTheme: Theme = {
     textOnCard: '#2c3e50',
     textSecondaryOnCard: '#5d6d7e',
     borderOnCard: '#d6d3d1',
+    bgSecondaryOnCard: '#f0ebe1',
     accent: '#d4a574',
     accentLight: 'rgba(212, 165, 116, 0.15)',
     border: 'rgba(240, 235, 225, 0.12)',

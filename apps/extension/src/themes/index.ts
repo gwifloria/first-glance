@@ -13,6 +13,7 @@ export interface Theme {
     textOnCard?: string
     textSecondaryOnCard?: string
     borderOnCard?: string
+    bgSecondaryOnCard?: string
     accent: string
     accentLight: string
     border: string

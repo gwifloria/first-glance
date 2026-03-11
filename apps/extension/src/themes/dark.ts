@@ -9,6 +9,7 @@ export const darkTheme: Theme = {
     bgSecondary: '#18181b',
     bgSidebar: '#000000',
     bgContent: '#121214',
+    bgFrame: '#3a3e48',
     bgCard: '#18181b',
     textPrimary: '#e4e4e7',
     textSecondary: '#71717a',

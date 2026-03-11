@@ -53,6 +53,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--bg-secondary', theme.colors.bgSecondary)
     root.style.setProperty('--bg-sidebar', theme.colors.bgSidebar)
     root.style.setProperty('--bg-content', theme.colors.bgContent)
+    root.style.setProperty(
+      '--bg-frame',
+      theme.colors.bgFrame ?? theme.colors.bgPrimary
+    )
     root.style.setProperty('--bg-card', theme.colors.bgCard)
     // 文字色
     root.style.setProperty('--text-primary', theme.colors.textPrimary)

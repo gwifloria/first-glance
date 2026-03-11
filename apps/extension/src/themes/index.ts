@@ -7,6 +7,7 @@ export interface Theme {
     bgSecondary: string
     bgSidebar: string
     bgContent: string
+    bgFrame?: string
     bgCard: string
     textPrimary: string
     textSecondary: string

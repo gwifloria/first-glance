@@ -37,9 +37,9 @@
     "title": "选择服务",
     "description": "选择要连接的任务服务",
     "didaList": "滴答清单",
-    "didaListDesc": "与滴答清单同步",
+    "didaListDesc": "中国版 (dida365.com)",
     "ticktick": "TickTick",
-    "ticktickDesc": "与 TickTick 同步",
+    "ticktickDesc": "国际版 (ticktick.com)",
     "todoist": "Todoist",
     "todoistDesc": "与 Todoist 同步",
     "noProviders": "没有可用服务，请配置 API 凭证"

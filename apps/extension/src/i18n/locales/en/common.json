@@ -37,9 +37,9 @@
     "title": "Choose Service",
     "description": "Select which task service to connect",
     "didaList": "Dida365",
-    "didaListDesc": "Sync with Dida365",
+    "didaListDesc": "Chinese version (dida365.com)",
     "ticktick": "TickTick",
-    "ticktickDesc": "Sync with TickTick",
+    "ticktickDesc": "International (ticktick.com)",
     "todoist": "Todoist",
     "todoistDesc": "Sync with Todoist",
     "noProviders": "No service available. Please configure API credentials."

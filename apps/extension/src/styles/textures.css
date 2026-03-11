@@ -75,6 +75,7 @@
   --text-primary: var(--text-on-card, var(--text-primary));
   --text-secondary: var(--text-on-card-secondary, var(--text-secondary));
   --border: var(--border-on-card, var(--border));
+  --bg-secondary: var(--bg-secondary-on-card, var(--bg-secondary));
 }
 
 /* 深色纹理主题：浅色点阵 */
@@ -94,6 +95,16 @@
     transparent 1.5px
   );
   background-size: 32px 32px;
+}
+
+/* 浅色卡片表面内使用深色点阵（覆盖 theme-dark-texture 的浅色点阵） */
+:root.theme-dark-texture .card-surface .dot-grid {
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.08) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 24px 24px;
 }
 
 :root.theme-dark-texture .notebook-shadow {

@@ -106,8 +106,14 @@ export function BlocksiteSettings() {
     <div className="space-y-3">
       {/* Chill Mode 状态提示 */}
       {chillModeActive && (
-        <div className="flex items-center justify-between p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+        <div
+          className="flex items-center justify-between p-3 rounded-lg border"
+          style={{
+            backgroundColor: 'var(--accent-light)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          <div className="flex items-center gap-2 text-[var(--accent)]">
             <CoffeeOutlined />
             <span className="text-sm">
               {t('blocksite.chillMode.active', { time: remainingTime })}
@@ -142,7 +148,7 @@ export function BlocksiteSettings() {
               key={domain}
               closable
               onClose={() => handleRemove(domain)}
-              className="!bg-[var(--bg-secondary)] !border-[var(--border)] !text-[var(--text-primary)]"
+              className="!border-[var(--border)]"
             >
               {domain}
             </Tag>

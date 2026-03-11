@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CoffeeOutlined } from '@ant-design/icons'
 import { getChillStage } from './constants'
+import { CoffeeCup } from '@/components/common/CoffeeCup'
 import {
   CHILL_MODE_DURATION_MS,
   CHILL_MODE_HOLD_INTERVAL_MS,
@@ -94,6 +94,8 @@ export function ChillModePanel({
     onStateChange?.({ isHolding: false, stageIndex: -1, stageMessage: '' })
   }, [onStateChange])
 
+  const fillPercent = holdProgress / CHILL_MODE_HOLD_STEPS
+
   // Calculate remaining seconds for display (使用 floor 避免显示延迟感)
   const remainingSeconds = Math.floor(
     ((CHILL_MODE_HOLD_STEPS - holdProgress) * CHILL_MODE_HOLD_INTERVAL_MS) /
@@ -111,40 +113,20 @@ export function ChillModePanel({
         </button>
       ) : (
         <div className="inline-flex flex-col items-center justify-center gap-3">
-          {/* Circular progress */}
-          <div className="relative w-16 h-16 flex items-center justify-center">
-            <svg className="absolute inset-0 -rotate-90" viewBox="0 0 64 64">
-              {/* Background circle */}
-              <circle
-                cx="32"
-                cy="32"
-                r="28"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                className="opacity-10"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="32"
-                cy="32"
-                r="28"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 28}
-                strokeDashoffset={
-                  2 * Math.PI * 28 * (1 - holdProgress / CHILL_MODE_HOLD_STEPS)
-                }
-                className={`transition-all duration-100 ${
-                  isHolding ? 'opacity-60' : 'opacity-30'
-                }`}
-              />
-            </svg>
-            {/* Center text */}
+          {/* 咖啡杯注满动画 */}
+          <div className="relative flex items-center justify-center">
+            <CoffeeCup
+              fillPercent={fillPercent}
+              size={64}
+              className={`transition-opacity duration-200 ${
+                isHolding ? '' : 'opacity-50'
+              }`}
+            />
+            {/* 倒计时叠加在杯子下方 */}
             <span
-              className={`text-lg font-mono ${isHolding ? 'opacity-80' : 'opacity-40'}`}
+              className={`absolute -bottom-5 text-xs font-mono ${
+                isHolding ? 'opacity-60' : 'opacity-30'
+              }`}
             >
               {remainingSeconds}s
             </span>
@@ -159,9 +141,8 @@ export function ChillModePanel({
             onTouchEnd={handleHoldEnd}
             onTouchCancel={handleHoldEnd}
             onContextMenu={(e) => e.preventDefault()}
-            className={`blocked-chill-btn ${isHolding ? 'holding' : ''}`}
+            className={`blocked-chill-btn ${isHolding ? 'holding' : ''} mt-2`}
           >
-            <CoffeeOutlined />
             {isHolding ? t('chillMode.holding') : t('chillMode.button')}
           </button>
         </div>

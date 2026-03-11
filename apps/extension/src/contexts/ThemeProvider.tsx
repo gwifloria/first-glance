@@ -53,6 +53,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--bg-secondary', theme.colors.bgSecondary)
     root.style.setProperty('--bg-sidebar', theme.colors.bgSidebar)
     root.style.setProperty('--bg-content', theme.colors.bgContent)
+    root.style.setProperty(
+      '--bg-frame',
+      theme.colors.bgFrame ?? theme.colors.bgPrimary
+    )
     root.style.setProperty('--bg-card', theme.colors.bgCard)
     // 文字色
     root.style.setProperty('--text-primary', theme.colors.textPrimary)
@@ -134,10 +138,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         '--border-on-card',
         theme.colors.borderOnCard ?? theme.colors.border
       )
+      root.style.setProperty(
+        '--bg-secondary-on-card',
+        theme.colors.bgSecondaryOnCard ?? theme.colors.bgSecondary
+      )
     } else {
       root.style.removeProperty('--text-on-card')
       root.style.removeProperty('--text-on-card-secondary')
       root.style.removeProperty('--border-on-card')
+      root.style.removeProperty('--bg-secondary-on-card')
     }
 
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme

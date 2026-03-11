@@ -8,9 +8,13 @@ import { contrastText } from '@/utils/color'
 export function createAntdTheme(theme: Theme): ThemeConfig {
   const { colors } = theme
   const isDark = theme.isDark ?? theme.type === 'modern'
+  // 卡片/modal 表面是否为深色（有 textOnCard 说明卡片是浅色）
+  const isDarkCard = isDark && !colors.textOnCard
   // antd 组件主要渲染在卡片/modal 内，使用卡片上的文字颜色
   const textOnCard = colors.textOnCard ?? colors.textPrimary
   const textSecondaryOnCard = colors.textSecondaryOnCard ?? colors.textSecondary
+  // antd 组件的输入框/标签等背景色（卡片上的次级背景）
+  const bgSecondaryOnCard = colors.bgSecondaryOnCard ?? colors.bgSecondary
 
   return {
     token: {
@@ -48,7 +52,7 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         // 主按钮：根据 accent 亮度自动计算对比色
         primaryColor: contrastText(colors.accent),
         // 文本按钮
-        textHoverBg: isDark
+        textHoverBg: isDarkCard
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
         // 通用
@@ -65,7 +69,7 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
       Input: {
         activeBg: 'transparent',
         hoverBg: 'transparent',
-        colorBgContainer: colors.bgSecondary,
+        colorBgContainer: bgSecondaryOnCard,
         colorText: textOnCard,
         colorTextPlaceholder: textSecondaryOnCard,
         activeBorderColor: colors.accent,
@@ -77,20 +81,30 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         colorText: textOnCard,
         optionSelectedBg: colors.accentLight,
         optionSelectedColor: textOnCard,
-        optionActiveBg: isDark
+        optionActiveBg: isDarkCard
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
       },
       Slider: {
-        railBg: isDark ? 'rgba(0, 0, 0, 0.12)' : 'rgba(0, 0, 0, 0.06)',
-        railHoverBg: isDark ? 'rgba(0, 0, 0, 0.18)' : 'rgba(0, 0, 0, 0.1)',
+        railBg: isDarkCard
+          ? 'rgba(255, 255, 255, 0.12)'
+          : 'rgba(0, 0, 0, 0.06)',
+        railHoverBg: isDarkCard
+          ? 'rgba(255, 255, 255, 0.18)'
+          : 'rgba(0, 0, 0, 0.1)',
         trackBg: colors.accent,
         trackHoverBg: colors.accent,
-        dotBorderColor: isDark ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.08)',
+        dotBorderColor: isDarkCard
+          ? 'rgba(255, 255, 255, 0.15)'
+          : 'rgba(0, 0, 0, 0.08)',
         dotActiveBorderColor: colors.accent,
         handleColor: colors.accent,
         handleLineWidth: 2,
         handleLineWidthHover: 3,
+      },
+      Tag: {
+        defaultBg: bgSecondaryOnCard,
+        defaultColor: textOnCard,
       },
       Form: {
         labelColor: textOnCard,

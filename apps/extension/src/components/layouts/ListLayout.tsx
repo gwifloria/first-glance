@@ -21,7 +21,7 @@ export function ListLayout({ onFocus }: ListLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className="h-screen bg-[var(--bg-primary)] flex overflow-hidden relative animate-fadeIn">
+    <div className="h-screen bg-[var(--bg-frame)] flex overflow-hidden relative animate-fadeIn">
       {/* 背景纹理层 - 通过 CSS 类控制显示 */}
       <div className="absolute inset-0 pointer-events-none opacity-40 paper-texture z-0" />
 

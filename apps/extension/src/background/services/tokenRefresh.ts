@@ -2,18 +2,39 @@
  * Token 刷新服务
  * 负责检测和自动刷新 OAuth token
  */
+import {
+  didaConfig,
+  ticktickConfig,
+  type DidaCompatProviderConfig,
+} from '@/services/didaCompatConfig'
 
-const CLIENT_ID = import.meta.env.VITE_DIDA_CLIENT_ID || ''
-const CLIENT_SECRET = import.meta.env.VITE_DIDA_CLIENT_SECRET || ''
-const TOKEN_URL = 'https://dida365.com/oauth/token'
+/** 根据 adapter_type 获取对应的配置 */
+function getConfigForProvider(
+  adapterType: string
+): DidaCompatProviderConfig | null {
+  switch (adapterType) {
+    case 'didaList':
+      return didaConfig
+    case 'ticktick':
+      return ticktickConfig
+    default:
+      return null
+  }
+}
 
 /**
  * 检查并刷新 token（如果即将过期）
  */
 export async function refreshTokenIfNeeded(): Promise<void> {
   try {
-    const result = await chrome.storage.local.get('auth_token')
-    const token = result.auth_token
+    // 批量读取 adapter 类型和 token
+    const { adapter_type: adapterType, auth_token: token } =
+      await chrome.storage.local.get(['adapter_type', 'auth_token'])
+
+    const config = getConfigForProvider(adapterType)
+
+    // 非滴答清单/TickTick 类型（如 todoist），不需要刷新
+    if (!config) return
 
     if (!token?.expires_at || !token?.refresh_token) {
       return
@@ -27,11 +48,11 @@ export async function refreshTokenIfNeeded(): Promise<void> {
 
     console.log('[Background] Token 即将过期，开始刷新')
 
-    const response = await fetch(TOKEN_URL, {
+    const response = await fetch(config.tokenUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+        Authorization: `Basic ${btoa(`${config.clientId}:${config.clientSecret}`)}`,
       },
       body: new URLSearchParams({
         grant_type: 'refresh_token',

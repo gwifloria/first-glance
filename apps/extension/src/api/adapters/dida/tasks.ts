@@ -1,38 +1,46 @@
 /**
- * 滴答清单任务 API
+ * 滴答清单/TickTick 任务 API
  */
-import { request } from './client'
+import { request, type RequestFn } from './client'
 import { endpoints } from './endpoints'
 import type { Task } from '@/types'
 
-export const tasksApi = {
-  /** 创建任务 */
-  create(task: Partial<Task>): Promise<Task> {
-    return request(endpoints.task, {
-      method: 'POST',
-      body: JSON.stringify(task),
-    })
-  },
-
-  /** 更新任务 */
-  update(taskId: string, updates: Partial<Task>): Promise<Task> {
-    return request(endpoints.taskById(taskId), {
-      method: 'POST',
-      body: JSON.stringify(updates),
-    })
-  },
-
-  /** 完成任务 */
-  complete(projectId: string, taskId: string): Promise<void> {
-    return request(endpoints.completeTask(projectId, taskId), {
-      method: 'POST',
-    })
-  },
-
-  /** 删除任务 */
-  delete(projectId: string, taskId: string): Promise<void> {
-    return request(endpoints.deleteTask(projectId, taskId), {
-      method: 'DELETE',
-    })
-  },
+export interface TasksApi {
+  create(task: Partial<Task>): Promise<Task>
+  update(taskId: string, updates: Partial<Task>): Promise<Task>
+  complete(projectId: string, taskId: string): Promise<void>
+  delete(projectId: string, taskId: string): Promise<void>
 }
+
+export function createTasksApi(req: RequestFn): TasksApi {
+  return {
+    create(task: Partial<Task>): Promise<Task> {
+      return req(endpoints.task, {
+        method: 'POST',
+        body: JSON.stringify(task),
+      })
+    },
+
+    update(taskId: string, updates: Partial<Task>): Promise<Task> {
+      return req(endpoints.taskById(taskId), {
+        method: 'POST',
+        body: JSON.stringify(updates),
+      })
+    },
+
+    complete(projectId: string, taskId: string): Promise<void> {
+      return req(endpoints.completeTask(projectId, taskId), {
+        method: 'POST',
+      })
+    },
+
+    delete(projectId: string, taskId: string): Promise<void> {
+      return req(endpoints.deleteTask(projectId, taskId), {
+        method: 'DELETE',
+      })
+    },
+  }
+}
+
+/** 滴答清单默认实例 */
+export const tasksApi = createTasksApi(request)

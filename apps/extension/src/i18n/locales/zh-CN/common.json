@@ -38,6 +38,8 @@
     "description": "选择要连接的任务服务",
     "didaList": "滴答清单",
     "didaListDesc": "与滴答清单同步",
+    "ticktick": "TickTick",
+    "ticktickDesc": "与 TickTick 同步",
     "todoist": "Todoist",
     "todoistDesc": "与 Todoist 同步",
     "noProviders": "没有可用服务，请配置 API 凭证"

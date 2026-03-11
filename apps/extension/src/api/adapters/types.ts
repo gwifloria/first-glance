@@ -60,7 +60,12 @@ export interface ITaskAdapter {
 }
 
 /** 适配器类型 */
-export type AdapterType = 'didaList' | 'notion' | 'todoist' | 'local'
+export type AdapterType =
+  | 'didaList'
+  | 'ticktick'
+  | 'notion'
+  | 'todoist'
+  | 'local'
 
 /** 适配器配置 */
 export interface AdapterConfig {

@@ -2,6 +2,7 @@
  * 适配器工厂
  */
 import { DidaListAdapter } from './dida'
+import { TickTickAdapter } from './ticktick'
 import { TodoistAdapter } from './todoist'
 import { LocalAdapter } from './LocalAdapter'
 import type { ITaskAdapter, AdapterType } from './types'
@@ -22,6 +23,9 @@ export function createTaskAdapter(type: AdapterType): ITaskAdapter {
   switch (type) {
     case 'didaList':
       adapter = new DidaListAdapter()
+      break
+    case 'ticktick':
+      adapter = new TickTickAdapter()
       break
     case 'todoist':
       adapter = new TodoistAdapter()

@@ -10,6 +10,7 @@ export type {
 
 // Adapters
 export { DidaListAdapter, didaListAdapter } from './dida'
+export { TickTickAdapter, tickTickAdapter } from './ticktick'
 export { LocalAdapter, localAdapter } from './LocalAdapter'
 
 // Factory

@@ -13,8 +13,8 @@ interface ConnectPromptProps {
   onCancel: () => void
 }
 
-/** 滴答清单 Logo - 蓝色圆环 + 橙色对勾 */
-const DidaListLogo = () => (
+/** 滴答清单/TickTick Logo - 蓝色圆环 + 橙色对勾 */
+const DidaCompatLogo = () => (
   <svg viewBox="0 0 48 48" className="w-8 h-8">
     <circle
       cx="24"
@@ -30,27 +30,6 @@ const DidaListLogo = () => (
     <path
       d="M14 24L21 31L35 17"
       stroke="#FBBC04"
-      strokeWidth="4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-    />
-  </svg>
-)
-
-/** TickTick Logo - 蓝色圆角方块 + 白色对勾 */
-const TickTickLogo = () => (
-  <svg viewBox="0 0 48 48" className="w-8 h-8">
-    <defs>
-      <linearGradient id="ticktick-bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#4DA3FF" />
-        <stop offset="100%" stopColor="#2B7DE9" />
-      </linearGradient>
-    </defs>
-    <rect width="48" height="48" rx="10" fill="url(#ticktick-bg)" />
-    <path
-      d="M14 24L21 31L35 17"
-      stroke="#FFFFFF"
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -82,12 +61,12 @@ const SERVICE_CONFIG: Record<
   didaList: {
     nameKey: 'serviceSelector.didaList',
     descKey: 'serviceSelector.didaListDesc',
-    Logo: DidaListLogo,
+    Logo: DidaCompatLogo,
   },
   ticktick: {
     nameKey: 'serviceSelector.ticktick',
     descKey: 'serviceSelector.ticktickDesc',
-    Logo: TickTickLogo,
+    Logo: DidaCompatLogo,
   },
   todoist: {
     nameKey: 'serviceSelector.todoist',

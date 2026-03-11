@@ -1,7 +1,7 @@
 /**
- * 滴答清单/TickTick 项目 API
+ * 滴答清单/TickTick 共用项目 API
  */
-import { request, type RequestFn } from './client'
+import type { RequestFn } from './client'
 import { endpoints } from './endpoints'
 import { storage } from '@/services/storage'
 import type { Task, Project } from '@/types'
@@ -85,10 +85,7 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
           return data.tasks || []
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : '未知错误'
-          console.error(
-            `[DidaAPI] 获取项目 ${project.name} 的任务失败:`,
-            errorMsg
-          )
+          console.error(`[API] 获取项目 ${project.name} 的任务失败:`, errorMsg)
           return []
         }
       }
@@ -98,7 +95,7 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
         .then((data) => data.tasks || [])
         .catch((err) => {
           const errorMsg = err instanceof Error ? err.message : '未知错误'
-          console.error('[DidaAPI] 获取收集箱任务失败:', errorMsg)
+          console.error('[API] 获取收集箱任务失败:', errorMsg)
           return [] as Task[]
         })
 
@@ -106,7 +103,6 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
       let inboxProject: Project | null = null
       if (inboxTasks.length > 0) {
         const realInboxId = inboxTasks[0].projectId
-        // 创建 inbox project 对象
         inboxProject = {
           id: realInboxId,
           name: '收集箱', // Inbox 名称会在 UI 层通过 i18n 处理
@@ -119,7 +115,7 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
       const projectTaskArrays = await withConcurrencyLimit(
         activeProjects,
         fetchProjectTasks,
-        5 // 最多 5 个并发请求
+        5
       )
 
       // 合并所有任务
@@ -139,6 +135,3 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
 
   return api
 }
-
-/** 滴答清单默认实例 */
-export const projectsApi = createProjectsApi(request)

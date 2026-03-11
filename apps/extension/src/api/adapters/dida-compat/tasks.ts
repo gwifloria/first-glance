@@ -1,7 +1,7 @@
 /**
- * 滴答清单/TickTick 任务 API
+ * 滴答清单/TickTick 共用任务 API
  */
-import { request, type RequestFn } from './client'
+import type { RequestFn } from './client'
 import { endpoints } from './endpoints'
 import type { Task } from '@/types'
 
@@ -41,6 +41,3 @@ export function createTasksApi(req: RequestFn): TasksApi {
     },
   }
 }
-
-/** 滴答清单默认实例 */
-export const tasksApi = createTasksApi(request)

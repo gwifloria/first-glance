@@ -1,17 +1,15 @@
 /**
- * 滴答清单/TickTick API 请求客户端
+ * 滴答清单/TickTick 共用 API 请求客户端
  */
-import { auth } from '@/services/auth'
 import { AuthError } from '@/api/AuthError'
-import { DIDA_API_BASE } from './endpoints'
 
 export type RequestFn = <T = void>(
   endpoint: string,
   options?: RequestInit
 ) => Promise<T>
 
-/** 创建兼容的请求函数 */
-export function createDidaCompatRequest(
+/** 创建 API 请求函数 */
+export function createRequest(
   apiBase: string,
   getToken: () => Promise<string | null>
 ): RequestFn {
@@ -75,8 +73,3 @@ export function createDidaCompatRequest(
     }
   }
 }
-
-/** 滴答清单默认请求函数 */
-export const request: RequestFn = createDidaCompatRequest(DIDA_API_BASE, () =>
-  auth.getValidToken()
-)

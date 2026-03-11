@@ -1,18 +1,13 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { AuthError } from '@/api/AuthError'
+import { createRequest } from '../dida-compat/client'
 
-vi.mock('@/services/auth', () => ({
-  auth: {
-    getValidToken: vi.fn(),
-  },
-}))
+const DIDA_API_BASE = 'https://api.dida365.com/open/v1'
 
-import { auth } from '@/services/auth'
-import { request } from './client'
-import { DIDA_API_BASE } from './endpoints'
-
-describe('Dida client', () => {
+describe('Dida-compat client', () => {
   let originalFetch: typeof fetch
+  const mockGetToken = vi.fn()
+  const request = createRequest(DIDA_API_BASE, mockGetToken)
 
   beforeEach(() => {
     originalFetch = globalThis.fetch
@@ -25,7 +20,7 @@ describe('Dida client', () => {
 
   describe('request', () => {
     it('发送带 Bearer token 的请求', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue('dida-token')
+      mockGetToken.mockResolvedValue('dida-token')
       globalThis.fetch = vi
         .fn()
         .mockResolvedValue(
@@ -45,7 +40,7 @@ describe('Dida client', () => {
     })
 
     it('401 抛出 AuthError', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue('token')
+      mockGetToken.mockResolvedValue('token')
       globalThis.fetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ errorMessage: '认证失败' }), {
           status: 401,
@@ -56,7 +51,7 @@ describe('Dida client', () => {
     })
 
     it('403 抛出 AuthError', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue('token')
+      mockGetToken.mockResolvedValue('token')
       globalThis.fetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ errorMessage: '权限不足' }), {
           status: 403,
@@ -67,7 +62,7 @@ describe('Dida client', () => {
     })
 
     it('204 返回 undefined', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue('token')
+      mockGetToken.mockResolvedValue('token')
       globalThis.fetch = vi
         .fn()
         .mockResolvedValue(new Response(null, { status: 204 }))
@@ -77,13 +72,13 @@ describe('Dida client', () => {
     })
 
     it('未登录抛出 Error', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue(null)
+      mockGetToken.mockResolvedValue(null)
 
       await expect(request('/task')).rejects.toThrow('未登录')
     })
 
     it('不做 case 转换', async () => {
-      vi.mocked(auth.getValidToken).mockResolvedValue('token')
+      mockGetToken.mockResolvedValue('token')
       globalThis.fetch = vi
         .fn()
         .mockResolvedValue(
@@ -97,7 +92,6 @@ describe('Dida client', () => {
         '/task'
       )
 
-      // Dida 客户端直接返回原始 JSON，不做转换
       expect(result.projectId).toBe('p1')
       expect(result.dueDate).toBe('2026-01-01')
     })

@@ -81,6 +81,17 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
       },
+      Slider: {
+        railBg: isDark ? 'rgba(0, 0, 0, 0.12)' : 'rgba(0, 0, 0, 0.06)',
+        railHoverBg: isDark ? 'rgba(0, 0, 0, 0.18)' : 'rgba(0, 0, 0, 0.1)',
+        trackBg: colors.accent,
+        trackHoverBg: colors.accent,
+        dotBorderColor: isDark ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.08)',
+        dotActiveBorderColor: colors.accent,
+        handleColor: colors.accent,
+        handleLineWidth: 2,
+        handleLineWidthHover: 3,
+      },
       Form: {
         labelColor: textOnCard,
         itemMarginBottom: 16,

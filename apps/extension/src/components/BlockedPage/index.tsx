@@ -151,6 +151,7 @@ export function BlockedPage() {
 
       {/* Paper texture */}
       <div className="absolute inset-0 opacity-30 pointer-events-none paper-texture" />
+      <div className="absolute inset-0 pointer-events-none line-grid-auto z-0" />
 
       {/* Content */}
       <div className="relative z-10 text-center px-8 animate-fade-in-up">

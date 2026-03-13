@@ -1,4 +1,5 @@
 import type { Theme } from './index'
+import { FONT_HAND_NUNITO } from './fonts'
 
 export const blueTheme: Theme = {
   name: '雾霾蓝',
@@ -26,6 +27,7 @@ export const blueTheme: Theme = {
     priorityHigh: '#dc2626',
     priorityMedium: '#f59e0b',
     priorityLow: '#64748b',
+    focusGradient: '#9ab0be',
     pomodoroWork: '#9a8a7a',
     pomodoroBreak: '#7a9a8a',
     // BlockedPage
@@ -52,6 +54,7 @@ export const blueTheme: Theme = {
     primary: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     secondary: '"Noto Serif SC", "STSong", serif',
     heading: '"ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+    hand: FONT_HAND_NUNITO,
   },
   showTexture: true,
   showTape: true,

@@ -6,14 +6,17 @@
 /* 默认隐藏纹理 */
 .paper-texture,
 .dot-grid,
-.dot-grid-loose {
+.dot-grid-loose,
+.line-grid,
+.line-grid-auto {
   display: none;
 }
 
 /* 有纹理主题时显示 */
 :root.theme-with-texture .paper-texture,
 :root.theme-with-texture .dot-grid,
-:root.theme-with-texture .dot-grid-loose {
+:root.theme-with-texture .dot-grid-loose,
+:root.theme-with-texture .line-grid {
   display: block;
 }
 
@@ -33,6 +36,24 @@
     transparent 1.5px
   );
   background-size: 32px 32px;
+}
+
+/* 方格纸线条纹理（官网同款） */
+.line-grid,
+.line-grid-auto {
+  background-image:
+    linear-gradient(rgba(44, 62, 80, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 62, 80, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* 格纹主题：line-grid-auto 替代 dot-grid */
+:root.theme-grid-lines .dot-grid {
+  display: none !important;
+}
+
+:root.theme-grid-lines .line-grid-auto {
+  display: block;
 }
 
 .paper-texture {

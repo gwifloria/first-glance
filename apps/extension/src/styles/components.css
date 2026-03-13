@@ -25,7 +25,7 @@
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    var(--accent) 90deg,
+    var(--focus-gradient, var(--accent)) 90deg,
     transparent 180deg
   );
 }

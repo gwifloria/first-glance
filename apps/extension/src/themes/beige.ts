@@ -1,4 +1,5 @@
 import type { Theme } from './index'
+import { FONT_HAND_NUNITO } from './fonts'
 
 export const beigeTheme: Theme = {
   name: '经典米',
@@ -26,6 +27,7 @@ export const beigeTheme: Theme = {
     priorityHigh: '#dc2626',
     priorityMedium: '#f59e0b',
     priorityLow: '#a8a29e',
+    focusGradient: '#aabfaa',
     pomodoroWork: '#b5a08a',
     pomodoroBreak: '#8ab5a0',
     // BlockedPage
@@ -52,6 +54,7 @@ export const beigeTheme: Theme = {
     primary: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     secondary: '"Noto Serif SC", "STSong", serif',
     heading: '"ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+    hand: FONT_HAND_NUNITO,
   },
   showTexture: true,
   showTape: true,

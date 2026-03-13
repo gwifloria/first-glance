@@ -46,7 +46,7 @@ function SidebarHeader({
             onClick={onToggleCollapse}
             title={toggleTitle}
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            className="!w-5 !h-5 !min-w-0 !p-0"
+            className="!w-5 !h-5 !min-w-0 !p-0 text-[var(--sidebar-text)]"
           />
         )}
       </div>

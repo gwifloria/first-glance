@@ -1,7 +1,7 @@
 import type { ThemeType } from '@/themes'
 
 const THEME_KEY = 'app_theme'
-const DEFAULT_THEME: ThemeType = 'pink'
+const DEFAULT_THEME: ThemeType = 'cream'
 
 // 旧主题名 -> 新主题名映射
 const THEME_MIGRATION: Record<string, ThemeType> = {
@@ -27,6 +27,7 @@ function resolveTheme(raw: unknown): ThemeType {
   }
 
   const validThemes: ThemeType[] = [
+    'cream',
     'milk',
     'beige',
     'pink',

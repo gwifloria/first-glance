@@ -1,4 +1,5 @@
 import type { Theme } from './index'
+import { FONT_HAND_NUNITO } from './fonts'
 
 export const twilightTheme: Theme = {
   name: '暮色蓝',
@@ -58,6 +59,7 @@ export const twilightTheme: Theme = {
     primary: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     secondary: '"Noto Serif SC", "STSong", serif',
     heading: '"ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+    hand: FONT_HAND_NUNITO,
   },
   showTexture: true,
   showTape: true,

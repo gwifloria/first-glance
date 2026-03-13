@@ -1,4 +1,5 @@
 import type { Theme } from './index'
+import { FONT_HAND_NUNITO } from './fonts'
 
 export const pinkTheme: Theme = {
   name: '莫兰迪粉',
@@ -52,6 +53,7 @@ export const pinkTheme: Theme = {
     primary: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     secondary: '"Noto Serif SC", "STSong", serif',
     heading: '"ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+    hand: FONT_HAND_NUNITO,
   },
   showTexture: true,
   showTape: true,

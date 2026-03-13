@@ -92,6 +92,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     <div className="h-screen bg-[var(--bg-primary)] flex flex-col relative overflow-hidden animate-fadeIn">
       {/* 背景纹理层 */}
       <div className="absolute inset-0 pointer-events-none opacity-60 paper-texture" />
+      <div className="absolute inset-0 pointer-events-none line-grid-auto z-0" />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

@@ -1,4 +1,5 @@
 import type { Theme } from './index'
+import { FONT_HAND_NUNITO } from './fonts'
 
 export const milkTheme: Theme = {
   name: '椰奶白',
@@ -26,6 +27,7 @@ export const milkTheme: Theme = {
     priorityHigh: '#dc2626',
     priorityMedium: '#f59e0b',
     priorityLow: '#a8a29e',
+    focusGradient: '#b8ada5',
     pomodoroWork: '#a09080',
     pomodoroBreak: '#8a9a8a',
     // BlockedPage
@@ -52,6 +54,7 @@ export const milkTheme: Theme = {
     primary: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     secondary: '"Noto Serif SC", "STSong", serif',
     heading: '"ZCOOL XiaoWei", "Ma Shan Zheng", cursive',
+    hand: FONT_HAND_NUNITO,
   },
   showTexture: true,
   showTape: true,

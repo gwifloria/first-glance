@@ -36,6 +36,7 @@ export interface Theme {
     // 番茄时钟颜色
     pomodoroWork: string
     pomodoroBreak: string
+    focusGradient?: string // FOCUS 按钮流动环颜色，默认用 accent
     // BlockedPage 颜色
     blockedBubbleBg: string
     blockedBubbleText: string
@@ -60,14 +61,24 @@ export interface Theme {
     primary: string
     secondary: string
     heading: string
+    hand?: string // .font-hand 类使用的字体，默认 Lora
   }
   // 装饰属性
   showTexture: boolean
   showTape: boolean
+  textureStyle?: 'dots' | 'grid' // 默认 dots
 }
 
-export type ThemeType = 'milk' | 'beige' | 'pink' | 'blue' | 'dark' | 'twilight'
+export type ThemeType =
+  | 'cream'
+  | 'milk'
+  | 'beige'
+  | 'pink'
+  | 'blue'
+  | 'dark'
+  | 'twilight'
 
+export { creamTheme } from './cream'
 export { milkTheme } from './milk'
 export { beigeTheme } from './beige'
 export { pinkTheme } from './pink'

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import {
   type Theme,
   type ThemeType,
+  creamTheme,
   milkTheme,
   beigeTheme,
   pinkTheme,
@@ -14,6 +15,7 @@ import { contrastText } from '@/utils/color'
 import { ThemeContext } from './ThemeContext'
 
 const themes: Record<ThemeType, Theme> = {
+  cream: creamTheme,
   milk: milkTheme,
   beige: beigeTheme,
   pink: pinkTheme,
@@ -23,7 +25,7 @@ const themes: Record<ThemeType, Theme> = {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeType, setThemeTypeState] = useState<ThemeType>('pink')
+  const [themeType, setThemeTypeState] = useState<ThemeType>('cream')
 
   // 初始加载
   useEffect(() => {
@@ -87,6 +89,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--priority-high', theme.colors.priorityHigh)
     root.style.setProperty('--priority-medium', theme.colors.priorityMedium)
     root.style.setProperty('--priority-low', theme.colors.priorityLow)
+    // FOCUS 按钮渐变色
+    if (theme.colors.focusGradient) {
+      root.style.setProperty('--focus-gradient', theme.colors.focusGradient)
+    } else {
+      root.style.removeProperty('--focus-gradient')
+    }
     // 番茄时钟色
     root.style.setProperty('--pomodoro-work', theme.colors.pomodoroWork)
     root.style.setProperty('--pomodoro-break', theme.colors.pomodoroBreak)
@@ -126,6 +134,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--font-primary', theme.font.primary)
     root.style.setProperty('--font-secondary', theme.font.secondary)
     root.style.setProperty('--font-heading', theme.font.heading)
+    if (theme.font.hand) {
+      root.style.setProperty('--font-hand', theme.font.hand)
+    } else {
+      root.style.removeProperty('--font-hand')
+    }
 
     // 双表面 CSS 变量（深色背景 + 浅色卡片的主题）
     if (theme.colors.textOnCard) {
@@ -155,6 +168,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.classList.toggle(
       'theme-dark-texture',
       theme.showTexture && (theme.isDark ?? false)
+    )
+    root.classList.toggle(
+      'theme-grid-lines',
+      theme.showTexture && theme.textureStyle === 'grid'
     )
   }, [theme])
 

@@ -41,7 +41,7 @@ export function RefreshButton({ className }: RefreshButtonProps) {
         icon={<ReloadOutlined spin={spinning} />}
         onClick={handleRefresh}
         disabled={spinning}
-        className={className}
+        className={`${className ?? ''} text-[var(--text-secondary)]`}
       />
     </Tooltip>
   )

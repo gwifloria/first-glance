@@ -4,11 +4,11 @@
 @import 'tailwindcss';
 
 /* 字体 */
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Ma+Shan+Zheng&family=Nunito:wght@400;600;700&family=Patrick+Hand&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&display=swap');
 
-/* Lora 字体类 */
+/* 手写/装饰字体类 - 通过 CSS 变量支持主题切换 */
 .font-hand {
-  font-family: 'Lora', serif;
+  font-family: var(--font-hand, 'Lora', serif);
 }
 
 :root {

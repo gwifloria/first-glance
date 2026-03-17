@@ -4,7 +4,7 @@
 
 **Extension Name (45 characters max):**
 ```
-First Glance - Focus Tab
+First Glance - Focus New Tab
 ```
 
 **Short Description (132 characters max):**

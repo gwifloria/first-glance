@@ -23,6 +23,9 @@
   "pomodoro": {
     "label": "番茄钟"
   },
+  "ambient": {
+    "label": "环境音"
+  },
   "help": {
     "feedback": "反馈问题",
     "changelog": "更新日志",

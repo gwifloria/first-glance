@@ -1,0 +1,84 @@
+import { Slider } from 'antd'
+import { CrownOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
+import { usePremium } from '@/hooks/usePremium'
+import { AMBIENT_SOUNDS } from './constants'
+import type { AmbientSoundType } from '@/services/ambientSoundEngine'
+
+interface AmbientSoundPanelProps {
+  currentSound: AmbientSoundType | null
+  volume: number
+  toggle: (type: AmbientSoundType) => void
+  setVolume: (volume: number) => void
+}
+
+export function AmbientSoundPanel({
+  currentSound,
+  volume,
+  toggle,
+  setVolume,
+}: AmbientSoundPanelProps) {
+  const { t } = useTranslation('focus')
+  const { isPremium } = usePremium()
+
+  return (
+    <div className="w-[264px] py-3 px-3">
+      <div className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+        {t('ambient.title')}
+        {!isPremium && (
+          <CrownOutlined
+            className="ml-1.5"
+            style={{ color: '#faad14', fontSize: 11 }}
+          />
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {AMBIENT_SOUNDS.map((sound) => {
+          const isActive = currentSound === sound.type
+          return (
+            <button
+              key={sound.type}
+              onClick={() => toggle(sound.type)}
+              className={`
+                flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-lg
+                border transition-all cursor-pointer
+                ${
+                  isActive
+                    ? 'border-[var(--accent)] bg-[var(--accent-light)]'
+                    : 'border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--text-secondary)]'
+                }
+              `}
+            >
+              <span className="text-lg leading-none">{sound.icon}</span>
+              <span
+                className={`text-[10px] leading-tight ${
+                  isActive
+                    ? 'text-[var(--accent)] font-medium'
+                    : 'text-[var(--text-secondary)]'
+                }`}
+              >
+                {t(sound.labelKey)}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-[var(--text-secondary)] shrink-0">
+          {t('ambient.volume')}
+        </span>
+        <Slider
+          min={0}
+          max={100}
+          value={volume}
+          onChange={setVolume}
+          className="flex-1"
+          tooltip={{ formatter: (v) => `${v}%` }}
+          disabled={!isPremium}
+        />
+      </div>
+    </div>
+  )
+}

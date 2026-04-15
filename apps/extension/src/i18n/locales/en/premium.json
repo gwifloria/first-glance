@@ -1,0 +1,30 @@
+{
+  "title": "First Glance Premium",
+  "price": "HK$19.99",
+  "priceNote": "One-time purchase, yours forever",
+  "description": "Unlock premium themes, custom backgrounds, and more. One-time purchase, yours forever.",
+  "purchase": "Get Premium",
+  "comingSoon": "Coming soon",
+  "licenseLabel": "Already have a License Key?",
+  "licensePlaceholder": "Enter your License Key",
+  "activateSuccess": "Activated! Thank you for your support!",
+  "invalidKey": "Invalid License Key. Please check and try again.",
+  "networkError": "Network error. Please try again later.",
+  "activated": "Premium Activated",
+  "activatedDesc": "Thank you for your support! All premium features are unlocked.",
+  "deactivate": "Deactivate License",
+  "deactivated": "Premium deactivated",
+  "badge": "Premium Feature",
+  "feature": {
+    "ambientSounds": "Ambient Focus Sounds",
+    "ambientSoundsDesc": "Rain, campfire, ocean and more. Set the mood for deep focus.",
+    "premiumThemes": "Premium Themes",
+    "premiumThemesDesc": "Exclusive color palettes designed for focus.",
+    "enhancedClock": "Enhanced Focus Clock",
+    "enhancedClockDesc": "Beautiful animations and visual effects during Pomodoro.",
+    "themes": "Premium theme collection",
+    "background": "Custom backgrounds",
+    "pomodoroStats": "Pomodoro statistics panel"
+  },
+  "themeLocked": "This is a Premium theme. Activate to use it."
+}

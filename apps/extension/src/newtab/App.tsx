@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react'
 import { useAppMode } from '@/contexts/useAppMode'
+import { usePremium } from '@/hooks/usePremium'
 import { TaskProvider } from '@/contexts/TaskProvider'
 import { FocusLayout, ListLayout } from '@/components/layouts'
 import { BlockedPage } from '@/components/BlockedPage'
 import { BuddyButton } from '@/components/Buddy/BuddyButton'
+import { PremiumModal } from '@/components/PremiumModal'
 
 type ViewMode = 'focus' | 'list'
 
@@ -13,6 +15,7 @@ const isBlockedMode =
 
 function AppContent() {
   const { isGuest } = useAppMode()
+  const { premiumModalOpen, closePremiumModal } = usePremium()
   const [viewMode, setViewMode] = useState<ViewMode>('focus')
 
   const handleSwitchToList = useCallback(() => setViewMode('list'), [])
@@ -27,6 +30,7 @@ function AppContent() {
         <ListLayout onFocus={handleSwitchToFocus} />
       )}
       <BuddyButton />
+      <PremiumModal open={premiumModalOpen} onClose={closePremiumModal} />
     </>
   )
 }

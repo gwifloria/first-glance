@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 import {
   type Theme,
   type ThemeType,
@@ -13,6 +19,7 @@ import {
 import { getTheme, setTheme, subscribeTheme } from '@/services/themeStorage'
 import { contrastText } from '@/utils/color'
 import { ThemeContext } from './ThemeContext'
+import { PremiumContext } from './PremiumContext'
 
 const themes: Record<ThemeType, Theme> = {
   cream: creamTheme,
@@ -37,9 +44,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return subscribeTheme(setThemeTypeState)
   }, [])
 
-  const setThemeType = useCallback((type: ThemeType) => {
-    setTheme(type)
-  }, [])
+  // 读取 PremiumContext（可能不存在，在 PremiumProvider 外部使用时）
+  const premiumCtx = useContext(PremiumContext)
+
+  const setThemeType = useCallback(
+    (type: ThemeType) => {
+      const target = themes[type]
+      if (target?.premium && premiumCtx && !premiumCtx.isPremium) {
+        premiumCtx.openPremiumModal()
+        return
+      }
+      setTheme(type)
+    },
+    [premiumCtx]
+  )
 
   const toggleTheme = useCallback(() => {
     setThemeType(themeType === 'milk' ? 'dark' : 'milk')

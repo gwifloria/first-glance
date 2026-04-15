@@ -11,6 +11,7 @@ import {
   CoffeeOutlined,
   ClockCircleOutlined,
   GlobalOutlined,
+  CrownOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import {
@@ -21,6 +22,7 @@ import {
 } from '@/utils/onboarding'
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
+import { usePremium } from '@/hooks/usePremium'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
 import { PomodoroSettingsModal } from '../FocusView/PomodoroSettingsModal'
 import { ThemeToggle } from './ThemeToggle'
@@ -86,8 +88,10 @@ interface SettingsPanelProps {
 export function SettingsPanel({ className }: SettingsPanelProps) {
   const { t: tSettings } = useTranslation('settings')
   const { t: tCommon } = useTranslation('common')
+  const { t: tPremium } = useTranslation('premium')
   const { t: tOnboarding } = useTranslation('onboarding')
   const { isGuest, disconnect } = useAppMode()
+  const { isPremium, openPremiumModal } = usePremium()
   const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
   const [soundSettingsOpen, setSoundSettingsOpen] = useState(false)
@@ -166,6 +170,19 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
         onClick={() => {
           setOpen(false)
           setSoundSettingsOpen(true)
+        }}
+      />
+
+      {/* Premium */}
+      <MenuItem
+        icon={
+          <CrownOutlined style={isPremium ? { color: '#faad14' } : undefined} />
+        }
+        label={isPremium ? tPremium('activated') : tPremium('title')}
+        accent={!isPremium}
+        onClick={() => {
+          setOpen(false)
+          openPremiumModal()
         }}
       />
 

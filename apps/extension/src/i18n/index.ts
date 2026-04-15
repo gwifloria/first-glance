@@ -11,6 +11,7 @@ import zhCNOnboarding from './locales/zh-CN/onboarding.json'
 import zhCNFocus from './locales/zh-CN/focus.json'
 import zhCNBlocked from './locales/zh-CN/blocked.json'
 import zhCNBuddy from './locales/zh-CN/buddy.json'
+import zhCNPremium from './locales/zh-CN/premium.json'
 
 import enCommon from './locales/en/common.json'
 import enSidebar from './locales/en/sidebar.json'
@@ -20,6 +21,7 @@ import enOnboarding from './locales/en/onboarding.json'
 import enFocus from './locales/en/focus.json'
 import enBlocked from './locales/en/blocked.json'
 import enBuddy from './locales/en/buddy.json'
+import enPremium from './locales/en/premium.json'
 
 const resources = {
   'zh-CN': {
@@ -31,6 +33,7 @@ const resources = {
     focus: zhCNFocus,
     blocked: zhCNBlocked,
     buddy: zhCNBuddy,
+    premium: zhCNPremium,
   },
   en: {
     common: enCommon,
@@ -41,6 +44,7 @@ const resources = {
     focus: enFocus,
     blocked: enBlocked,
     buddy: enBuddy,
+    premium: enPremium,
   },
 }
 
@@ -68,6 +72,7 @@ i18n
       'focus',
       'blocked',
       'buddy',
+      'premium',
     ],
 
     interpolation: {

@@ -13,3 +13,7 @@ export { useConnectPrompt } from './useConnectPrompt'
 // Theme Context
 export { ThemeContext, type ThemeContextValue } from './ThemeContext'
 export { ThemeProvider } from './ThemeProvider'
+
+// Premium Context
+export { PremiumContext, type PremiumContextValue } from './PremiumContext'
+export { PremiumProvider } from './PremiumProvider'

@@ -54,6 +54,17 @@
     "chartTooltip": "{{count}} pomodoro · {{duration}}",
     "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
   },
+  "ambient": {
+    "title": "Ambient Sounds",
+    "volume": "Volume",
+    "rain": "Rain",
+    "rainBirds": "Rain & Birds",
+    "nature": "Nature",
+    "ocean": "Ocean",
+    "stream": "Stream",
+    "campfire": "Campfire",
+    "whiteNoise": "White Noise"
+  },
   "pomodoroSettings": {
     "title": "Pomodoro Settings",
     "workDuration": "Work Duration",

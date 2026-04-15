@@ -63,6 +63,8 @@ export interface Theme {
     heading: string
     hand?: string // .font-hand 类使用的字体，默认 Lora
   }
+  // Premium 标记
+  premium?: boolean
   // 装饰属性
   showTexture: boolean
   showTape: boolean

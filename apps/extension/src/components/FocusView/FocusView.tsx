@@ -11,6 +11,7 @@ import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
+import { AmbientSoundButton } from '../AmbientSound'
 import type { Task } from '@/types'
 
 interface FocusViewProps {
@@ -103,6 +104,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
 
       {/* Top bar */}
       <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">
+        <AmbientSoundButton />
         <SettingsPanel />
       </div>
 

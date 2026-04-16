@@ -17,6 +17,10 @@ import {
 chrome.runtime.onInstalled.addListener(async (details) => {
   const currentVersion = chrome.runtime.getManifest().version
 
+  chrome.runtime.setUninstallURL(
+    'https://docs.google.com/forms/d/e/1FAIpQLSfM4LQp9ZzEveCoFPtvpqSKLnd-kz0PHc_GeDlD5QPRWGgkpg/viewform'
+  )
+
   if (details.reason === 'install') {
     console.log(`[Extension] 首次安装 v${currentVersion}`)
     await chrome.storage.local.set({

@@ -23,6 +23,9 @@
   "pomodoro": {
     "label": "Pomodoro"
   },
+  "ambient": {
+    "label": "Ambient Sounds"
+  },
   "help": {
     "feedback": "Send Feedback",
     "changelog": "Changelog",

@@ -1,0 +1,30 @@
+{
+  "title": "First Glance Premium",
+  "price": "HK$19.99",
+  "priceNote": "一次购买，永久使用",
+  "description": "解锁精品主题、自定义背景等装饰功能，一次购买永久使用。",
+  "purchase": "购买 Premium",
+  "comingSoon": "即将推出",
+  "licenseLabel": "已有 License Key？",
+  "licensePlaceholder": "输入你的 License Key",
+  "activateSuccess": "激活成功，感谢支持！",
+  "invalidKey": "License Key 无效，请检查后重试",
+  "networkError": "网络错误，请稍后重试",
+  "activated": "Premium 已激活",
+  "activatedDesc": "感谢你的支持！所有 Premium 功能已解锁。",
+  "deactivate": "停用 License",
+  "deactivated": "已停用 Premium",
+  "badge": "Premium 功能",
+  "feature": {
+    "ambientSounds": "环境专注音",
+    "ambientSoundsDesc": "雨声、篝火、海浪等，营造沉浸式专注氛围。",
+    "premiumThemes": "精品主题",
+    "premiumThemesDesc": "为专注设计的专属配色方案。",
+    "enhancedClock": "增强专注时钟",
+    "enhancedClockDesc": "番茄钟运行时的精美动画和视觉效果。",
+    "themes": "精品主题包",
+    "background": "自定义背景图",
+    "pomodoroStats": "番茄钟统计面板"
+  },
+  "themeLocked": "这是 Premium 主题，激活后可使用"
+}

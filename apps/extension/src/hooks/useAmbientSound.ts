@@ -48,14 +48,20 @@ export function useAmbientSound() {
     }
   }, [])
 
+  const stoppedRef = useRef(false)
+
   const play = useCallback(
     async (type: AmbientSoundType) => {
+      restoredRef.current = true // 用户手动播放，跳过恢复逻辑
       clearPreviewTimer()
+      stoppedRef.current = false
       setLoadingSound(type)
       ambientEngine.setVolume(state.volume / 100)
       const ok = await ambientEngine.play(type)
       setLoadingSound(null)
-      if (!ok) return
+
+      // 加载期间用户已停止，不再继续
+      if (stoppedRef.current || !ok) return
 
       setState((prev) => ({ ...prev, sound: type, playing: true }))
 
@@ -73,6 +79,7 @@ export function useAmbientSound() {
   )
 
   const stop = useCallback(() => {
+    stoppedRef.current = true
     clearPreviewTimer()
     ambientEngine.stop()
     setState((prev) => ({ ...prev, sound: null, playing: false }))

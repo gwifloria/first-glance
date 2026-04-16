@@ -17,6 +17,7 @@ export type AmbientSoundType =
 let currentAudio: HTMLAudioElement | null = null
 let currentType: AmbientSoundType | null = null
 let currentVolume = 0.5
+let currentLoadId = 0
 
 export async function play(type: AmbientSoundType): Promise<boolean> {
   // 如果正在播放同一个，不重复创建
@@ -25,9 +26,14 @@ export async function play(type: AmbientSoundType): Promise<boolean> {
   }
 
   stop()
+  const loadId = ++currentLoadId
 
   try {
     const blobUrl = await loadSound(type)
+
+    // 加载期间被 stop() 或新的 play() 取消
+    if (loadId !== currentLoadId) return false
+
     const audio = new Audio(blobUrl)
     audio.loop = true
     audio.volume = currentVolume
@@ -41,6 +47,7 @@ export async function play(type: AmbientSoundType): Promise<boolean> {
 }
 
 export function stop(): void {
+  ++currentLoadId // 取消正在进行的加载
   if (currentAudio) {
     currentAudio.pause()
     currentAudio.src = ''

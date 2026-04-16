@@ -9,7 +9,10 @@ interface CacheEntry {
   cachedAt: number
 }
 
+let dbInstance: IDBDatabase | null = null
+
 function openDB(): Promise<IDBDatabase> {
+  if (dbInstance) return Promise.resolve(dbInstance)
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
     req.onupgradeneeded = () => {
@@ -18,7 +21,13 @@ function openDB(): Promise<IDBDatabase> {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' })
       }
     }
-    req.onsuccess = () => resolve(req.result)
+    req.onsuccess = () => {
+      dbInstance = req.result
+      dbInstance.onclose = () => {
+        dbInstance = null
+      }
+      resolve(dbInstance)
+    }
     req.onerror = () => reject(req.error)
   })
 }

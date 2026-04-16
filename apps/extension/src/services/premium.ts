@@ -14,8 +14,9 @@ const DEFAULT_STATUS: PremiumStatus = {
   instanceId: null,
 }
 
-interface LemonSqueezyValidateResponse {
-  valid: boolean
+interface LemonSqueezyResponse {
+  activated: boolean
+  valid?: boolean
   error?: string
   license_key?: {
     id: number
@@ -34,60 +35,47 @@ interface LemonSqueezyValidateResponse {
 }
 
 /**
- * 验证 LemonSqueezy license key
- */
-export async function validateLicense(
-  key: string
-): Promise<{ success: boolean; error?: string; instanceId?: string }> {
-  try {
-    const response = await fetch(
-      'https://api.lemonsqueezy.com/v1/licenses/validate',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          license_key: key,
-          instance_name: `first-glance-${await getBrowserId()}`,
-        }),
-      }
-    )
-
-    const data: LemonSqueezyValidateResponse = await response.json()
-
-    if (!data.valid) {
-      return { success: false, error: data.error || 'invalid_key' }
-    }
-
-    return {
-      success: true,
-      instanceId: data.instance?.id ?? undefined,
-    }
-  } catch {
-    return { success: false, error: 'network_error' }
-  }
-}
-
-/**
- * 激活 license 并存储状态
+ * 激活 LemonSqueezy license key（消耗一个激活名额）
  */
 export async function activateLicense(key: string): Promise<{
   success: boolean
   error?: string
 }> {
-  const result = await validateLicense(key)
-  if (!result.success) {
-    return { success: false, error: result.error }
-  }
+  try {
+    const instanceName = `first-glance-${await getBrowserId()}`
+    const response = await fetch(
+      'https://api.lemonsqueezy.com/v1/licenses/activate',
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          license_key: key,
+          instance_name: instanceName,
+        }),
+      }
+    )
 
-  const status: PremiumStatus = {
-    isActivated: true,
-    licenseKey: key,
-    activatedAt: Date.now(),
-    instanceId: result.instanceId ?? null,
-  }
+    const data: LemonSqueezyResponse = await response.json()
 
-  await chrome.storage.sync.set({ [PREMIUM_KEY]: status })
-  return { success: true }
+    if (!data.activated) {
+      return { success: false, error: data.error || 'activation_failed' }
+    }
+
+    const status: PremiumStatus = {
+      isActivated: true,
+      licenseKey: key,
+      activatedAt: Date.now(),
+      instanceId: data.instance?.id ?? null,
+    }
+
+    await chrome.storage.sync.set({ [PREMIUM_KEY]: status })
+    return { success: true }
+  } catch {
+    return { success: false, error: 'network_error' }
+  }
 }
 
 /**
@@ -117,8 +105,11 @@ export async function deactivateLicense(): Promise<void> {
     try {
       await fetch('https://api.lemonsqueezy.com/v1/licenses/deactivate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
           license_key: status.licenseKey,
           instance_id: status.instanceId,
         }),

@@ -1,7 +1,9 @@
 /**
  * 环境音播放引擎
- * 使用 HTMLAudioElement 播放循环 MP3 文件
+ * 使用 HTMLAudioElement 播放远程加载的音频
  */
+
+import { loadSound } from './ambientSoundLoader'
 
 export type AmbientSoundType =
   | 'rain'
@@ -12,23 +14,9 @@ export type AmbientSoundType =
   | 'campfire'
   | 'white-noise'
 
-const SOUND_FILES: Record<AmbientSoundType, string> = {
-  rain: '/sounds/rain.m4a',
-  'rain-birds': '/sounds/rain-birds.m4a',
-  nature: '/sounds/nature.m4a',
-  ocean: '/sounds/ocean.m4a',
-  stream: '/sounds/stream.m4a',
-  campfire: '/sounds/campfire.m4a',
-  'white-noise': '/sounds/white-noise.m4a',
-}
-
 let currentAudio: HTMLAudioElement | null = null
 let currentType: AmbientSoundType | null = null
 let currentVolume = 0.5
-
-function getAudioUrl(type: AmbientSoundType): string {
-  return chrome.runtime.getURL(SOUND_FILES[type])
-}
 
 export async function play(type: AmbientSoundType): Promise<boolean> {
   // 如果正在播放同一个，不重复创建
@@ -38,18 +26,16 @@ export async function play(type: AmbientSoundType): Promise<boolean> {
 
   stop()
 
-  const audio = new Audio(getAudioUrl(type))
-  audio.loop = true
-  audio.volume = currentVolume
-
   try {
+    const blobUrl = await loadSound(type)
+    const audio = new Audio(blobUrl)
+    audio.loop = true
+    audio.volume = currentVolume
     await audio.play()
     currentAudio = audio
     currentType = type
     return true
   } catch {
-    // Chrome autoplay policy: 需要用户交互后才能播放
-    audio.src = ''
     return false
   }
 }

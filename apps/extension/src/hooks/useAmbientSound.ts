@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePersistedState } from './usePersistedState'
 import { usePremium } from './usePremium'
 import * as ambientEngine from '@/services/ambientSoundEngine'
@@ -36,14 +36,20 @@ export function useAmbientSound() {
     }
   }, [state.playing, state.sound, state.volume, isPremium, setState])
 
+  const [loadingSound, setLoadingSound] = useState<AmbientSoundType | null>(
+    null
+  )
+
   const play = useCallback(
     async (type: AmbientSoundType) => {
       if (!isPremium) {
         openPremiumModal()
         return
       }
+      setLoadingSound(type)
       ambientEngine.setVolume(state.volume / 100)
       const ok = await ambientEngine.play(type)
+      setLoadingSound(null)
       setState((prev) => ({ ...prev, sound: type, playing: ok }))
     },
     [isPremium, openPremiumModal, state.volume, setState]
@@ -77,6 +83,7 @@ export function useAmbientSound() {
     currentSound: state.sound,
     volume: state.volume,
     isPlaying: state.playing,
+    loadingSound,
     play,
     stop,
     toggle,

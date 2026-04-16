@@ -1,5 +1,5 @@
 import { Slider } from 'antd'
-import { CrownOutlined } from '@ant-design/icons'
+import { CrownOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePremium } from '@/hooks/usePremium'
 import { AMBIENT_SOUNDS } from './constants'
@@ -8,6 +8,7 @@ import type { AmbientSoundType } from '@/services/ambientSoundEngine'
 interface AmbientSoundPanelProps {
   currentSound: AmbientSoundType | null
   volume: number
+  loadingSound: AmbientSoundType | null
   toggle: (type: AmbientSoundType) => void
   setVolume: (volume: number) => void
 }
@@ -15,6 +16,7 @@ interface AmbientSoundPanelProps {
 export function AmbientSoundPanel({
   currentSound,
   volume,
+  loadingSound,
   toggle,
   setVolume,
 }: AmbientSoundPanelProps) {
@@ -36,10 +38,12 @@ export function AmbientSoundPanel({
       <div className="grid grid-cols-3 gap-2 mb-4">
         {AMBIENT_SOUNDS.map((sound) => {
           const isActive = currentSound === sound.type
+          const isLoading = loadingSound === sound.type
           return (
             <button
               key={sound.type}
-              onClick={() => toggle(sound.type)}
+              onClick={() => !isLoading && toggle(sound.type)}
+              disabled={isLoading}
               className={`
                 flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-lg
                 border transition-all cursor-pointer
@@ -48,9 +52,16 @@ export function AmbientSoundPanel({
                     ? 'border-[var(--accent)] bg-[var(--accent-light)]'
                     : 'border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--text-secondary)]'
                 }
+                ${isLoading ? 'opacity-70 cursor-wait' : ''}
               `}
             >
-              <span className="text-lg leading-none">{sound.icon}</span>
+              <span className="text-lg leading-none">
+                {isLoading ? (
+                  <LoadingOutlined style={{ fontSize: 18 }} />
+                ) : (
+                  sound.icon
+                )}
+              </span>
               <span
                 className={`text-[10px] leading-tight ${
                   isActive

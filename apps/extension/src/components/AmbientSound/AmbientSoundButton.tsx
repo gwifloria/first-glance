@@ -6,7 +6,7 @@ import { AmbientSoundPanel } from './AmbientSoundPanel'
 
 export function AmbientSoundButton() {
   const [open, setOpen] = useState(false)
-  const { isPlaying, currentSound, volume, toggle, setVolume } =
+  const { isPlaying, currentSound, volume, loadingSound, toggle, setVolume } =
     useAmbientSound()
 
   return (
@@ -15,6 +15,7 @@ export function AmbientSoundButton() {
         <AmbientSoundPanel
           currentSound={currentSound}
           volume={volume}
+          loadingSound={loadingSound}
           toggle={toggle}
           setVolume={setVolume}
         />

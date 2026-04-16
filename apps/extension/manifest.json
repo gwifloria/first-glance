@@ -29,7 +29,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/newtab/index.html", "sounds/*"],
+      "resources": ["src/newtab/index.html"],
       "matches": ["<all_urls>"]
     }
   ]

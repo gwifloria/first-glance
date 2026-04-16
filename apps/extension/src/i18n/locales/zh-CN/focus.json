@@ -63,7 +63,9 @@
     "ocean": "海浪",
     "stream": "溪流",
     "campfire": "篝火",
-    "whiteNoise": "白噪音"
+    "whiteNoise": "白噪音",
+    "previewHint": "点击可免费试听 15 秒",
+    "unlock": "解锁全部音源"
   },
   "pomodoroSettings": {
     "title": "番茄钟设置",

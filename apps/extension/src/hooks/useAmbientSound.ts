@@ -39,26 +39,44 @@ export function useAmbientSound() {
   const [loadingSound, setLoadingSound] = useState<AmbientSoundType | null>(
     null
   )
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearPreviewTimer = useCallback(() => {
+    if (previewTimerRef.current) {
+      clearTimeout(previewTimerRef.current)
+      previewTimerRef.current = null
+    }
+  }, [])
 
   const play = useCallback(
     async (type: AmbientSoundType) => {
-      if (!isPremium) {
-        openPremiumModal()
-        return
-      }
+      clearPreviewTimer()
       setLoadingSound(type)
       ambientEngine.setVolume(state.volume / 100)
       const ok = await ambientEngine.play(type)
       setLoadingSound(null)
-      setState((prev) => ({ ...prev, sound: type, playing: ok }))
+      if (!ok) return
+
+      setState((prev) => ({ ...prev, sound: type, playing: true }))
+
+      // 非付费用户：15 秒试听后自动停止并弹出 Premium Modal
+      if (!isPremium) {
+        previewTimerRef.current = setTimeout(() => {
+          previewTimerRef.current = null
+          ambientEngine.stop()
+          setState((prev) => ({ ...prev, sound: null, playing: false }))
+          openPremiumModal()
+        }, 15_000)
+      }
     },
-    [isPremium, openPremiumModal, state.volume, setState]
+    [isPremium, openPremiumModal, state.volume, setState, clearPreviewTimer]
   )
 
   const stop = useCallback(() => {
+    clearPreviewTimer()
     ambientEngine.stop()
     setState((prev) => ({ ...prev, sound: null, playing: false }))
-  }, [setState])
+  }, [setState, clearPreviewTimer])
 
   const toggle = useCallback(
     (type: AmbientSoundType) => {

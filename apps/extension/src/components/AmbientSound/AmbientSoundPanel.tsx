@@ -21,17 +21,24 @@ export function AmbientSoundPanel({
   setVolume,
 }: AmbientSoundPanelProps) {
   const { t } = useTranslation('focus')
-  const { isPremium } = usePremium()
+  const { isPremium, openPremiumModal } = usePremium()
 
   return (
     <div className="w-[264px] py-3 px-3">
-      <div className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-3">
-        {t('ambient.title')}
+      <div className="mb-3">
+        <div className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
+          {t('ambient.title')}
+          {!isPremium && (
+            <CrownOutlined
+              className="ml-1.5"
+              style={{ color: '#faad14', fontSize: 11 }}
+            />
+          )}
+        </div>
         {!isPremium && (
-          <CrownOutlined
-            className="ml-1.5"
-            style={{ color: '#faad14', fontSize: 11 }}
-          />
+          <div className="text-[10px] text-[var(--text-secondary)] opacity-60 mt-1">
+            {t('ambient.previewHint')}
+          </div>
         )}
       </div>
 
@@ -76,20 +83,32 @@ export function AmbientSoundPanel({
         })}
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-xs text-[var(--text-secondary)] shrink-0">
-          {t('ambient.volume')}
-        </span>
-        <Slider
-          min={0}
-          max={100}
-          value={volume}
-          onChange={setVolume}
-          className="flex-1"
-          tooltip={{ formatter: (v) => `${v}%` }}
-          disabled={!isPremium}
-        />
-      </div>
+      {isPremium ? (
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-[var(--text-secondary)] shrink-0">
+            {t('ambient.volume')}
+          </span>
+          <Slider
+            min={0}
+            max={100}
+            value={volume}
+            onChange={setVolume}
+            className="flex-1"
+            tooltip={{ formatter: (v) => `${v}%` }}
+          />
+        </div>
+      ) : (
+        <button
+          onClick={openPremiumModal}
+          className="w-full text-center text-[11px] py-1.5 rounded-md
+            bg-[var(--accent-light)] text-[var(--accent)]
+            hover:opacity-80 transition-opacity cursor-pointer
+            border border-[var(--accent)] border-opacity-20"
+        >
+          <CrownOutlined className="mr-1" style={{ fontSize: 10 }} />
+          {t('ambient.unlock')}
+        </button>
+      )}
     </div>
   )
 }

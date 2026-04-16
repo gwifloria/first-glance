@@ -63,7 +63,9 @@
     "ocean": "Ocean",
     "stream": "Stream",
     "campfire": "Campfire",
-    "whiteNoise": "White Noise"
+    "whiteNoise": "White Noise",
+    "previewHint": "Tap to preview 15s for free",
+    "unlock": "Unlock all sounds"
   },
   "pomodoroSettings": {
     "title": "Pomodoro Settings",

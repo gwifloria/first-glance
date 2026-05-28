@@ -42,6 +42,8 @@
   --font-primary: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-secondary: 'Noto Serif SC', 'STSong', serif;
   --font-heading: 'ZCOOL XiaoWei', 'Ma Shan Zheng', cursive;
+  /* Premium 标识金色：与主题无关，不被 ThemeContext 覆盖 */
+  --color-premium-gold: #faad14;
 }
 
 html,

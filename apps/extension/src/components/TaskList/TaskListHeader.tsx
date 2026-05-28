@@ -49,11 +49,11 @@ export function TaskListHeader({
   return (
     <div className="flex justify-between items-start mb-8">
       <div className="flex flex-col gap-1">
-        <span className="text-[11px] font-medium text-[var(--text-secondary)] tracking-[1px]">
+        <span className="text-[0.6875rem] font-medium text-[var(--text-secondary)] tracking-[1px]">
           {filterLabel}
         </span>
         <div className="flex items-baseline gap-2">
-          <h1 className="text-[32px] max-md:text-2xl font-light text-[var(--text-primary)] m-0 font-[var(--font-secondary)]">
+          <h1 className="text-[2rem] max-md:text-2xl font-light text-[var(--text-primary)] m-0 font-[family-name:var(--font-heading)]">
             {filterTitle}
           </h1>
           <span className="text-base text-[var(--warning)]">✦</span>

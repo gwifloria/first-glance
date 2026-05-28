@@ -52,7 +52,7 @@ export const NavItem = memo(function NavItem({
       )}
       {!collapsed && (
         <>
-          <span className="flex-1 text-[13px] text-[var(--text-primary)] truncate">
+          <span className="flex-1 text-[0.8125rem] text-[var(--text-primary)] truncate font-[family-name:var(--font-heading)]">
             {name}
           </span>
           {count > 0 && (

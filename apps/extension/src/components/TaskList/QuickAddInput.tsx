@@ -75,7 +75,7 @@ export const QuickAddInput = memo(function QuickAddInput({
         variant="borderless"
         suffix={
           <span
-            className="text-[11px] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
+            className="text-[0.6875rem] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
             onClick={onOpenEditor}
           >
             +

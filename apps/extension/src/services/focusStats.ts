@@ -3,6 +3,8 @@
  * 记录番茄钟完成数据，存储在 chrome.storage.local
  */
 
+import { createStorageSubscriber } from './storageSubscriber'
+
 const STORAGE_KEY = 'focus_stats'
 
 export interface FocusSession {
@@ -112,17 +114,8 @@ export function getWeekDailyStats(data: FocusStatsData): DailyStatsWithDate[] {
   return result
 }
 
-export function subscribeFocusStats(
-  callback: (data: FocusStatsData) => void
-): () => void {
-  const handler = (
-    changes: Record<string, chrome.storage.StorageChange>,
-    areaName: string
-  ) => {
-    if (areaName === 'local' && changes[STORAGE_KEY]) {
-      callback(changes[STORAGE_KEY].newValue ?? EMPTY_STATS)
-    }
-  }
-  chrome.storage.onChanged.addListener(handler)
-  return () => chrome.storage.onChanged.removeListener(handler)
-}
+export const subscribeFocusStats = createStorageSubscriber<FocusStatsData>(
+  'local',
+  STORAGE_KEY,
+  (raw) => (raw as FocusStatsData | undefined) ?? EMPTY_STATS
+)

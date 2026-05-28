@@ -1,4 +1,5 @@
 import type { ThemeType } from '@/themes'
+import { createStorageSubscriber } from './storageSubscriber'
 
 const THEME_KEY = 'app_theme'
 const DEFAULT_THEME: ThemeType = 'cream'
@@ -97,18 +98,8 @@ export async function setTheme(theme: ThemeType): Promise<void> {
 /**
  * 订阅主题变化
  */
-export function subscribeTheme(
-  callback: (theme: ThemeType) => void
-): () => void {
-  const handler = (
-    changes: Record<string, chrome.storage.StorageChange>,
-    areaName: string
-  ) => {
-    if (areaName !== 'sync') return
-    if (THEME_KEY in changes) {
-      callback(resolveTheme(changes[THEME_KEY].newValue))
-    }
-  }
-  chrome.storage.onChanged.addListener(handler)
-  return () => chrome.storage.onChanged.removeListener(handler)
-}
+export const subscribeTheme = createStorageSubscriber(
+  'sync',
+  THEME_KEY,
+  resolveTheme
+)

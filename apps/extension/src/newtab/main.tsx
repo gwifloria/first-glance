@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { AppModeProvider } from '@/contexts/AppModeProvider'
 import { ConnectPromptProvider } from '@/contexts/ConnectPromptProvider'
 import { ThemeProvider } from '@/contexts/ThemeProvider'
+import { FontProvider } from '@/contexts/FontProvider'
 import { PremiumProvider } from '@/contexts/PremiumProvider'
 import { ErrorBoundary } from '@/components/common'
 import { useTheme } from '@/hooks/useTheme'
@@ -50,11 +51,13 @@ export function Root() {
       <AppModeProvider>
         <PremiumProvider>
           <ThemeProvider>
-            <AntdConfigProvider>
-              <ConnectPromptProvider>
-                <App />
-              </ConnectPromptProvider>
-            </AntdConfigProvider>
+            <FontProvider>
+              <AntdConfigProvider>
+                <ConnectPromptProvider>
+                  <App />
+                </ConnectPromptProvider>
+              </AntdConfigProvider>
+            </FontProvider>
           </ThemeProvider>
         </PremiumProvider>
       </AppModeProvider>

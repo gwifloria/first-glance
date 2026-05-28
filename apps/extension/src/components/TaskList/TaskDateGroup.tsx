@@ -174,7 +174,7 @@ export const TaskDateGroup = memo(function TaskDateGroup({
           <RightOutlined
             className={`text-[10px] text-[var(--text-secondary)] transition-transform duration-200 ${isCollapsed ? '' : 'rotate-90'}`}
           />
-          <span className="text-[11px] font-medium text-[var(--text-secondary)] tracking-[1px]">
+          <span className="text-[0.6875rem] font-medium text-[var(--text-secondary)] tracking-[1px]">
             {groupTitle.toUpperCase()}
           </span>
           <span className="ml-auto text-xs text-[var(--text-secondary)]">

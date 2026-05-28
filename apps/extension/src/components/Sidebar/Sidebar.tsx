@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { ThemeToggle } from '../common'
+import { FontQuickSwitcher } from './FontQuickSwitcher'
 import { SearchInput } from './SearchInput'
 import { SmartFilterList } from './SmartFilterList'
 import { ProjectList } from './ProjectList'
@@ -50,6 +51,11 @@ function SidebarHeader({
           />
         )}
       </div>
+      {!collapsed && (
+        <div className="flex items-center gap-2 mb-3">
+          <FontQuickSwitcher />
+        </div>
+      )}
     </div>
   )
 }

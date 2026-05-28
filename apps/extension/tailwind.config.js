@@ -15,6 +15,7 @@ export default {
         success: 'var(--success)',
         warning: 'var(--warning)',
         danger: 'var(--danger)',
+        premium: 'var(--color-premium-gold)',
         'priority-high': 'var(--priority-high)',
         'priority-medium': 'var(--priority-medium)',
         'priority-low': 'var(--priority-low)',
@@ -29,6 +30,7 @@ export default {
       fontFamily: {
         primary: 'var(--font-primary)',
         secondary: 'var(--font-secondary)',
+        heading: 'var(--font-heading)',
       },
     },
   },

@@ -18,6 +18,8 @@
   "feature": {
     "ambientSounds": "环境专注音",
     "ambientSoundsDesc": "雨声、篝火、海浪等，营造沉浸式专注氛围。",
+    "fonts": "字体主题包",
+    "fontsDesc": "DynaPuff / Playwrite / Mountains of Christmas，三套字体随你切换。",
     "premiumThemes": "精品主题",
     "premiumThemesDesc": "为专注设计的专属配色方案。",
     "enhancedClock": "增强专注时钟",
@@ -26,5 +28,15 @@
     "background": "自定义背景图",
     "pomodoroStats": "番茄钟统计面板"
   },
-  "themeLocked": "这是 Premium 主题，激活后可使用"
+  "themeLocked": "这是 Premium 主题，激活后可使用",
+  "fontLocked": "这是 Premium 字体，激活后可使用",
+  "fontLabel": "Fonts",
+  "fontModalTitle": "字体设置",
+  "fontModalSubtitle": "选一套字体气质，所见即所得",
+  "fontSizeLabel": "字号",
+  "fontSize": {
+    "S": "小",
+    "M": "标准",
+    "L": "大"
+  }
 }

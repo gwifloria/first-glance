@@ -2,6 +2,8 @@ import { Slider } from 'antd'
 import { CrownOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePremium } from '@/hooks/usePremium'
+import { PremiumBadge } from '../common/PremiumBadge'
+import { SectionLabel } from '../common/SectionLabel'
 import { AMBIENT_SOUNDS } from './constants'
 import type { AmbientSoundType } from '@/services/ambientSoundEngine'
 
@@ -26,15 +28,9 @@ export function AmbientSoundPanel({
   return (
     <div className="w-[264px] py-3 px-3">
       <div className="mb-3">
-        <div className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
+        <SectionLabel right={<PremiumBadge variant="label" size={11} />}>
           {t('ambient.title')}
-          {!isPremium && (
-            <CrownOutlined
-              className="ml-1.5"
-              style={{ color: '#faad14', fontSize: 11 }}
-            />
-          )}
-        </div>
+        </SectionLabel>
         {!isPremium && (
           <div className="text-[10px] text-[var(--text-secondary)] opacity-60 mt-1">
             {t('ambient.previewHint')}

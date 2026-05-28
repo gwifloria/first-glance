@@ -1,4 +1,5 @@
 import { defaultSettings, type AppSettings } from '@/types/settings'
+import { createStorageSubscriber } from './storageSubscriber'
 
 const STORAGE_KEY = 'app_settings'
 const VERSION_KEY = 'settings_version'
@@ -6,6 +7,20 @@ const CURRENT_VERSION = 7
 
 // 旧版存储键（用于迁移）
 const LEGACY_SETTINGS_KEY = 'user_settings'
+
+/**
+ * dev 模式下从环境变量读取 AI Buddy 兜底配置
+ * 仅在三项齐全时返回，不写回 storage，避免把 key 同步到云端
+ */
+function getDevAIConfigFallback(): AppSettings['aiConfig'] {
+  // `vite build --watch` 下 import.meta.env.DEV 恒为 false，这里用 MODE 判断
+  if (import.meta.env.MODE !== 'development') return undefined
+  const baseUrl = import.meta.env.VITE_BUDDY_BASE_URL
+  const apiKey = import.meta.env.VITE_BUDDY_API_KEY
+  const model = import.meta.env.VITE_BUDDY_MODEL
+  if (!baseUrl || !apiKey || !model) return undefined
+  return { baseUrl, apiKey, model }
+}
 
 /**
  * 获取设置
@@ -16,7 +31,12 @@ export async function getSettings(): Promise<AppSettings> {
 
   const result = await chrome.storage.sync.get([STORAGE_KEY, VERSION_KEY])
   await migrateIfNeeded(result)
-  return { ...defaultSettings, ...result[STORAGE_KEY] }
+  const merged = { ...defaultSettings, ...result[STORAGE_KEY] }
+  if (!merged.aiConfig) {
+    const fallback = getDevAIConfigFallback()
+    if (fallback) merged.aiConfig = fallback
+  }
+  return merged
 }
 
 /**
@@ -71,22 +91,11 @@ export async function setSettings(
  * 订阅设置变化
  * 返回取消订阅函数
  */
-export function subscribeSettings(
-  callback: (settings: AppSettings) => void
-): () => void {
-  const handler = (
-    changes: Record<string, chrome.storage.StorageChange>,
-    areaName: string
-  ) => {
-    // 只处理 sync 区域的变化
-    if (areaName !== 'sync') return
-    if (STORAGE_KEY in changes) {
-      callback({ ...defaultSettings, ...changes[STORAGE_KEY].newValue })
-    }
-  }
-  chrome.storage.onChanged.addListener(handler)
-  return () => chrome.storage.onChanged.removeListener(handler)
-}
+export const subscribeSettings = createStorageSubscriber<AppSettings>(
+  'sync',
+  STORAGE_KEY,
+  (raw) => ({ ...defaultSettings, ...(raw as Partial<AppSettings>) })
+)
 
 /**
  * 版本迁移

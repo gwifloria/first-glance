@@ -18,6 +18,8 @@
   "feature": {
     "ambientSounds": "Ambient Focus Sounds",
     "ambientSoundsDesc": "Rain, campfire, ocean and more. Set the mood for deep focus.",
+    "fonts": "Font Theme Packs",
+    "fontsDesc": "DynaPuff / Playwrite / Mountains of Christmas — three font moods.",
     "premiumThemes": "Premium Themes",
     "premiumThemesDesc": "Exclusive color palettes designed for focus.",
     "enhancedClock": "Enhanced Focus Clock",
@@ -26,5 +28,15 @@
     "background": "Custom backgrounds",
     "pomodoroStats": "Pomodoro statistics panel"
   },
-  "themeLocked": "This is a Premium theme. Activate to use it."
+  "themeLocked": "This is a Premium theme. Activate to use it.",
+  "fontLocked": "This is a Premium font. Activate to use it.",
+  "fontLabel": "Fonts",
+  "fontModalTitle": "Font Settings",
+  "fontModalSubtitle": "Pick a typography style — preview live, no guesswork",
+  "fontSizeLabel": "Size",
+  "fontSize": {
+    "S": "Small",
+    "M": "Default",
+    "L": "Large"
+  }
 }

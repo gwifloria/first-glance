@@ -59,7 +59,7 @@ export function ThemeToggle({
               {isLocked && (
                 <CrownFilled
                   className="absolute -top-1 -right-1 pointer-events-none"
-                  style={{ fontSize: 8, color: '#faad14' }}
+                  style={{ fontSize: 8, color: 'var(--color-premium-gold)' }}
                 />
               )}
             </div>

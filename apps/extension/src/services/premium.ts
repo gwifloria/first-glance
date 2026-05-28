@@ -1,4 +1,6 @@
 const PREMIUM_KEY = 'premium_status'
+const DEV_OVERRIDE_KEY = 'dev_premium_override'
+const IS_DEV_BUILD = import.meta.env.MODE === 'development'
 
 export interface PremiumStatus {
   isActivated: boolean
@@ -12,6 +14,47 @@ const DEFAULT_STATUS: PremiumStatus = {
   licenseKey: null,
   activatedAt: null,
   instanceId: null,
+}
+
+/**
+ * dev 模式下的 Premium 开关（仅 dev build 生效）：
+ * - 默认 true，保留"开发即解锁"的便利
+ * - 用户可在 SettingsPanel 切到 false，用于测试非会员 UI
+ * - 模块加载时异步 hydrate；后续 storage 变化由 subscribePremium 统一处理
+ * 生产 build 下 IS_DEV_BUILD = false，整段逻辑被 tree-shaken
+ */
+let devOverride = true
+
+if (IS_DEV_BUILD) {
+  chrome.storage.local.get(DEV_OVERRIDE_KEY).then((r) => {
+    const v = r[DEV_OVERRIDE_KEY]
+    if (typeof v === 'boolean') devOverride = v
+  })
+}
+
+function isDevPremium(): boolean {
+  return IS_DEV_BUILD && devOverride
+}
+
+function applyDevFallback(status: PremiumStatus): PremiumStatus {
+  if (isDevPremium() && !status.isActivated) {
+    return { ...status, isActivated: true }
+  }
+  return status
+}
+
+export function isDevBuild(): boolean {
+  return IS_DEV_BUILD
+}
+
+export function getDevPremiumOverride(): boolean {
+  return devOverride
+}
+
+export async function setDevPremiumOverride(enabled: boolean): Promise<void> {
+  if (!IS_DEV_BUILD) return
+  devOverride = enabled
+  await chrome.storage.local.set({ [DEV_OVERRIDE_KEY]: enabled })
 }
 
 interface LemonSqueezyResponse {
@@ -83,13 +126,15 @@ export async function activateLicense(key: string): Promise<{
  */
 export async function getPremiumStatus(): Promise<PremiumStatus> {
   const result = await chrome.storage.sync.get(PREMIUM_KEY)
-  return result[PREMIUM_KEY] ?? DEFAULT_STATUS
+  const status: PremiumStatus = result[PREMIUM_KEY] ?? DEFAULT_STATUS
+  return applyDevFallback(status)
 }
 
 /**
  * 快速判断是否 Premium
  */
 export async function isPremium(): Promise<boolean> {
+  if (isDevPremium()) return true
   const status = await getPremiumStatus()
   return status.isActivated
 }
@@ -132,9 +177,17 @@ export function subscribePremium(
     changes: Record<string, chrome.storage.StorageChange>,
     areaName: string
   ) => {
-    if (areaName !== 'sync') return
-    if (PREMIUM_KEY in changes) {
-      callback(changes[PREMIUM_KEY].newValue ?? DEFAULT_STATUS)
+    if (areaName === 'sync' && PREMIUM_KEY in changes) {
+      const next: PremiumStatus =
+        changes[PREMIUM_KEY].newValue ?? DEFAULT_STATUS
+      callback(applyDevFallback(next))
+      return
+    }
+    if (IS_DEV_BUILD && areaName === 'local' && DEV_OVERRIDE_KEY in changes) {
+      const v = changes[DEV_OVERRIDE_KEY].newValue
+      devOverride = typeof v === 'boolean' ? v : true
+      // dev override 变化时重派当前状态
+      getPremiumStatus().then(callback)
     }
   }
   chrome.storage.onChanged.addListener(handler)

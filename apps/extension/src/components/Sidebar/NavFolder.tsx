@@ -45,7 +45,7 @@ export const NavFolder = memo(function NavFolder({
           <RightOutlined
             className={`text-[10px] text-[var(--text-secondary)] transition-transform duration-200 ${isFolderCollapsed ? '' : 'rotate-90'}`}
           />
-          <span className="text-[11px] font-medium text-[var(--text-secondary)] tracking-wide">
+          <span className="text-[0.6875rem] font-medium text-[var(--text-secondary)] tracking-wide font-[family-name:var(--font-heading)]">
             {folder.name.toUpperCase()}
           </span>
         </div>

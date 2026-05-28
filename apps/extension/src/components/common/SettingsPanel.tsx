@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react'
-import { Popover, Button, Divider, Modal, Tooltip } from 'antd'
+import { Popover, Button, Divider, Modal, Tooltip, Switch } from 'antd'
 import {
   SettingOutlined,
   StopOutlined,
@@ -23,9 +23,18 @@ import {
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
 import { usePremium } from '@/hooks/usePremium'
+import {
+  getDevPremiumOverride,
+  isDevBuild,
+  setDevPremiumOverride,
+} from '@/services/premium'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
 import { PomodoroSettingsModal } from '../FocusView/PomodoroSettingsModal'
 import { ThemeToggle } from './ThemeToggle'
+import { SectionLabel } from './SectionLabel'
+import { FontSelectorModal } from '../FontSelectorModal'
+import { useFont } from '@/hooks/useFont'
+import { getFontOption } from '@/constants/fonts'
 
 const HELP_LINKS = {
   website: 'https://www.gwifloria.space/',
@@ -95,14 +104,29 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
   const { openConnectPrompt } = useConnectPrompt()
   const [blocksiteOpen, setBlocksiteOpen] = useState(false)
   const [soundSettingsOpen, setSoundSettingsOpen] = useState(false)
+  const [fontSelectorOpen, setFontSelectorOpen] = useState(false)
   const [disconnectOpen, setDisconnectOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const [isOnboarding, setIsOnboarding] = useState(false)
   const [blocksiteNotSeen, setBlocksiteNotSeen] = useState(false)
+  const [devPremium, setDevPremium] = useState(() => getDevPremiumOverride())
+  const { fontType, fontScale } = useFont()
+  const currentFont = getFontOption(fontType)
+  const currentScaleLabel = tPremium(`fontSize.${fontScale}`)
 
   useEffect(() => {
     shouldShowOnboarding().then((should) => setIsOnboarding(should))
     shouldShowBlocksiteHint().then((should) => setBlocksiteNotSeen(should))
+  }, [])
+
+  // dev override 在 premium.ts 模块加载时异步 hydrate，
+  // 首屏渲染可能拿到默认值，所以挂载后直接读一次 storage 兜底
+  useEffect(() => {
+    if (!isDevBuild()) return
+    chrome.storage.local.get('dev_premium_override').then((r) => {
+      const v = r['dev_premium_override']
+      if (typeof v === 'boolean') setDevPremium(v)
+    })
   }, [])
 
   const version = chrome.runtime.getManifest().version
@@ -120,9 +144,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
     <div className="w-64 py-1">
       {/* 主题选择 */}
       <div className="px-3 py-2">
-        <div className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-2">
-          Appearance
-        </div>
+        <SectionLabel className="mb-2">Appearance</SectionLabel>
         <ThemeToggle size="lg" />
         {isOnboarding && (
           <p className="text-xs text-[var(--accent)] mt-2 leading-relaxed">
@@ -130,6 +152,24 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           </p>
         )}
       </div>
+
+      {/* 字体选择 → 打开 FontSelectorModal */}
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(false)
+          setFontSelectorOpen(true)
+        }}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 hover:bg-[var(--bg-secondary)] transition-colors cursor-pointer border-0 bg-transparent text-left"
+      >
+        <div className="flex flex-col items-start">
+          <SectionLabel>{tPremium('fontLabel')}</SectionLabel>
+          <span className="text-sm text-[var(--text-primary)]">
+            {currentFont.name} · {currentScaleLabel}
+          </span>
+        </div>
+        <span className="text-xs text-[var(--text-secondary)]">›</span>
+      </button>
 
       <Divider className="!my-2" />
 
@@ -176,7 +216,11 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       {/* Premium */}
       <MenuItem
         icon={
-          <CrownOutlined style={isPremium ? { color: '#faad14' } : undefined} />
+          <CrownOutlined
+            style={
+              isPremium ? { color: 'var(--color-premium-gold)' } : undefined
+            }
+          />
         }
         label={isPremium ? tPremium('activated') : tPremium('title')}
         accent={!isPremium}
@@ -185,6 +229,23 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           openPremiumModal()
         }}
       />
+
+      {/* Dev-only：本地切换 Premium，方便测试付费/非付费 UI。生产 build 下整块被 tree-shaken */}
+      {isDevBuild() && (
+        <div className="flex items-center justify-between px-3 py-2 bg-[var(--bg-secondary)]/40">
+          <span className="text-xs font-mono text-[var(--text-secondary)]">
+            DEV · Premium override
+          </span>
+          <Switch
+            size="small"
+            checked={devPremium}
+            onChange={(checked) => {
+              setDevPremium(checked)
+              setDevPremiumOverride(checked)
+            }}
+          />
+        </div>
+      )}
 
       <Divider className="!my-2" />
 
@@ -311,6 +372,11 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
       <PomodoroSettingsModal
         open={soundSettingsOpen}
         onClose={() => setSoundSettingsOpen(false)}
+      />
+
+      <FontSelectorModal
+        open={fontSelectorOpen}
+        onClose={() => setFontSelectorOpen(false)}
       />
     </>
   )

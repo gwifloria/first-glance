@@ -40,7 +40,7 @@ function AntdConfigProvider({ children }: { children: ReactNode }) {
   )
 }
 
-function Root() {
+export function Root() {
   return (
     <ErrorBoundary>
       <AppModeProvider>

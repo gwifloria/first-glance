@@ -4,6 +4,7 @@ import {
   CrownOutlined,
   CheckCircleFilled,
   CustomerServiceOutlined,
+  FontSizeOutlined,
   SkinOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons'
@@ -95,7 +96,7 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
     <Modal
       title={
         <span className="flex items-center gap-2">
-          <CrownOutlined style={{ color: '#faad14' }} />
+          <CrownOutlined style={{ color: 'var(--color-premium-gold)' }} />
           {t('title')}
         </span>
       }
@@ -137,7 +138,12 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
                 icon={<CustomerServiceOutlined />}
                 title={t('feature.ambientSounds')}
                 description={t('feature.ambientSoundsDesc')}
-                comingSoon
+              />
+
+              <FeatureCard
+                icon={<FontSizeOutlined />}
+                title={t('feature.fonts')}
+                description={t('feature.fontsDesc')}
               />
 
               <FeatureCard

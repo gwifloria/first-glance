@@ -148,15 +148,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--shadow-small', theme.shadow.small)
     root.style.setProperty('--shadow-medium', theme.shadow.medium)
     root.style.setProperty('--shadow-large', theme.shadow.large)
-    // 字体
-    root.style.setProperty('--font-primary', theme.font.primary)
-    root.style.setProperty('--font-secondary', theme.font.secondary)
-    root.style.setProperty('--font-heading', theme.font.heading)
-    if (theme.font.hand) {
-      root.style.setProperty('--font-hand', theme.font.hand)
-    } else {
-      root.style.removeProperty('--font-hand')
-    }
+    // 字体变量由 FontProvider 统一管理（依赖当前 theme + fontType 合并写入），
+    // ThemeProvider 不再设置 --font-* 以避免双写竞态
 
     // 双表面 CSS 变量（深色背景 + 浅色卡片的主题）
     if (theme.colors.textOnCard) {

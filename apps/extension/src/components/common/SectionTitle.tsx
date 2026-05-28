@@ -15,7 +15,7 @@ export function SectionTitle({
 
   if (!isCollapsible) {
     return (
-      <div className="px-3 py-2 text-[11px] font-medium text-[var(--text-secondary)] tracking-wide flex items-center gap-1">
+      <div className="px-3 py-2 text-[0.6875rem] font-medium text-[var(--text-secondary)] tracking-wide font-[family-name:var(--font-heading)] flex items-center gap-1">
         <span className="text-xs">›</span>
         {title}
       </div>
@@ -25,7 +25,7 @@ export function SectionTitle({
   return (
     <div
       onClick={onToggle}
-      className="px-3 py-2 text-[11px] font-medium text-[var(--text-secondary)] tracking-wide flex items-center gap-1 cursor-pointer hover:opacity-80 select-none"
+      className="px-3 py-2 text-[0.6875rem] font-medium text-[var(--text-secondary)] tracking-wide font-[family-name:var(--font-heading)] flex items-center gap-1 cursor-pointer hover:opacity-80 select-none"
     >
       <RightOutlined
         className={`text-[10px] transition-transform duration-200 ${collapsed ? '' : 'rotate-90'}`}

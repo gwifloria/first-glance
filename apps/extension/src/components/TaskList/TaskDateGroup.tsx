@@ -123,7 +123,7 @@ export const TaskDateGroup = memo(function TaskDateGroup({
 }: TaskDateGroupProps) {
   const { t } = useTranslation('task')
   const {
-    data: { taskMap, tasks: allTasks },
+    data: { taskMap },
   } = useTaskContext()
 
   // 展开/折叠子任务状态（默认全部展开）
@@ -137,23 +137,30 @@ export const TaskDateGroup = memo(function TaskDateGroup({
     })
   }
 
-  // parentId → children[] 映射
+  // 当前分组内的任务 ID 集合（父子关系判断限定在本组内）
+  const groupTaskIds = useMemo(
+    () => new Set(group.tasks.map((task) => task.id)),
+    [group.tasks]
+  )
+
+  // parentId → children[] 映射（仅同组内的父子关系）
   const childrenMap = useMemo(() => {
     const map = new Map<string, Task[]>()
-    for (const task of allTasks) {
-      if (task.parentId && taskMap.has(task.parentId)) {
+    for (const task of group.tasks) {
+      if (task.parentId && groupTaskIds.has(task.parentId)) {
         const children = map.get(task.parentId) ?? []
         children.push(task)
         map.set(task.parentId, children)
       }
     }
     return map
-  }, [allTasks, taskMap])
+  }, [group.tasks, groupTaskIds])
 
-  // 只保留 root 任务（无 parentId 或 parent 不在 taskMap 中的孤儿）
+  // root 任务：无 parentId，或父任务不在本组（提升为根，避免被计数却不渲染）
   const rootTasks = useMemo(
-    () => group.tasks.filter((t) => !t.parentId || !taskMap.has(t.parentId)),
-    [group.tasks, taskMap]
+    () =>
+      group.tasks.filter((t) => !t.parentId || !groupTaskIds.has(t.parentId)),
+    [group.tasks, groupTaskIds]
   )
 
   const getProjectById = (projectId: string) =>

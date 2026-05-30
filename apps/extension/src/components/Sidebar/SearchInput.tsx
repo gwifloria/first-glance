@@ -21,16 +21,16 @@ export function SearchInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholderText}
-        prefix={<SearchOutlined className="text-[var(--text-secondary)]" />}
+        prefix={<SearchOutlined className="!text-[var(--text-secondary)]" />}
         suffix={
           value && (
             <CloseCircleFilled
-              className="text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
+              className="!text-[var(--text-secondary)] cursor-pointer hover:!text-[var(--text-primary)] transition-colors"
               onClick={() => onChange('')}
             />
           )
         }
-        className="!bg-black/[0.04] !rounded-lg !py-1.5 !text-sm [&_.ant-input]:!bg-transparent"
+        className="!bg-black/[0.04] !rounded-lg !py-1.5 !text-sm [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-[var(--text-primary)] [&_.ant-input::placeholder]:!text-[var(--text-secondary)]"
         variant="borderless"
       />
     </div>

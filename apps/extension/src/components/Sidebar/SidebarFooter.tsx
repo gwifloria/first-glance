@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Button, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
+import { SurfaceIconButton } from '../common'
 import { DefaultProjectModal } from './DefaultProjectModal'
 
 interface SidebarFooterProps {
@@ -15,15 +16,15 @@ export function SidebarFooter({ collapsed = false }: SidebarFooterProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
   const button = (
-    <Button
-      type="text"
+    <SurfaceIconButton
+      surface="sidebar"
       size="small"
       icon={<SettingOutlined />}
       onClick={() => setModalOpen(true)}
-      className={`${collapsed ? '!w-full !justify-center' : 'w-full justify-start'} text-[var(--text-secondary)] hover:text-[var(--text-primary)]`}
+      className={collapsed ? '!w-full !justify-center' : 'w-full justify-start'}
     >
       {!collapsed && t('action.defaultProject')}
-    </Button>
+    </SurfaceIconButton>
   )
 
   return (

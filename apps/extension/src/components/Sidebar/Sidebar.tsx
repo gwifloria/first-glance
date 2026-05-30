@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react'
-import { Button } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePersistedBoolean } from '@/hooks/usePersistedBoolean'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { ThemeToggle } from '../common'
+import { ThemeToggle, SurfaceIconButton } from '../common'
 import { FontQuickSwitcher } from './FontQuickSwitcher'
 import { SearchInput } from './SearchInput'
 import { SmartFilterList } from './SmartFilterList'
@@ -41,13 +40,13 @@ function SidebarHeader({
       >
         {!collapsed && <ThemeToggle />}
         {!hideToggle && (
-          <Button
-            type="text"
+          <SurfaceIconButton
+            surface="sidebar"
             size="small"
             onClick={onToggleCollapse}
             title={toggleTitle}
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            className="!w-5 !h-5 !min-w-0 !p-0 text-[var(--sidebar-text)]"
+            className="!w-5 !h-5 !min-w-0 !p-0"
           />
         )}
       </div>

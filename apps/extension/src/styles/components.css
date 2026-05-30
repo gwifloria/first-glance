@@ -65,6 +65,11 @@
 }
 .quick-add-input .ant-input {
   background: transparent !important;
+  /* Input token 的 colorText 是「卡片字色」，这里在页面表面上要用页面字色 */
+  color: var(--text-primary) !important;
+}
+.quick-add-input .ant-input::placeholder {
+  color: var(--text-secondary) !important;
 }
 
 /* Onboarding 按钮 */

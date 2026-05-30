@@ -121,6 +121,27 @@ apps/
 - CSS 变量动态注入 + 双表面颜色系统（textOnCard/borderOnCard）
 - 支持纹理和贴纸装饰（Journal 风格）
 
+### 表面与字色约定（重要：新增任何文字/图标前必读）
+
+全 app 只有 3 种背景表面，每种配一对字色。**任何文字/图标，先问「贴在哪个表面上」，再用对应变量**：
+
+| 表面 | 背景变量 | 主字色 | 次字色 |
+|------|----------|--------|--------|
+| 页面（content/时钟区/悬浮按钮） | `--bg-content` | `--text-primary` | `--text-secondary` |
+| 侧边栏 | `--bg-sidebar` | `--sidebar-text` | （hover→`--sidebar-active-text`） |
+| 卡片/弹窗 | `--bg-card` | `--text-on-card` | `--text-on-card-secondary` |
+
+- 浅色主题里三套字色重合，看不出区别；**只有 twilight 这类「深色页面 + 浅色卡片」的 journal 深色主题三者分裂**，配错才会显形（深色字贴深色底→隐身）。所以新功能必须在 twilight 下验证，不能只看默认主题。
+- **antd 组件的坑**：antd 全局 `colorText` token 被设成了「卡片字色」（`themes/antdTheme.ts`，因大多数 antd 组件在卡片/弹窗内）。所以**放在页面/侧边栏上的 antd 组件会默认拿到卡片字色**，在 twilight 下隐身。普通 `text-[var(--…)]`（不带 `!`）斗不过 antd 的 `.ant-btn` color，**必须用 `!important`**。
+
+**规则**：
+- 卡片/弹窗内的 antd 组件 → 什么都不用做，antd 默认就对。
+- 页面/侧边栏上的 antd **图标按钮** → 用 `components/common/SurfaceIconButton`（`surface="page" | "sidebar"`），字色 + hover 已焊死，不用记得加 `!`。
+- 页面/侧边栏上的 antd **Input** → 必须显式覆盖 `.ant-input` 的 `color` 和 `::placeholder`（typed text/placeholder 也走 Input token 的卡片字色），见 `SearchInput.tsx` / `quick-add-input`。
+- 弹窗/卡片内的**输入框/下拉填充**不要用 `--bg-secondary`：dark 主题里它 == `--bg-card`，且 `.ant-modal-content` 的 on-card 重映射在 dark 下会回退到同色，导致输入框与卡片糊在一起。用 `--surface-raised`（卡片内抬升叠加层，深/浅卡片都保证对比）+ `--border-on-card`（回退 `--border`）的边框，见 `constants/styles.ts` 的 `FORM_INPUT_STYLE` / `FORM_SELECT_STYLE`。
+- 其它直接渲染的图标/文字 → 用上表对应的表面字色变量即可（普通 `<span>/<div>` 不经过 antd，无需 `!`）。
+- 注：`.ant-modal-content` / `.card-surface` 作用域内，`--text-primary`/`--text-secondary`/`--border`/`--bg-secondary` 已自动重映射为 on-card 版本（`styles/textures.css`），所以卡片内直接用这些变量即可，无需手动写 `-on-card` 后缀。
+
 ### 网站屏蔽机制
 - 使用 Chrome `declarativeNetRequest` API 实现网站屏蔽
 - 屏蔽规则动态更新，存储在 `chrome.storage.sync`

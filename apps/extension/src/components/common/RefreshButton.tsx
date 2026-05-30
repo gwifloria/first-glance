@@ -3,10 +3,11 @@
  * 通过 TaskContext 获取刷新方法，无需 props 传递
  */
 import { useState, useCallback } from 'react'
-import { Button, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
+import { SurfaceIconButton } from './SurfaceIconButton'
 
 const MIN_SPIN_DURATION = 600 // 最小旋转时间，确保动画可见
 
@@ -35,13 +36,13 @@ export function RefreshButton({ className }: RefreshButtonProps) {
 
   return (
     <Tooltip title={t('action.refresh')}>
-      <Button
-        type="text"
+      <SurfaceIconButton
+        surface="page"
         size="small"
         icon={<ReloadOutlined spin={spinning} />}
         onClick={handleRefresh}
         disabled={spinning}
-        className={`${className ?? ''} text-[var(--text-secondary)]`}
+        className={className}
       />
     </Tooltip>
   )

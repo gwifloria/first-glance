@@ -18,7 +18,8 @@ export function filterTasks(
   } else {
     switch (filter) {
       case 'inbox':
-        filtered = filtered.filter((t) => t.projectId?.startsWith('inbox'))
+        // inbox 归属由 adapter 层统一标记（各服务用各自规则），这里只读标记
+        filtered = filtered.filter((t) => t.isInbox)
         break
       case 'today':
         filtered = filtered.filter((t) => isToday(t.dueDate))

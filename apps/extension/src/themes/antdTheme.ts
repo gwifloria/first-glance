@@ -66,6 +66,20 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         titleColor: textOnCard,
         borderRadiusLG: 16,
       },
+      Drawer: {
+        // 抽屉面板（section）底色走卡片色；圆角/阴影/留白在组件里用 styles.section 配
+        colorBgElevated: colors.bgCard,
+        colorText: textOnCard,
+        // 关掉 antd 给外层 wrapper（直角）的默认阴影，避免从圆角缝里露出直角暗块；
+        // 阴影改由 styles.section 自己出（跟着圆角走）。
+        // 这些是 antd6 内部计算 token、未在公开类型暴露，用 as object 绕过类型检查
+        ...({
+          boxShadowDrawerRight: 'none',
+          boxShadowDrawerLeft: 'none',
+          boxShadowDrawerUp: 'none',
+          boxShadowDrawerDown: 'none',
+        } as object),
+      },
       Input: {
         activeBg: 'transparent',
         hoverBg: 'transparent',

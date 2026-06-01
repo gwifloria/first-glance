@@ -17,6 +17,7 @@ describe('filterTasks', () => {
       id: '1',
       dueDate: '2026-02-27',
       projectId: 'inbox-1',
+      isInbox: true,
       title: '今天',
     }),
     makeTask({
@@ -73,7 +74,7 @@ describe('filterTasks', () => {
     expect(result.map((t) => t.id)).toEqual(['1', '2', '5'])
   })
 
-  it('inbox 按 projectId.startsWith("inbox") 筛选', () => {
+  it('inbox 按 task.isInbox 标记筛选', () => {
     const result = filterTasks(tasks, 'inbox')
     expect(result.map((t) => t.id)).toEqual(['1'])
   })

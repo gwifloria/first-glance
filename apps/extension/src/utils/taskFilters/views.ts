@@ -39,8 +39,8 @@ export function computeTaskViews(tasks: Task[]): ComputedViews {
     const pid = task.projectId ?? ''
     result.projectCounts.set(pid, (result.projectCounts.get(pid) ?? 0) + 1)
 
-    // 2. Inbox 任务
-    if (pid.startsWith('inbox')) {
+    // 2. Inbox 任务（归属由 adapter 层统一标记，各服务用各自规则）
+    if (task.isInbox) {
       result.inbox.push(task)
       result.counts.inbox++
     }

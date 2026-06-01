@@ -37,6 +37,14 @@
     "placeholderTitle": "Task title",
     "placeholderContent": "Task description (optional)"
   },
+  "detail": {
+    "subtasks": "Subtasks",
+    "date": "Date",
+    "labels": "Labels",
+    "addLabel": "Add label",
+    "noDate": "No date",
+    "saved": "Saved"
+  },
   "confirm": {
     "delete": "Delete this task?"
   },

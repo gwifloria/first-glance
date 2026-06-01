@@ -2,6 +2,7 @@ import { useState, useCallback, memo, useMemo } from 'react'
 import { Empty, Alert, Spin } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { TaskEditor } from '../Task/TaskEditor'
+import { TaskDetailDrawer } from '../Task/TaskDetailDrawer'
 import { TaskListHeader } from './TaskListHeader'
 import { QuickAddInput } from './QuickAddInput'
 import { TaskDateGroup } from './TaskDateGroup'
@@ -46,8 +47,12 @@ export const TaskList = memo(function TaskList({
   onFocus,
 }: TaskListProps) {
   const { t } = useTranslation('task')
+  // TaskEditor 仅用于「新建任务」（QuickAdd 的展开入口）
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
+  // 点击任务行打开右侧详情抽屉
+  const [detailTask, setDetailTask] = useState<Task | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [collapsedGroups, toggleGroup] = usePersistedSet('taskGroupCollapsed')
 
   // 使用传入的分组函数
@@ -58,8 +63,13 @@ export const TaskList = memo(function TaskList({
   const taskCount = groups.reduce((sum, g) => sum + g.tasks.length, 0)
 
   const handleEdit = useCallback((task: Task) => {
-    setEditingTask(task)
-    setIsEditorOpen(true)
+    setDetailTask(task)
+    setIsDetailOpen(true)
+  }, [])
+
+  // 仅收起，保留 detailTask 让关闭动画有内容可渲染；下次打开新任务时按 key 重挂载
+  const handleCloseDetail = useCallback(() => {
+    setIsDetailOpen(false)
   }, [])
 
   const handleNew = useCallback(() => {
@@ -151,6 +161,17 @@ export const TaskList = memo(function TaskList({
         open={isEditorOpen}
         onCancel={handleCloseEditor}
         onSave={handleSave}
+      />
+
+      <TaskDetailDrawer
+        key={detailTask?.id ?? 'none'}
+        task={detailTask}
+        projects={projects}
+        open={isDetailOpen}
+        onClose={handleCloseDetail}
+        onUpdate={onUpdate}
+        onComplete={onComplete}
+        onDelete={onDelete}
       />
     </div>
   )

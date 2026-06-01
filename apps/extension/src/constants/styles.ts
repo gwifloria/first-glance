@@ -24,3 +24,8 @@ export const MODAL_CANCEL_BUTTON_STYLE =
 
 export const FORM_LAYOUT_STYLE =
   '[&_.ant-form-item]:!mb-4 [&_.ant-form-item-label>label]:!text-xs [&_.ant-form-item-label>label]:!font-normal [&_.ant-form-item-label]:!pb-1.5'
+
+// 任务详情抽屉的正文排版：为「长读」调过 —— 行高 1.7、段落/列表间距收紧，
+// 杀掉 loose markdown 在 <li> 里塞 <p> 造成的大间距，列表标记走次字色
+export const TASK_DETAIL_PROSE_CLASS =
+  'text-[15px] leading-[1.7] text-[var(--text-primary)] [&_p]:my-3 [&_ul]:my-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:my-3 [&_ol]:pl-5 [&_ol]:list-decimal [&_li]:my-1 [&_li]:marker:text-[var(--text-secondary)] [&_li>p]:!my-0 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h1]:mt-4 [&_h1]:mb-2 [&_h2]:text-[15px] [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-1.5 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--surface-raised)] [&_code]:px-1 [&_code]:rounded [&_code]:text-[13px] [&_s]:line-through [&_del]:line-through [&_mark]:bg-[var(--surface-accent)] [&_mark]:text-[var(--text-primary)] [&_mark]:px-0.5 [&_mark]:rounded-sm'

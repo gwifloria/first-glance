@@ -1,9 +1,15 @@
 {
   "title": "设置",
+  "defaultView": {
+    "label": "默认视图",
+    "focus": "专注",
+    "list": "列表"
+  },
   "defaultProject": {
     "label": "新任务默认清单",
     "inbox": "收集箱",
-    "hint": "在智能清单中快速添加任务时，将使用此清单"
+    "hint": "在智能清单中快速添加任务时，将使用此清单",
+    "saved": "已设定"
   },
   "blocksite": {
     "label": "屏蔽网站",

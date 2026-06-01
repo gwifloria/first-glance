@@ -3,6 +3,7 @@ import { getSettings } from '@/services/settingsStorage'
 import type { Task } from '@/types'
 import { formatDateStr } from '@/utils/date'
 import { Input } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,10 +20,21 @@ export const QuickAddInput = memo(function QuickAddInput({
 }: QuickAddInputProps) {
   const { t } = useTranslation('task')
   const [quickAddValue, setQuickAddValue] = useState('')
+  const [creating, setCreating] = useState(false)
 
   const handleQuickAdd = async () => {
-    if (!quickAddValue.trim()) return
+    if (creating || !quickAddValue.trim()) return
 
+    setCreating(true)
+    try {
+      await submitQuickAdd()
+      setQuickAddValue('')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  const submitQuickAdd = async () => {
     const settings = await getSettings()
     let projectId: string | undefined
     let dueDate: string | undefined
@@ -61,7 +73,6 @@ export const QuickAddInput = memo(function QuickAddInput({
       projectId,
       dueDate,
     })
-    setQuickAddValue('')
   }
 
   return (
@@ -71,15 +82,23 @@ export const QuickAddInput = memo(function QuickAddInput({
         value={quickAddValue}
         onChange={(e) => setQuickAddValue(e.target.value)}
         onPressEnter={handleQuickAdd}
+        disabled={creating}
         className="quick-add-input"
         variant="borderless"
         suffix={
-          <span
-            className="text-[0.6875rem] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
-            onClick={onOpenEditor}
-          >
-            +
-          </span>
+          creating ? (
+            <LoadingOutlined
+              className="text-[var(--accent)]"
+              style={{ fontSize: 14 }}
+            />
+          ) : (
+            <span
+              className="text-[0.6875rem] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
+              onClick={onOpenEditor}
+            >
+              +
+            </span>
+          )
         }
       />
     </div>

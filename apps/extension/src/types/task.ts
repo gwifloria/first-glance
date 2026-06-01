@@ -35,6 +35,11 @@ export interface Task {
   tags?: string[]
   /** 父任务 ID（子任务才有） */
   parentId?: string
+  /**
+   * 是否属于收集箱。由 adapter 层统一标记（各服务用各自规则：
+   * Todoist 比对真实 inbox 项目 id，滴答用 id 前缀），通用层只读此标记。
+   */
+  isInbox?: boolean
 }
 
 /** 本地任务（访客模式） */

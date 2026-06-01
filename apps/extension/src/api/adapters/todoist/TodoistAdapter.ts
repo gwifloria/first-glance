@@ -70,6 +70,8 @@ export interface TodoistCreateTaskRequest {
   dueDatetime?: string
   /** 父任务 ID（创建子任务时使用） */
   parentId?: string
+  /** 标签（Todoist 称 labels） */
+  labels?: string[]
 }
 
 /** 更新任务请求体 */
@@ -79,6 +81,8 @@ export interface TodoistUpdateTaskRequest {
   priority?: number
   dueDate?: string | null
   dueDatetime?: string | null
+  /** 标签（Todoist 称 labels）：全量替换 */
+  labels?: string[]
 }
 
 // ==================== 数据转换 ====================
@@ -168,6 +172,7 @@ export function transformCreateTaskToTodoist(
     req.priority = priorityToTodoist(input.priority)
   if (input.dueDate) applyDueFields(req, input.dueDate)
   if (input.parentId) req.parentId = input.parentId
+  if (input.tags) req.labels = input.tags
 
   return req
 }
@@ -193,6 +198,8 @@ export function transformUpdateTaskToTodoist(
     }
   }
 
+  if (input.tags !== undefined) req.labels = input.tags
+
   return req
 }
 
@@ -200,6 +207,15 @@ export function transformUpdateTaskToTodoist(
 
 export class TodoistAdapter implements ITaskAdapter {
   readonly name = 'todoist'
+
+  // Todoist 的 inbox 项目 id 是数字（如 '2254282139'），无前缀可认。
+  // 由 inboxProject 标志解析后缓存，用于给任务打 isInbox 标记。
+  private inboxProjectId?: string
+
+  /** 给任务打 isInbox 标记：projectId 命中 inbox 项目即为收集箱任务 */
+  private stamp(task: Task): Task {
+    return { ...task, isInbox: task.projectId === this.inboxProjectId }
+  }
 
   async getProjects(): Promise<Project[]> {
     const todoistProjects = await projectsApi.getAll()
@@ -211,6 +227,7 @@ export class TodoistAdapter implements ITaskAdapter {
       return a.sortOrder - b.sortOrder
     })
 
+    this.inboxProjectId = projects.find((p) => p.kind === 'INBOX')?.id
     await storage.setCachedProjects(projects)
     return projects
   }
@@ -228,9 +245,12 @@ export class TodoistAdapter implements ITaskAdapter {
       return a.sortOrder - b.sortOrder
     })
 
+    this.inboxProjectId = projects.find((p) => p.kind === 'INBOX')?.id
+
     const tasks = todoistTasks
       .map(transformTaskFromTodoist)
       .filter((task) => task.status === 0)
+      .map((task) => this.stamp(task))
 
     await Promise.all([
       storage.setCachedTasks(tasks),
@@ -243,13 +263,13 @@ export class TodoistAdapter implements ITaskAdapter {
   async createTask(input: CreateTaskInput): Promise<Task> {
     const todoistInput = transformCreateTaskToTodoist(input)
     const todoistTask = await tasksApi.create(todoistInput)
-    return transformTaskFromTodoist(todoistTask)
+    return this.stamp(transformTaskFromTodoist(todoistTask))
   }
 
   async updateTask(taskId: string, input: UpdateTaskInput): Promise<Task> {
     const todoistInput = transformUpdateTaskToTodoist(input)
     const todoistTask = await tasksApi.update(taskId, todoistInput)
-    return transformTaskFromTodoist(todoistTask)
+    return this.stamp(transformTaskFromTodoist(todoistTask))
   }
 
   async completeTask(task: Task): Promise<void> {

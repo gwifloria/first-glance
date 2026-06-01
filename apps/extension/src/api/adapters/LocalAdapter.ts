@@ -29,6 +29,8 @@ export class LocalAdapter implements ITaskAdapter {
       status: local.status,
       createdTime: local.createdTime,
       sortOrder: 0,
+      // 本地模式只有收集箱一个项目，全部任务即收集箱任务
+      isInbox: true,
     }
   }
 

@@ -15,11 +15,16 @@ describe('views', () => {
   describe('computeTaskViews', () => {
     it('计数正确', () => {
       const tasks = [
-        makeTask({ id: '1', dueDate: '2026-02-27', projectId: 'inbox-1' }), // today + inbox + week
+        makeTask({
+          id: '1',
+          dueDate: '2026-02-27',
+          projectId: 'inbox-1',
+          isInbox: true,
+        }), // today + inbox + week
         makeTask({ id: '2', dueDate: '2026-02-28', projectId: 'proj-1' }), // tomorrow + week
         makeTask({ id: '3', dueDate: '2026-02-25', projectId: 'proj-1' }), // overdue
         makeTask({ id: '4', dueDate: '2026-03-02', projectId: 'proj-2' }), // week (not today/tomorrow)
-        makeTask({ id: '5', projectId: 'inbox-1' }), // inbox + nodate
+        makeTask({ id: '5', projectId: 'inbox-1', isInbox: true }), // inbox + nodate
       ]
 
       const views = computeTaskViews(tasks)

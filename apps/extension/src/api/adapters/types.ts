@@ -12,6 +12,7 @@ export interface CreateTaskInput {
   priority?: number
   dueDate?: string
   parentId?: string
+  tags?: string[]
 }
 
 /** 更新任务的输入 */
@@ -21,6 +22,8 @@ export interface UpdateTaskInput {
   priority?: number
   dueDate?: string
   projectId?: string
+  /** 标签全量替换：传入完整数组（含删改后的结果） */
+  tags?: string[]
 }
 
 /** 获取任务的返回结果 */

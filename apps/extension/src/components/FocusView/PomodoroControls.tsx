@@ -28,6 +28,7 @@ interface PomodoroControlsProps {
   onResume: () => void
   onReset: () => void
   onSkip: () => void
+  onOpenStats?: () => void
 }
 
 export const PomodoroControls = memo(function PomodoroControls({
@@ -38,6 +39,7 @@ export const PomodoroControls = memo(function PomodoroControls({
   onResume,
   onReset,
   onSkip,
+  onOpenStats,
 }: PomodoroControlsProps) {
   const { t } = useTranslation('focus')
 
@@ -98,7 +100,7 @@ export const PomodoroControls = memo(function PomodoroControls({
         </>
       )}
 
-      <TodayTomatoCount />
+      <TodayTomatoCount onOpenStats={onOpenStats} />
     </div>
   )
 })

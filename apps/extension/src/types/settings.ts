@@ -8,6 +8,8 @@ import type { NotificationSound } from '@/services/soundEngine'
 export interface AppSettings {
   /** 默认清单 ID，null 表示使用收集箱 */
   defaultProjectId: string | null
+  /** 打开新标签页时的默认视图（仅连接服务后生效，游客始终 focus） */
+  defaultView: 'focus' | 'list'
   /** 被屏蔽的网站域名列表 */
   blockedSites: string[]
   /** AI 助手配置 */
@@ -25,6 +27,7 @@ export interface AppSettings {
  */
 export const defaultSettings: AppSettings = {
   defaultProjectId: null,
+  defaultView: 'focus',
   blockedSites: [],
   aiConfig: undefined,
   notificationSound: 'bell',

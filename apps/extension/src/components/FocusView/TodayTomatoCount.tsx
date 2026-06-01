@@ -1,6 +1,6 @@
 /**
  * 今日番茄计数指示器
- * 点击展开本周统计 Popover
+ * 点击展开本周统计 Popover，可进一步打开完整统计面板
  */
 import { useState, useEffect } from 'react'
 import { Popover } from 'antd'
@@ -12,7 +12,11 @@ import {
 import { StatsPopoverContent } from './StatsCard'
 import { TomatoIcon } from './TomatoIcon'
 
-export function TodayTomatoCount() {
+export function TodayTomatoCount({
+  onOpenStats,
+}: {
+  onOpenStats?: () => void
+}) {
   const [todayCount, setTodayCount] = useState<number>(0)
   const [open, setOpen] = useState(false)
 
@@ -25,9 +29,16 @@ export function TodayTomatoCount() {
 
   if (todayCount === 0) return null
 
+  const handleOpenStats = onOpenStats
+    ? () => {
+        setOpen(false)
+        onOpenStats()
+      }
+    : undefined
+
   return (
     <Popover
-      content={<StatsPopoverContent />}
+      content={<StatsPopoverContent onOpenDashboard={handleOpenStats} />}
       trigger="click"
       placement="bottomRight"
       open={open}

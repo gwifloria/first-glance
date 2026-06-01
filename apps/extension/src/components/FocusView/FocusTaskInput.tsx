@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { LoadingOutlined } from '@ant-design/icons'
 import { formatDateStr } from '@/utils/date'
 import { getSettings } from '@/services/settingsStorage'
 import { RefreshButton } from '../common/RefreshButton'
@@ -76,9 +77,13 @@ export function FocusTaskInput({
           disabled={creating || (isGuestMode && !canAddMore)}
           className="flex-1 text-center text-[var(--text-secondary)] placeholder:text-[var(--text-secondary)] bg-transparent border-0 border-b border-[var(--border)] py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors disabled:opacity-50"
         />
-        {showRefresh && (
-          <RefreshButton className="!text-[var(--accent)] opacity-60 hover:opacity-100 transition-opacity shrink-0" />
+        {creating && (
+          <LoadingOutlined
+            className="text-[var(--accent)] shrink-0"
+            style={{ fontSize: 14 }}
+          />
         )}
+        {showRefresh && <RefreshButton className="shrink-0" />}
       </div>
       {/* 访客模式限制提示 */}
       {isGuestMode && (

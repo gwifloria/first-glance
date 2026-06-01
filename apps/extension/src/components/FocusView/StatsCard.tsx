@@ -11,16 +11,10 @@ import {
   getTodayStats,
   getWeekStats,
   getWeekDailyStats,
+  formatDuration,
   type FocusStatsData,
   type DailyStatsWithDate,
 } from '@/services/focusStats'
-
-function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes}m`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}h ${m}m` : `${h}h`
-}
 
 function StatItem({ value, label }: { value: string | number; label: string }) {
   return (
@@ -99,7 +93,11 @@ function WeeklyChart({ dailyStats }: { dailyStats: DailyStatsWithDate[] }) {
   )
 }
 
-export function StatsPopoverContent() {
+export function StatsPopoverContent({
+  onOpenDashboard,
+}: {
+  onOpenDashboard?: () => void
+}) {
   const { t } = useTranslation('focus')
   const [stats, setStats] = useState<FocusStatsData | null>(null)
 
@@ -145,6 +143,16 @@ export function StatsPopoverContent() {
         )}
       </div>
       {hasChartData && <WeeklyChart dailyStats={dailyStats} />}
+      {onOpenDashboard && (
+        <button
+          onClick={onOpenDashboard}
+          className="w-full mt-3 pt-2 border-t border-[var(--border)] text-xs
+            text-[var(--text-secondary)] hover:text-[var(--accent)]
+            transition-colors cursor-pointer"
+        >
+          {t('stats.viewFull')} →
+        </button>
+      )}
     </div>
   )
 }

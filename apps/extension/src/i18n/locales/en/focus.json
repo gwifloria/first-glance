@@ -52,7 +52,71 @@
     "weekTime": "Focus",
     "noData": "No focus sessions yet",
     "chartTooltip": "{{count}} pomodoro · {{duration}}",
-    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "viewFull": "View full stats",
+    "dashboardTitle": "Focus Stats",
+    "dashboardBadge": "Data Hub",
+    "dashboardSubtitle": "Insight into your attention tracking",
+    "unlockDashboard": "Unlock full stats",
+    "overall": {
+      "title": "Last 90 days",
+      "totalCount": "Total pomos",
+      "totalTime": "Total focus",
+      "avgDaily": "Daily avg"
+    },
+    "streak": {
+      "title": "{{days}}-Day Focus Streak",
+      "goal": "Goal {{goal}}",
+      "remaining": "Complete {{count}} more to hit today's goal",
+      "secure": "Complete 1 pomodoro to keep your streak alive",
+      "done": "Today's goal reached 🎉"
+    },
+    "tabs": {
+      "trend": "Trend",
+      "hourly": "Hourly",
+      "heatmap": "Heatmap",
+      "log": "Log"
+    },
+    "trend": {
+      "last7": "7-day trend",
+      "caption": "Daily completions",
+      "delta": "{{delta}}% vs prev"
+    },
+    "heatmap": {
+      "title": "Focus heatmap",
+      "tooltip": "{{count}} pomodoro",
+      "summary": "{{days}} of {{total}} days active",
+      "activeDays": "Active days",
+      "maxDay": "Best day",
+      "longestStreak": "Longest streak",
+      "dayUnit": "days",
+      "less": "Less",
+      "more": "More"
+    },
+    "rhythm": {
+      "title": "Activity distribution",
+      "golden": "Golden hours",
+      "empty": "Not enough data to see a pattern yet",
+      "tooltip": "{{hour}} · {{count}} pomodoro",
+      "buckets": {
+        "morning": "Morning",
+        "forenoon": "Forenoon",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "night": "Night",
+        "lateNight": "Late night"
+      }
+    },
+    "log": {
+      "title": "Recent focus logs",
+      "count": "{{count}} total",
+      "free": "Free focus",
+      "priority": {
+        "high": "HIGH",
+        "medium": "MED",
+        "low": "LOW"
+      }
+    }
   },
   "ambient": {
     "title": "Ambient Sounds",

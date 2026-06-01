@@ -70,8 +70,14 @@ function calculateTimeLeft(stored: PomodoroStorage): number {
   return Math.max(0, duration - elapsed)
 }
 
+/** 记录专注会话时，按 taskId 取当时任务的标题/优先级用于快照 */
+export type TaskMetaResolver = (
+  taskId: string
+) => { title: string; priority: number } | null
+
 export function usePomodoro(
-  config?: Partial<PomodoroConfig>
+  config?: Partial<PomodoroConfig>,
+  getTaskMeta?: TaskMetaResolver
 ): PomodoroState & PomodoroActions {
   const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
@@ -81,6 +87,11 @@ export function usePomodoro(
   const intervalRef = useRef<number | null>(null)
   const storageRef = useRef<PomodoroStorage | null>(null)
   const switchToNextPhaseRef = useRef<(() => Promise<void>) | null>(null)
+  const taskMetaRef = useRef<TaskMetaResolver | undefined>(getTaskMeta)
+
+  useEffect(() => {
+    taskMetaRef.current = getTaskMeta
+  }, [getTaskMeta])
 
   const [state, setState] = useState<PomodoroState>({
     mode: 'idle',
@@ -139,10 +150,15 @@ export function usePomodoro(
 
       // work 结束时记录专注数据（与提示音共用去重逻辑）
       if (stored.mode === 'work') {
+        const meta = stored.currentTaskId
+          ? taskMetaRef.current?.(stored.currentTaskId)
+          : null
         recordFocusSession({
           timestamp: now,
           duration: stored.config.workDuration,
           taskId: stored.currentTaskId,
+          taskTitle: meta?.title ?? null,
+          priority: meta?.priority ?? null,
         })
       }
     }

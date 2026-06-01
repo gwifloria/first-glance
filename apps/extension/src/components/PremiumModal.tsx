@@ -7,6 +7,7 @@ import {
   FontSizeOutlined,
   SkinOutlined,
   ClockCircleOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePremium } from '@/hooks/usePremium'
@@ -144,6 +145,12 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
                 icon={<FontSizeOutlined />}
                 title={t('feature.fonts')}
                 description={t('feature.fontsDesc')}
+              />
+
+              <FeatureCard
+                icon={<BarChartOutlined />}
+                title={t('feature.statsDashboard')}
+                description={t('feature.statsDashboardDesc')}
               />
 
               <FeatureCard

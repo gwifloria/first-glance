@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useAppMode } from '@/contexts/useAppMode'
 import { usePremium } from '@/hooks/usePremium'
+import { getSettings } from '@/services/settingsStorage'
 import { TaskProvider } from '@/contexts/TaskProvider'
 import { FocusLayout, ListLayout } from '@/components/layouts'
 import { BlockedPage } from '@/components/BlockedPage'
@@ -17,6 +18,13 @@ function AppContent() {
   const { isGuest } = useAppMode()
   const { premiumModalOpen, closePremiumModal } = usePremium()
   const [viewMode, setViewMode] = useState<ViewMode>('focus')
+
+  // 按用户设置的默认视图初始化（游客由下方渲染门控强制 focus）
+  useEffect(() => {
+    getSettings().then((s) => {
+      if (s.defaultView === 'list') setViewMode('list')
+    })
+  }, [])
 
   const handleSwitchToList = useCallback(() => setViewMode('list'), [])
   const handleSwitchToFocus = useCallback(() => setViewMode('focus'), [])

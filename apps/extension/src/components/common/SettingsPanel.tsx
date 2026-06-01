@@ -1,5 +1,13 @@
 import { useState, useEffect, type ReactNode } from 'react'
-import { Popover, Button, Divider, Modal, Tooltip, Switch } from 'antd'
+import {
+  Popover,
+  Button,
+  Divider,
+  Modal,
+  Tooltip,
+  Switch,
+  Segmented,
+} from 'antd'
 import {
   SettingOutlined,
   StopOutlined,
@@ -28,6 +36,11 @@ import {
   isDevBuild,
   setDevPremiumOverride,
 } from '@/services/premium'
+import {
+  getSettings,
+  setSettings,
+  subscribeSettings,
+} from '@/services/settingsStorage'
 import { BlocksiteModal } from '../Blocksite/BlocksiteModal'
 import { PomodoroSettingsModal } from '../FocusView/PomodoroSettingsModal'
 import { ThemeToggle } from './ThemeToggle'
@@ -110,6 +123,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
   const [isOnboarding, setIsOnboarding] = useState(false)
   const [blocksiteNotSeen, setBlocksiteNotSeen] = useState(false)
   const [devPremium, setDevPremium] = useState(() => getDevPremiumOverride())
+  const [defaultView, setDefaultViewState] = useState<'focus' | 'list'>('focus')
   const { fontType, fontScale } = useFont()
   const currentFont = getFontOption(fontType)
   const currentScaleLabel = tPremium(`fontSize.${fontScale}`)
@@ -118,6 +132,16 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
     shouldShowOnboarding().then((should) => setIsOnboarding(should))
     shouldShowBlocksiteHint().then((should) => setBlocksiteNotSeen(should))
   }, [])
+
+  useEffect(() => {
+    getSettings().then((s) => setDefaultViewState(s.defaultView))
+    return subscribeSettings((s) => setDefaultViewState(s.defaultView))
+  }, [])
+
+  const handleDefaultViewChange = (value: 'focus' | 'list') => {
+    setDefaultViewState(value)
+    setSettings({ defaultView: value })
+  }
 
   // dev override 在 premium.ts 模块加载时异步 hydrate，
   // 首屏渲染可能拿到默认值，所以挂载后直接读一次 storage 兜底
@@ -152,6 +176,22 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           </p>
         )}
       </div>
+
+      {/* 默认视图（游客无 List 视图，故仅连接后显示） */}
+      {!isGuest && (
+        <div className="px-3 py-2 flex items-center justify-between gap-2">
+          <SectionLabel>{tSettings('defaultView.label')}</SectionLabel>
+          <Segmented<'focus' | 'list'>
+            size="small"
+            value={defaultView}
+            onChange={handleDefaultViewChange}
+            options={[
+              { label: tSettings('defaultView.focus'), value: 'focus' },
+              { label: tSettings('defaultView.list'), value: 'list' },
+            ]}
+          />
+        </div>
+      )}
 
       {/* 字体选择 → 打开 FontSelectorModal */}
       <button
@@ -334,7 +374,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           onOpenChange={handleOpenChange}
           arrow={false}
           styles={{
-            body: {
+            content: {
               padding: 0,
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border)',

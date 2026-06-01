@@ -173,6 +173,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty('--bg-secondary-on-card')
     }
 
+    // 卡片在弹窗/纸面内的"抬升"填充：与卡片表面拉开层次。
+    // 按卡片明暗自适应——浅色卡片用极淡的暗色叠加，深色卡片用极淡的亮色叠加。
+    const isDarkCard = (theme.isDark ?? false) && !theme.colors.textOnCard
+    root.style.setProperty(
+      '--surface-raised',
+      isDarkCard ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'
+    )
+    // 比 --surface-raised 更明显的"轨道线"色，用于进度环轨道、分隔等
+    // （--border 在深色主题里过淡，会与卡片同色）
+    root.style.setProperty(
+      '--track',
+      isDarkCard ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.1)'
+    )
+    // 卡片上的"强调底色"：把 accent 按比例混进卡片色，保证 7 个主题都有可见
+    // 但不刺眼的强调（dark 主题 accent 近白，避免像 --accent-light 那样回退成卡片同色）。
+    root.style.setProperty(
+      '--surface-accent',
+      `color-mix(in srgb, ${theme.colors.accent} 15%, ${theme.colors.bgCard})`
+    )
+
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme
     root.classList.toggle('theme-with-texture', theme.showTexture)
     root.classList.toggle('theme-with-tape', theme.showTape)

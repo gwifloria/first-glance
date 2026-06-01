@@ -46,17 +46,6 @@ export function FontSelectorModal({ open, onClose }: FontSelectorModalProps) {
       footer={null}
       width="90vw"
       style={{ maxWidth: 560 }}
-      styles={{
-        content: {
-          backgroundColor: 'var(--bg-primary)',
-          border: '1px solid var(--border)',
-        },
-        header: {
-          backgroundColor: 'transparent',
-          borderBottom: 'none',
-          color: 'var(--text-primary)',
-        },
-      }}
     >
       <p className="text-xs mt-1 mb-4 text-[var(--text-secondary)]">
         {t('fontModalSubtitle')}
@@ -121,13 +110,14 @@ function FontPreviewCard({
     <button
       type="button"
       onClick={onClick}
+      style={{ boxShadow: 'var(--shadow-small)' }}
       className={`
         relative w-full p-4 rounded-lg border text-left cursor-pointer transition-all
         text-[var(--text-primary)]
         ${
           isActive
             ? 'ring-2 ring-[var(--accent)] border-[var(--accent)] bg-[var(--bg-secondary)]'
-            : 'border-[var(--border)] bg-transparent hover:opacity-90'
+            : 'border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--text-secondary)]'
         }
       `}
     >

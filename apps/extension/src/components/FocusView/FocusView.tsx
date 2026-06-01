@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { App } from 'antd'
+import { App, Button } from 'antd'
+import { BarChartOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import type { Quote } from '@/data/quotes'
 import { usePomodoro } from '@/hooks/usePomodoro'
@@ -10,6 +11,7 @@ import { Clock } from '../common/Clock'
 import { PomodoroControls } from './PomodoroControls'
 import { FocusTaskList } from './FocusTaskList'
 import { FocusFloatButton } from './FocusFloatButton'
+import { StatsDashboard } from './StatsDashboard'
 import { ChillModeIndicator } from '../common/ChillModeIndicator'
 import { AmbientSoundButton } from '../AmbientSound'
 import type { Task } from '@/types'
@@ -18,6 +20,9 @@ interface FocusViewProps {
   quote: Quote
   onSwitchView?: () => void
 }
+
+// 统计面板尚未打磨完成，暂时隐藏入口（代码保留，改为 true 即可恢复）
+const SHOW_STATS_DASHBOARD = false
 
 export function FocusView({ quote, onSwitchView }: FocusViewProps) {
   const { t } = useTranslation('focus')
@@ -43,10 +48,19 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     )
   }, [])
 
-  const pomodoro = usePomodoro(pomodoroConfig)
   const { data, actions } = useTaskContext()
+  const getTaskMeta = useCallback(
+    (taskId: string) => {
+      const task = data.tasks.find((t) => t.id === taskId)
+      return task ? { title: task.title, priority: task.priority } : null
+    },
+    [data.tasks]
+  )
+  const pomodoro = usePomodoro(pomodoroConfig, getTaskMeta)
   const isImmersive = pomodoro.mode !== 'idle'
   const prevModeRef = useRef(pomodoro.mode)
+  const [statsOpen, setStatsOpen] = useState(false)
+  const openStats = useCallback(() => setStatsOpen(true), [])
 
   // 监听 work → break 切换，弹出任务完成确认
   useEffect(() => {
@@ -104,6 +118,16 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
 
       {/* Top bar */}
       <div className="flex justify-end items-center gap-2 p-6 max-lg:p-4 relative z-10">
+        {SHOW_STATS_DASHBOARD && (
+          <Button
+            type="text"
+            size="small"
+            icon={<BarChartOutlined />}
+            onClick={openStats}
+            aria-label={t('stats.dashboardTitle')}
+            className="!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]"
+          />
+        )}
         <AmbientSoundButton />
         <SettingsPanel />
       </div>
@@ -131,6 +155,7 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
           onResume={pomodoro.resume}
           onReset={pomodoro.reset}
           onSkip={pomodoro.skip}
+          onOpenStats={SHOW_STATS_DASHBOARD ? openStats : undefined}
         />
         <FocusTaskList
           immersive={isImmersive}
@@ -157,6 +182,10 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
       </div>
 
       <ChillModeIndicator />
+
+      {SHOW_STATS_DASHBOARD && (
+        <StatsDashboard open={statsOpen} onClose={() => setStatsOpen(false)} />
+      )}
     </div>
   )
 }

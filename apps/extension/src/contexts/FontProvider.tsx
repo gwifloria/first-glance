@@ -76,6 +76,8 @@ export function FontProvider({ children }: { children: ReactNode }) {
     } else {
       root.style.removeProperty('--font-hand')
     }
+    // 花体可读性补偿系数，正文 font-hand 标题按字体放大字号
+    root.style.setProperty('--font-hand-scale', String(option.handScale ?? 1))
   }, [fontType, theme])
 
   const setFontType = useCallback(

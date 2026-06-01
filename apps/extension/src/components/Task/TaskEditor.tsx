@@ -119,7 +119,7 @@ export function TaskEditor({
       onCancel={onCancel}
       okText={t('common:button.save')}
       cancelText={t('common:button.cancel')}
-      destroyOnClose
+      destroyOnHidden
       width={400}
       className={MODAL_STYLE}
       okButtonProps={{ className: MODAL_OK_BUTTON_STYLE, loading: saving }}

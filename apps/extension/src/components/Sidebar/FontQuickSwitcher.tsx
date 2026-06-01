@@ -106,7 +106,7 @@ export function FontQuickSwitcher() {
       placement="bottomLeft"
       arrow={false}
       styles={{
-        body: {
+        content: {
           padding: 0,
           backgroundColor: 'var(--bg-primary)',
           border: '1px solid var(--border)',

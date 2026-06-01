@@ -89,7 +89,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
       footer={null}
       width={400}
       className="connect-prompt-modal"
-      destroyOnClose
+      destroyOnHidden
     >
       <div className="p-6">
         <div className="text-center mb-6">

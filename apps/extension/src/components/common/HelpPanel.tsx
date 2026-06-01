@@ -94,7 +94,7 @@ export function HelpPanel({ className }: HelpPanelProps) {
       onOpenChange={setOpen}
       arrow={false}
       styles={{
-        body: {
+        content: {
           padding: 0,
           backgroundColor: 'var(--bg-primary)',
           border: '1px solid var(--border)',

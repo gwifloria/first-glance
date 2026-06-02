@@ -91,7 +91,7 @@ export function LongPressButton({
       onTouchStart={handleStart}
       onTouchEnd={stop}
       onTouchCancel={stop}
-      className={`relative inline-flex items-center gap-1 px-2 py-1 rounded text-sm bg-transparent border-none cursor-pointer select-none transition-colors ${className}`}
+      className={`relative inline-flex items-center gap-2 px-2 py-1 rounded text-sm bg-transparent border-none cursor-pointer select-none transition-colors ${className}`}
     >
       {/* 进度环覆盖在 icon 上 */}
       <span

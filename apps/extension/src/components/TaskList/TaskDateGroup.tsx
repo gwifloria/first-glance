@@ -40,7 +40,6 @@ function TaskTree({
   getProjectById,
   onToggleExpand,
   onComplete,
-  onDelete,
   onEdit,
   onStartPomodoro,
 }: {
@@ -52,7 +51,6 @@ function TaskTree({
   getProjectById: (id: string) => Project | undefined
   onToggleExpand: (id: string) => void
   onComplete: (task: Task) => void
-  onDelete: (task: Task) => void
   onEdit: (task: Task) => void
   onStartPomodoro?: (task: Task) => void
 }) {
@@ -71,7 +69,6 @@ function TaskTree({
         nested={depth > 0}
         onToggleExpand={() => onToggleExpand(task.id)}
         onComplete={onComplete}
-        onDelete={onDelete}
         onEdit={onEdit}
         onStartPomodoro={onStartPomodoro}
       />
@@ -89,7 +86,6 @@ function TaskTree({
                 getProjectById={getProjectById}
                 onToggleExpand={onToggleExpand}
                 onComplete={onComplete}
-                onDelete={onDelete}
                 onEdit={onEdit}
                 onStartPomodoro={onStartPomodoro}
               />
@@ -100,7 +96,6 @@ function TaskTree({
                 project={getProjectById(child.projectId)}
                 nested
                 onComplete={onComplete}
-                onDelete={onDelete}
                 onEdit={onEdit}
                 onStartPomodoro={onStartPomodoro}
               />
@@ -119,7 +114,6 @@ interface TaskDateGroupProps {
   showGroupTitle: boolean
   onToggle: () => void
   onComplete: (task: Task) => void
-  onDelete: (task: Task) => void
   onEdit: (task: Task) => void
   onStartPomodoro?: (task: Task) => void
 }
@@ -131,7 +125,6 @@ export const TaskDateGroup = memo(function TaskDateGroup({
   showGroupTitle,
   onToggle,
   onComplete,
-  onDelete,
   onEdit,
   onStartPomodoro,
 }: TaskDateGroupProps) {
@@ -216,7 +209,6 @@ export const TaskDateGroup = memo(function TaskDateGroup({
               getProjectById={getProjectById}
               onToggleExpand={toggleExpand}
               onComplete={onComplete}
-              onDelete={onDelete}
               onEdit={onEdit}
               onStartPomodoro={onStartPomodoro}
             />

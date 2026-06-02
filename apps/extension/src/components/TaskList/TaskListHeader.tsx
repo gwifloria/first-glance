@@ -63,9 +63,9 @@ export function TaskListHeader({
           </span>
         </div>
       </div>
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         <SortGroupControl />
-        <RefreshButton className="mt-1" />
+        <RefreshButton />
         {onFocus && (
           <Button
             type="default"

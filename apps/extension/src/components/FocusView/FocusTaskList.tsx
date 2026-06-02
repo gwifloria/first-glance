@@ -5,7 +5,7 @@ import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import { parseContent, contentToSummary } from '@/utils/contentRendering'
 import type { Task } from '@/types'
-import { Button, Checkbox, message, Popover, Spin } from 'antd'
+import { Button, Checkbox, message, Popover, Spin, Tooltip } from 'antd'
 import { AimOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -47,14 +47,16 @@ function ActionButtons({
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {isIdle && onStartPomodoro && (
-        <Button
-          type="text"
-          size="small"
-          icon={<TomatoIcon size={14} />}
-          onClick={() => onStartPomodoro(task)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-          title={t('pomodoro.start')}
-        />
+        <Tooltip title={t('pomodoro.start')}>
+          <Button
+            type="text"
+            size="small"
+            icon={<TomatoIcon size={14} />}
+            onClick={() => onStartPomodoro(task)}
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+            aria-label={t('pomodoro.start')}
+          />
+        </Tooltip>
       )}
       {isFocusingUnbound && onBindTask && (
         <Button

@@ -15,6 +15,15 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
   const textSecondaryOnCard = colors.textSecondaryOnCard ?? colors.textSecondary
   // antd 组件的输入框/标签等背景色（卡片上的次级背景）
   const bgSecondaryOnCard = colors.bgSecondaryOnCard ?? colors.bgSecondary
+  // 卡片表面上的交互叠加色（多个组件复用）：
+  // dark 卡片用浅色半透明（accentLight==bgCard 会与面板同色而隐形），
+  // 浅色/journal 卡片仍用 accent 柔色调（选中）/ 黑色低透明（hover）
+  const overlaySelected = isDarkCard
+    ? 'rgba(255, 255, 255, 0.12)'
+    : colors.accentLight
+  const overlayHover = isDarkCard
+    ? 'rgba(255, 255, 255, 0.08)'
+    : 'rgba(0, 0, 0, 0.04)'
 
   return {
     token: {
@@ -52,9 +61,7 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         // 主按钮：根据 accent 亮度自动计算对比色
         primaryColor: contrastText(colors.accent),
         // 文本按钮
-        textHoverBg: isDarkCard
-          ? 'rgba(255, 255, 255, 0.08)'
-          : 'rgba(0, 0, 0, 0.04)',
+        textHoverBg: overlayHover,
         // 通用：手帐风全局去掉按钮投影（原先靠各处 !shadow-none）
         defaultShadow: 'none',
         primaryShadow: 'none',
@@ -113,15 +120,26 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         selectorBg: 'var(--surface-raised)',
         colorBgElevated: colors.bgCard,
         colorText: textOnCard,
-        optionSelectedBg: colors.accentLight,
+        // dark 主题里 accentLight == bgCard（同为 #18181b），选中高亮会与下拉面板
+        // 同色而隐形，故走 overlaySelected（深色卡片用浅色半透明叠加）
+        optionSelectedBg: overlaySelected,
         optionSelectedColor: textOnCard,
-        optionActiveBg: isDarkCard
-          ? 'rgba(255, 255, 255, 0.08)'
-          : 'rgba(0, 0, 0, 0.04)',
+        optionActiveBg: overlayHover,
         optionFontSize: 14,
         hoverBorderColor: colors.accent,
         activeBorderColor: colors.accent,
         borderRadius: 12,
+      },
+      Menu: {
+        // Dropdown 菜单（如侧边栏默认清单选择）渲染在 colorBgElevated=卡片表面上。
+        // antd 默认选中态走 colorPrimary 派生：dark 主题 accent=#fafafa（白），
+        // 会得到白底白字而隐身。这里把选中/hover 焊死到卡片字色 + 可见叠加。
+        itemColor: textOnCard,
+        itemHoverColor: textOnCard,
+        itemSelectedColor: textOnCard,
+        itemSelectedBg: overlaySelected,
+        itemHoverBg: overlayHover,
+        itemActiveBg: overlayHover,
       },
       Radio: {
         // 优先级 Radio.Group 用 flex gap 控间距，去掉每项默认右外边距

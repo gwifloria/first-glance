@@ -144,7 +144,6 @@ export const TaskList = memo(function TaskList({
               showGroupTitle={groups.length > 1}
               onToggle={() => toggleGroup(group.id)}
               onComplete={onComplete}
-              onDelete={onDelete}
               onEdit={handleEdit}
               onStartPomodoro={onStartPomodoro}
             />

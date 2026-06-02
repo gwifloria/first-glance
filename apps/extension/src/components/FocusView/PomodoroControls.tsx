@@ -19,6 +19,10 @@ import { LongPressButton } from '../common/LongPressButton'
 const BTN_PRIMARY = '!text-[var(--text-secondary)] hover:!text-[var(--accent)]'
 const BTN_SECONDARY =
   '!text-[var(--text-secondary)] hover:!text-[var(--text-primary)]'
+// 运行态三个控件（暂停/继续 用 antd Button，跳过/结束 用 LongPressButton）需对齐：
+// 把 antd Button 的字号/字重/内边距压到与 LongPressButton（px-2 text-sm 常规字重）一致，
+// 否则 antd 默认的 large 字号 + 字重 500 + paddingInline 16 会让 Pause 偏粗偏大、间距不均
+const BTN_RUN_NORMALIZE = '!px-2 !text-sm !font-normal'
 
 interface PomodoroControlsProps {
   mode: PomodoroMode
@@ -64,7 +68,7 @@ export const PomodoroControls = memo(function PomodoroControls({
               size="large"
               icon={<PauseCircleOutlined />}
               onClick={onPause}
-              className={BTN_PRIMARY}
+              className={`${BTN_PRIMARY} ${BTN_RUN_NORMALIZE}`}
             >
               {t('pomodoro.pause')}
             </Button>
@@ -74,7 +78,7 @@ export const PomodoroControls = memo(function PomodoroControls({
               size="large"
               icon={<PlayCircleOutlined />}
               onClick={onResume}
-              className={BTN_PRIMARY}
+              className={`${BTN_PRIMARY} ${BTN_RUN_NORMALIZE}`}
             >
               {mode === 'break'
                 ? t('pomodoro.startBreak')

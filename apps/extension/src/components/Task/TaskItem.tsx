@@ -1,11 +1,6 @@
 import { memo } from 'react'
-import { Button, Popconfirm } from 'antd'
-import {
-  DeleteOutlined,
-  RightOutlined,
-  TagOutlined,
-  AimOutlined,
-} from '@ant-design/icons'
+import { Button, Tooltip } from 'antd'
+import { RightOutlined, TagOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { formatShortDate } from '@/utils/date'
 import { isOverdue } from '@/utils/taskFilters'
@@ -15,6 +10,7 @@ import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import { contentToSummary } from '@/utils/contentRendering'
 import { ProjectColorDot } from '../common/ProjectColorDot'
 import { TaskCheckbox } from '../common/TaskCheckbox'
+import { TomatoIcon } from '../FocusView/TomatoIcon'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import type { Task, Project } from '@/types'
 
@@ -28,7 +24,6 @@ interface TaskItemProps {
   nested?: boolean
   onToggleExpand?: () => void
   onComplete: (task: Task) => void
-  onDelete: (task: Task) => void
   onEdit: (task: Task) => void
   /** 从列表直接开启番茄钟（绑定该任务并切到 Focus） */
   onStartPomodoro?: (task: Task) => void
@@ -43,7 +38,6 @@ export const TaskItem = memo(function TaskItem({
   nested,
   onToggleExpand,
   onComplete,
-  onDelete,
   onEdit,
   onStartPomodoro,
 }: TaskItemProps) {
@@ -146,36 +140,24 @@ export const TaskItem = memo(function TaskItem({
         </div>
       </div>
 
-      <div
-        className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {onStartPomodoro && (
-          <Button
-            type="text"
-            size="small"
-            icon={<AimOutlined />}
-            onClick={() => onStartPomodoro(task)}
-            className="!w-7 !h-7 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-            aria-label={t('focus:pomodoro.start')}
-          />
-        )}
-        <Popconfirm
-          title={t('task:confirm.delete')}
-          onConfirm={() => onDelete(task)}
-          okText={t('common:button.delete')}
-          cancelText={t('common:button.cancel')}
+      {/* 列表行只保留「开启番茄钟」，删除等编辑操作收进任务详情抽屉内 */}
+      {onStartPomodoro && (
+        <div
+          className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={(e) => e.stopPropagation()}
         >
-          <Button
-            type="text"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            className="!w-7 !h-7"
-            aria-label={t('common:button.delete')}
-          />
-        </Popconfirm>
-      </div>
+          <Tooltip title={t('focus:pomodoro.start')}>
+            <Button
+              type="text"
+              size="small"
+              icon={<TomatoIcon size={14} />}
+              onClick={() => onStartPomodoro(task)}
+              className="!text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+              aria-label={t('focus:pomodoro.start')}
+            />
+          </Tooltip>
+        </div>
+      )}
     </div>
   )
 })

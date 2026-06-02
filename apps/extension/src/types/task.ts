@@ -42,6 +42,11 @@ export interface Task {
    * Todoist 比对真实 inbox 项目 id，滴答用 id 前缀），通用层只读此标记。
    */
   isInbox?: boolean
+  /**
+   * 是否置顶。由 adapter 层统一标记：滴答用 sortOrder>0，Todoist/本地无置顶概念恒 false。
+   * 不能在通用层用 sortOrder 猜——Todoist 的 sortOrder 来自 childOrder（位置序号，恒>0）。
+   */
+  isPinned?: boolean
 }
 
 /** 本地任务（访客模式） */

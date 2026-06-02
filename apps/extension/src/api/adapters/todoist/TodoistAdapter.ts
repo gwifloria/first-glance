@@ -216,9 +216,14 @@ export class TodoistAdapter implements ITaskAdapter {
   // 由 inboxProject 标志解析后缓存，用于给任务打 isInbox 标记。
   private inboxProjectId?: string
 
-  /** 给任务打 isInbox 标记：projectId 命中 inbox 项目即为收集箱任务 */
+  // Todoist 开放 API 无置顶概念，且 sortOrder 来自 childOrder（位置序号，恒>0），
+  // 不能据此判置顶——isPinned 恒 false，避免全部任务被误塞进 pinned 桶。
   private stamp(task: Task): Task {
-    return { ...task, isInbox: task.projectId === this.inboxProjectId }
+    return {
+      ...task,
+      isInbox: task.projectId === this.inboxProjectId,
+      isPinned: false,
+    }
   }
 
   async getProjects(): Promise<Project[]> {

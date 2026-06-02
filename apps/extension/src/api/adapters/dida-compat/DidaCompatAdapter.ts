@@ -27,7 +27,11 @@ export class DidaCompatAdapter implements ITaskAdapter {
 
   // 滴答/TickTick 的 inbox 项目真实 id 以 'inbox' 开头，用作 isInbox 判定
   private stamp(task: Task): Task {
-    return { ...task, isInbox: !!task.projectId?.startsWith('inbox') }
+    return {
+      ...task,
+      isInbox: !!task.projectId?.startsWith('inbox'),
+      isPinned: task.sortOrder > 0,
+    }
   }
 
   async getProjects(): Promise<Project[]> {

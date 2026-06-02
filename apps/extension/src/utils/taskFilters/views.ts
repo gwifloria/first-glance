@@ -96,7 +96,7 @@ export function computeTaskViews(tasks: Task[]): ComputedViews {
     const label = classifyDueDate(dateStr, todayStr, tomorrowStr, nextWeekStr)
     bumpDateCounts(result.counts, label)
 
-    if (task.sortOrder > 0) {
+    if (task.isPinned) {
       result.byDate.pinned.push(task)
     } else {
       // 'week' 类别没有独立桶，并入 later；其余类别名即桶名

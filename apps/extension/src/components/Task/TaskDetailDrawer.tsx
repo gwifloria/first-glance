@@ -243,7 +243,6 @@ export function TaskDetailDrawer({
             size="xs"
           />
           <span className="truncate">
-            #
             {isInbox
               ? tSettings('defaultProject.inbox')
               : (project?.name ?? '')}

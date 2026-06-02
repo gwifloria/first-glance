@@ -115,7 +115,7 @@ export const TaskItem = memo(function TaskItem({
                   size="xs"
                 />
                 <span className="text-[var(--text-secondary)]">
-                  #{projectName}
+                  {projectName}
                 </span>
               </span>
             )}

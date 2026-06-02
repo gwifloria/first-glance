@@ -13,6 +13,7 @@ import type {
   GetAllTasksResult,
 } from '../types'
 import { storage } from '@/services/storage'
+import { todoistColorToHex } from './colors'
 import { tasksApi } from './tasks'
 import { projectsApi } from './projects'
 
@@ -141,6 +142,8 @@ export function transformProjectFromTodoist(raw: TodoistProject): Project {
     name: raw.name,
     sortOrder: raw.childOrder,
     kind: raw.inboxProject ? 'INBOX' : undefined,
+    // Todoist 颜色是名称（berry_red 等），映射成 hex 供色点渲染
+    color: todoistColorToHex(raw.color),
   }
 }
 

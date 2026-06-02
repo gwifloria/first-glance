@@ -1,9 +1,15 @@
 {
   "title": "Settings",
+  "defaultView": {
+    "label": "Default view",
+    "focus": "Focus",
+    "list": "List"
+  },
   "defaultProject": {
     "label": "Default list for new tasks",
     "inbox": "Inbox",
-    "hint": "This list will be used when quickly adding tasks in smart lists"
+    "hint": "This list will be used when quickly adding tasks in smart lists",
+    "saved": "Set!"
   },
   "blocksite": {
     "label": "Blocked Sites",

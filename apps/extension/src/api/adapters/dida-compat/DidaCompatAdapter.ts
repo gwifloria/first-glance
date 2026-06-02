@@ -14,6 +14,8 @@ import type {
 
 export class DidaCompatAdapter implements ITaskAdapter {
   readonly name: string
+  // 滴答/TickTick 开放 API 不支持真实子任务、独立 deadline，也不暴露 tags
+  readonly capabilities = { subtasks: false, deadline: false, labels: false }
   private tasksApi: TasksApi
   private projectsApi: ProjectsApi
 
@@ -23,27 +25,40 @@ export class DidaCompatAdapter implements ITaskAdapter {
     this.projectsApi = projectsApi
   }
 
+  // 滴答/TickTick 的 inbox 项目真实 id 以 'inbox' 开头，用作 isInbox 判定
+  private stamp(task: Task): Task {
+    return {
+      ...task,
+      isInbox: !!task.projectId?.startsWith('inbox'),
+      isPinned: task.sortOrder > 0,
+    }
+  }
+
   async getProjects(): Promise<Project[]> {
     return this.projectsApi.getAll()
   }
 
   async getAllTasks(): Promise<GetAllTasksResult> {
-    return this.projectsApi.getAllTasks()
+    const { tasks, projects } = await this.projectsApi.getAllTasks()
+    return { tasks: tasks.map((t) => this.stamp(t)), projects }
   }
 
   async createTask(input: CreateTaskInput): Promise<Task> {
-    return this.tasksApi.create({
+    const task = await this.tasksApi.create({
       title: input.title,
       projectId: input.projectId,
       content: input.content,
       priority: input.priority ?? 0,
       dueDate: input.dueDate,
       parentId: input.parentId,
+      tags: input.tags,
     })
+    return this.stamp(task)
   }
 
   async updateTask(taskId: string, input: UpdateTaskInput): Promise<Task> {
-    return this.tasksApi.update(taskId, input)
+    const task = await this.tasksApi.update(taskId, input)
+    return this.stamp(task)
   }
 
   async completeTask(task: Task): Promise<void> {

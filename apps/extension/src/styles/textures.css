@@ -91,8 +91,9 @@
 }
 
 /* 卡片内部颜色覆盖（暮色蓝等双表面主题） */
+/* antd6 把 modal 盒子类名从 .ant-modal-content 改为 .ant-modal-container */
 .card-surface,
-.ant-modal-content {
+.ant-modal-container {
   --text-primary: var(--text-on-card, var(--text-primary));
   --text-secondary: var(--text-on-card-secondary, var(--text-secondary));
   --border: var(--border-on-card, var(--border));

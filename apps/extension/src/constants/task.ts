@@ -42,7 +42,9 @@ export const PRIORITY_COLORS = {
   [TASK_PRIORITY.HIGH]: 'var(--priority-high)',
   [TASK_PRIORITY.MEDIUM]: 'var(--priority-medium)',
   [TASK_PRIORITY.LOW]: 'var(--priority-low)',
-  [TASK_PRIORITY.NONE]: 'var(--border)',
+  // 无优先级用次字色而非分隔线色：checkbox 圈环/标记是可见控件，
+  // 分隔线色（--border）在浅卡片上太弱会隐身；次字色各表面可读、卡片内自动 on-card
+  [TASK_PRIORITY.NONE]: 'var(--text-secondary)',
 } as const
 
 /**

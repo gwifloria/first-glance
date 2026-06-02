@@ -15,6 +15,8 @@ const LOCAL_PROJECT_ID = 'local-inbox'
 
 export class LocalAdapter implements ITaskAdapter {
   readonly name = 'local'
+  // 游客模式不支持编辑/子任务等高级能力
+  readonly capabilities = { subtasks: false, deadline: false, labels: false }
 
   /**
    * 将 LocalTask 转换为 Task 格式
@@ -29,6 +31,9 @@ export class LocalAdapter implements ITaskAdapter {
       status: local.status,
       createdTime: local.createdTime,
       sortOrder: 0,
+      // 本地模式只有收集箱一个项目，全部任务即收集箱任务
+      isInbox: true,
+      isPinned: false,
     }
   }
 

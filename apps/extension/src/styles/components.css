@@ -63,14 +63,7 @@
   border-color: var(--accent) !important;
   box-shadow: var(--shadow-medium) !important;
 }
-.quick-add-input .ant-input {
-  background: transparent !important;
-  /* Input token 的 colorText 是「卡片字色」，这里在页面表面上要用页面字色 */
-  color: var(--text-primary) !important;
-}
-.quick-add-input .ant-input::placeholder {
-  color: var(--text-secondary) !important;
-}
+/* .ant-input 的字色/占位/透明背景由 SurfaceInput（surface="page"）统一处理 */
 
 /* Onboarding 按钮 */
 .onboarding-btn-skip {

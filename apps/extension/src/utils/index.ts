@@ -30,7 +30,6 @@ export {
   // 视图计算（核心）
   computeTaskViews,
   getFocusTasks,
-  getTaskCounts,
 } from './taskFilters'
 
 // 项目工具

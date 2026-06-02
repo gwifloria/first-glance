@@ -38,7 +38,7 @@ export const NavItem = memo(function NavItem({
         transition-all duration-200 ease-out
         ${collapsed ? 'justify-center px-2' : 'px-3'}
         ${nested && !collapsed ? 'pl-7' : ''}
-        ${active ? 'bg-[var(--accent-light)]' : 'hover:bg-black/[0.04] hover:translate-x-0.5'}
+        ${active ? 'bg-[var(--accent-light)]' : 'hover:bg-[var(--overlay-hover-surface)] hover:translate-x-0.5'}
       `}
     >
       {icon ? (

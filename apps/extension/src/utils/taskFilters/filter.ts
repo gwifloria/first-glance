@@ -18,10 +18,14 @@ export function filterTasks(
   } else {
     switch (filter) {
       case 'inbox':
-        filtered = filtered.filter((t) => t.projectId?.startsWith('inbox'))
+        // inbox 归属由 adapter 层统一标记（各服务用各自规则），这里只读标记
+        filtered = filtered.filter((t) => t.isInbox)
         break
       case 'today':
-        filtered = filtered.filter((t) => isToday(t.dueDate))
+        // Today 视图同时纳入已过期（getTaskGroups 会把过期组自动置顶在今天组之上）
+        filtered = filtered.filter(
+          (t) => isToday(t.dueDate) || isOverdue(t.dueDate)
+        )
         break
       case 'tomorrow':
         filtered = filtered.filter((t) => isTomorrow(t.dueDate))

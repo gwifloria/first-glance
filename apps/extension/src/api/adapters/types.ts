@@ -12,6 +12,7 @@ export interface CreateTaskInput {
   priority?: number
   dueDate?: string
   parentId?: string
+  tags?: string[]
 }
 
 /** 更新任务的输入 */
@@ -21,6 +22,8 @@ export interface UpdateTaskInput {
   priority?: number
   dueDate?: string
   projectId?: string
+  /** 标签全量替换：传入完整数组（含删改后的结果） */
+  tags?: string[]
 }
 
 /** 获取任务的返回结果 */
@@ -30,11 +33,26 @@ export interface GetAllTasksResult {
 }
 
 /**
+ * 适配器能力声明：各服务开放 API 支持度不同（非共通能力在 adapter 层声明，UI 据此显隐）。
+ * - subtasks：真实子任务（parentId）。Todoist 支持；滴答/TickTick 开放 API 仅有 checklist items，不支持。
+ * - deadline：独立于 dueDate 的截止日字段。仅 Todoist 有。
+ * - labels：任务标签（用于按标签分组）。滴答开放 API 不暴露 tags。
+ */
+export interface AdapterCapabilities {
+  subtasks: boolean
+  deadline: boolean
+  labels: boolean
+}
+
+/**
  * 任务后端适配器接口
  */
 export interface ITaskAdapter {
   /** 适配器名称 */
   readonly name: string
+
+  /** 服务能力声明 */
+  readonly capabilities: AdapterCapabilities
 
   // ========== 项目操作 ==========
 

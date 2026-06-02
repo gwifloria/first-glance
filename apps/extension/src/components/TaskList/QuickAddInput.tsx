@@ -1,8 +1,11 @@
 import { FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
+import { useTaskContext } from '@/contexts/TaskContext'
+import { resolveDefaultProjectId } from '@/utils/project'
 import type { Task } from '@/types'
 import { formatDateStr } from '@/utils/date'
-import { Input } from 'antd'
+import { SurfaceInput } from '../common'
+import { LoadingOutlined } from '@ant-design/icons'
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -18,11 +21,23 @@ export const QuickAddInput = memo(function QuickAddInput({
   onOpenEditor,
 }: QuickAddInputProps) {
   const { t } = useTranslation('task')
+  const { data } = useTaskContext()
   const [quickAddValue, setQuickAddValue] = useState('')
+  const [creating, setCreating] = useState(false)
 
   const handleQuickAdd = async () => {
-    if (!quickAddValue.trim()) return
+    if (creating || !quickAddValue.trim()) return
 
+    setCreating(true)
+    try {
+      await submitQuickAdd()
+      setQuickAddValue('')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  const submitQuickAdd = async () => {
     const settings = await getSettings()
     let projectId: string | undefined
     let dueDate: string | undefined
@@ -36,14 +51,11 @@ export const QuickAddInput = memo(function QuickAddInput({
       // 选中具体项目时，使用该项目
       projectId = filter.replace('project:', '')
     } else {
-      // today/tomorrow 使用 defaultProjectId
-      // 如果 defaultProjectId 是 inbox 或未设置，不传 projectId（API 默认放到 inbox）
-      const isInbox =
-        !settings.defaultProjectId ||
-        settings.defaultProjectId.startsWith('inbox')
-      if (!isInbox && settings.defaultProjectId) {
-        projectId = settings.defaultProjectId
-      }
+      // today/tomorrow 用默认清单；收集箱当作未指定（resolveDefaultProjectId 内处理）
+      projectId = resolveDefaultProjectId(
+        settings.defaultProjectId,
+        data.projects
+      )
     }
 
     // 根据 filter 设置 dueDate（全天任务，纯日期字符串）
@@ -61,25 +73,32 @@ export const QuickAddInput = memo(function QuickAddInput({
       projectId,
       dueDate,
     })
-    setQuickAddValue('')
   }
 
   return (
     <div className="mb-6">
-      <Input
+      <SurfaceInput
         placeholder={t('placeholder.quickAdd')}
         value={quickAddValue}
         onChange={(e) => setQuickAddValue(e.target.value)}
         onPressEnter={handleQuickAdd}
+        disabled={creating}
         className="quick-add-input"
         variant="borderless"
         suffix={
-          <span
-            className="text-[0.6875rem] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
-            onClick={onOpenEditor}
-          >
-            +
-          </span>
+          creating ? (
+            <LoadingOutlined
+              className="text-[var(--accent)]"
+              style={{ fontSize: 14 }}
+            />
+          ) : (
+            <span
+              className="text-[0.6875rem] text-[var(--text-secondary)] bg-[var(--bg-secondary)] py-0.5 px-1.5 rounded cursor-pointer hover:bg-[var(--border)]"
+              onClick={onOpenEditor}
+            >
+              +
+            </span>
+          )
         }
       />
     </div>

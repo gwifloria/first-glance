@@ -39,11 +39,7 @@ function PomodoroSection({
           block
           icon={<PlayCircleOutlined />}
           onClick={pomodoro.start}
-          className="!h-10 !text-sm !font-medium !rounded-lg"
-          style={{
-            backgroundColor: 'var(--accent)',
-            borderColor: 'var(--accent)',
-          }}
+          className="!h-10"
         >
           {t('popup.startPomodoro')}
         </Button>

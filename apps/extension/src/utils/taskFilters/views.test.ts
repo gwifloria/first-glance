@@ -15,11 +15,16 @@ describe('views', () => {
   describe('computeTaskViews', () => {
     it('计数正确', () => {
       const tasks = [
-        makeTask({ id: '1', dueDate: '2026-02-27', projectId: 'inbox-1' }), // today + inbox + week
+        makeTask({
+          id: '1',
+          dueDate: '2026-02-27',
+          projectId: 'inbox-1',
+          isInbox: true,
+        }), // today + inbox + week
         makeTask({ id: '2', dueDate: '2026-02-28', projectId: 'proj-1' }), // tomorrow + week
         makeTask({ id: '3', dueDate: '2026-02-25', projectId: 'proj-1' }), // overdue
         makeTask({ id: '4', dueDate: '2026-03-02', projectId: 'proj-2' }), // week (not today/tomorrow)
-        makeTask({ id: '5', projectId: 'inbox-1' }), // inbox + nodate
+        makeTask({ id: '5', projectId: 'inbox-1', isInbox: true }), // inbox + nodate
       ]
 
       const views = computeTaskViews(tasks)
@@ -46,8 +51,8 @@ describe('views', () => {
 
     it('pinned 任务出现在 pinned 列表', () => {
       const tasks = [
-        makeTask({ id: '1', sortOrder: 10, dueDate: '2026-02-27' }),
-        makeTask({ id: '2', sortOrder: 0, dueDate: '2026-02-27' }),
+        makeTask({ id: '1', isPinned: true, dueDate: '2026-02-27' }),
+        makeTask({ id: '2', isPinned: false, dueDate: '2026-02-27' }),
       ]
 
       const views = computeTaskViews(tasks)
@@ -58,7 +63,7 @@ describe('views', () => {
 
     it('pinned 任务也计入日期分组的 count', () => {
       const tasks = [
-        makeTask({ id: '1', sortOrder: 10, dueDate: '2026-02-27' }), // pinned today
+        makeTask({ id: '1', isPinned: true, dueDate: '2026-02-27' }), // pinned today
       ]
 
       const views = computeTaskViews(tasks)
@@ -69,7 +74,9 @@ describe('views', () => {
     })
 
     it('pinned 过期任务计入 overdue count', () => {
-      const tasks = [makeTask({ id: '1', sortOrder: 5, dueDate: '2026-02-25' })]
+      const tasks = [
+        makeTask({ id: '1', isPinned: true, dueDate: '2026-02-25' }),
+      ]
 
       const views = computeTaskViews(tasks)
 
@@ -91,9 +98,24 @@ describe('views', () => {
 
     it('pinned 组按 sortOrder 排序', () => {
       const tasks = [
-        makeTask({ id: '1', sortOrder: 5, dueDate: '2026-02-27' }),
-        makeTask({ id: '2', sortOrder: 20, dueDate: '2026-02-27' }),
-        makeTask({ id: '3', sortOrder: 10, dueDate: '2026-02-27' }),
+        makeTask({
+          id: '1',
+          isPinned: true,
+          sortOrder: 5,
+          dueDate: '2026-02-27',
+        }),
+        makeTask({
+          id: '2',
+          isPinned: true,
+          sortOrder: 20,
+          dueDate: '2026-02-27',
+        }),
+        makeTask({
+          id: '3',
+          isPinned: true,
+          sortOrder: 10,
+          dueDate: '2026-02-27',
+        }),
       ]
 
       const views = computeTaskViews(tasks)
@@ -143,10 +165,10 @@ describe('views', () => {
 
     it('pinnedFocus 优先显示', () => {
       const tasks = [
-        makeTask({ id: 'pinned', sortOrder: 10, dueDate: '2026-02-27' }),
+        makeTask({ id: 'pinned', isPinned: true, dueDate: '2026-02-27' }),
         makeTask({
           id: 'normal',
-          sortOrder: 0,
+          isPinned: false,
           dueDate: '2026-02-27',
           priority: 5,
         }),
@@ -171,7 +193,11 @@ describe('views', () => {
 
     it('未来日期的 pinned 不出现', () => {
       const tasks = [
-        makeTask({ id: 'future-pinned', sortOrder: 10, dueDate: '2026-04-01' }),
+        makeTask({
+          id: 'future-pinned',
+          isPinned: true,
+          dueDate: '2026-04-01',
+        }),
         makeTask({ id: 'today', dueDate: '2026-02-27' }),
       ]
       const views = computeTaskViews(tasks)
@@ -185,7 +211,7 @@ describe('views', () => {
       const tasks = [
         makeTask({
           id: 'pinned-overdue',
-          sortOrder: 10,
+          isPinned: true,
           dueDate: '2026-02-25',
         }),
       ]

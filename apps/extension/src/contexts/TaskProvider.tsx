@@ -21,7 +21,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     return currentProvider
   }, [isConnected, currentProvider])
 
-  const { data: rawData, actions } = useTaskData(adapterType, disconnect)
+  const {
+    data: rawData,
+    actions,
+    capabilities,
+  } = useTaskData(adapterType, disconnect)
   const data = useMemo(
     () => ({ ...rawData, taskMap: buildTaskMap(rawData.tasks) }),
     [rawData]
@@ -48,8 +52,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
   // 使用 useMemo 包装 context value，避免每次渲染都创建新对象导致的全局重渲染
   const value = useMemo<TaskContextValue>(
-    () => ({ data, actions, views, filters }),
-    [data, actions, views, filters]
+    () => ({ data, actions, views, filters, capabilities }),
+    [data, actions, views, filters, capabilities]
   )
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>

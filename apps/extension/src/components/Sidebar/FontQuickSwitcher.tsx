@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Popover, Segmented } from 'antd'
 import { CheckOutlined, CrownFilled, FontSizeOutlined } from '@ant-design/icons'
+import { POPOVER_CONTENT_STYLE } from '@/constants/styles'
 import { useTranslation } from 'react-i18next'
 import { useFont } from '@/hooks/useFont'
 import { usePremium } from '@/hooks/usePremium'
@@ -105,13 +106,7 @@ export function FontQuickSwitcher() {
       onOpenChange={setOpen}
       placement="bottomLeft"
       arrow={false}
-      styles={{
-        body: {
-          padding: 0,
-          backgroundColor: 'var(--bg-primary)',
-          border: '1px solid var(--border)',
-        },
-      }}
+      styles={{ content: POPOVER_CONTENT_STYLE }}
     >
       <Button
         type="text"

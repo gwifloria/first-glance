@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTaskContext } from '@/contexts/TaskContext'
+import { usePomodoro } from '@/hooks/usePomodoro'
+import { getSettings, subscribeSettings } from '@/services/settingsStorage'
 import { Sidebar } from '@/components/Sidebar'
 import { TaskList } from '@/components/TaskList'
 import { ChillModeIndicator } from '@/components/common'
+import type { Task } from '@/types'
 
 interface ListLayoutProps {
   onFocus: () => void
@@ -19,6 +22,36 @@ export function ListLayout({ onFocus }: ListLayoutProps) {
 
   const [selectedFilter, setSelectedFilter] = useState('today')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // 番茄钟配置（用户自定义时长），用于从列表直接开启
+  const [pomodoroConfig, setPomodoroConfig] = useState({
+    workDuration: 25,
+    breakDuration: 5,
+  })
+  useEffect(() => {
+    getSettings().then((s) =>
+      setPomodoroConfig({
+        workDuration: s.workDuration,
+        breakDuration: s.breakDuration,
+      })
+    )
+    return subscribeSettings((s) =>
+      setPomodoroConfig({
+        workDuration: s.workDuration,
+        breakDuration: s.breakDuration,
+      })
+    )
+  }, [])
+  const pomodoro = usePomodoro(pomodoroConfig)
+
+  // 从列表开启番茄钟：绑定任务（跨标签页存储同步）后切到 Focus 视图沉浸计时
+  const handleStartPomodoro = useCallback(
+    (task: Task) => {
+      pomodoro.startWithTask(task.id)
+      onFocus()
+    },
+    [pomodoro, onFocus]
+  )
 
   return (
     <div className="h-screen bg-[var(--bg-frame)] flex overflow-hidden relative animate-fadeIn">
@@ -55,6 +88,7 @@ export function ListLayout({ onFocus }: ListLayoutProps) {
               onUpdate={updateTask}
               onCreate={createTask}
               onFocus={onFocus}
+              onStartPomodoro={handleStartPomodoro}
             />
           </main>
         </div>

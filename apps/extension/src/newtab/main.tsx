@@ -12,9 +12,13 @@ import { PremiumProvider } from '@/contexts/PremiumProvider'
 import { ErrorBoundary } from '@/components/common'
 import { useTheme } from '@/hooks/useTheme'
 import { createAntdTheme } from '@/themes/antdTheme'
+import { seedDevFocusStatsIfNeeded } from '@/services/focusStats'
 import '@/i18n'
 import App from './App'
 import '@/styles/index.css'
+
+// dev 模式按需灌入假番茄数据（生产构建中被 tree-shaken）
+seedDevFocusStatsIfNeeded()
 
 // Ant Design 配置包装器，响应主题变化
 function AntdConfigProvider({ children }: { children: ReactNode }) {

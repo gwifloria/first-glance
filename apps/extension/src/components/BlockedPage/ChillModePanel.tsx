@@ -7,6 +7,7 @@ import {
   CHILL_MODE_HOLD_INTERVAL_MS,
   CHILL_MODE_HOLD_STEPS,
 } from '@/constants'
+import { STORAGE_KEYS } from '@/services/storageKeys'
 
 interface ChillModePanelProps {
   originalUrl?: string
@@ -42,7 +43,7 @@ export function ChillModePanel({
   const enterChillMode = useCallback(async () => {
     const expiresAt = Date.now() + CHILL_MODE_DURATION_MS
     await chrome.storage.local.set({
-      chill_mode: { active: true, expiresAt },
+      [STORAGE_KEYS.CHILL_MODE]: { active: true, expiresAt },
     })
     // 等待 background 清除屏蔽规则后再导航
     await new Promise((resolve) => setTimeout(resolve, 100))

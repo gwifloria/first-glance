@@ -33,6 +33,19 @@ export function sortTasks(tasks: Task[], by: SortOption): Task[] {
       // 按滴答清单原排序
       sorted.sort((a, b) => a.sortOrder - b.sortOrder)
       break
+    case 'name':
+      // 按标题字母/拼音序
+      sorted.sort((a, b) => a.title.localeCompare(b.title))
+      break
+    case 'deadline':
+      // 早截止在前，无截止日在后
+      sorted.sort((a, b) => {
+        if (!a.deadline && !b.deadline) return 0
+        if (!a.deadline) return 1
+        if (!b.deadline) return -1
+        return a.deadline.localeCompare(b.deadline)
+      })
+      break
   }
 
   return sorted

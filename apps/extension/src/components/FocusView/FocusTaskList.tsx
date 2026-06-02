@@ -10,7 +10,7 @@ import { AimOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
-import { TomatoIcon } from './TomatoIcon'
+import { StartPomodoroButton } from '../common'
 import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
@@ -25,7 +25,7 @@ const RANK_OFFSETS = [
 ]
 
 const CONTENT_POPOVER_CLASS =
-  'max-w-[320px] max-h-[240px] overflow-y-auto text-sm leading-relaxed text-[var(--text-primary)] [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:my-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--bg-secondary)] [&_code]:px-1 [&_code]:rounded [&_s]:line-through [&_del]:line-through [&_mark]:bg-[var(--accent-light)] [&_mark]:text-[var(--text-primary)] [&_mark]:px-0.5 [&_mark]:rounded-sm'
+  'card-surface max-w-[320px] max-h-[240px] overflow-y-auto text-sm leading-relaxed text-[var(--text-primary)] [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:my-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--bg-secondary)] [&_code]:px-1 [&_code]:rounded [&_s]:line-through [&_del]:line-through [&_mark]:bg-[var(--accent-light)] [&_mark]:text-[var(--text-primary)] [&_mark]:px-0.5 [&_mark]:rounded-sm'
 
 // 番茄钟 / 绑定任务的 hover 按钮
 function ActionButtons({
@@ -47,13 +47,10 @@ function ActionButtons({
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {isIdle && onStartPomodoro && (
-        <Button
-          type="text"
-          size="small"
-          icon={<TomatoIcon size={14} />}
-          onClick={() => onStartPomodoro(task)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-          title={t('pomodoro.start')}
+        <StartPomodoroButton
+          task={task}
+          onStart={onStartPomodoro}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         />
       )}
       {isFocusingUnbound && onBindTask && (
@@ -411,6 +408,15 @@ export function FocusTaskList({
   const canAddMore = isGuest ? focusTasks.length < MAX_LOCAL_TASKS : true
   const focusingUnbound = !!immersive && !currentTaskId
 
+  // 沉浸时把「绑定任务」置顶为 hero——它可能不在 focusTasks（今天/逾期前 3）里
+  // （如从 ListView 对一个无日期/靠后的任务开启番茄钟），否则会全部淡出、看不到正在专注的任务。
+  const displayTasks = useMemo(() => {
+    if (!immersive || !currentTaskId) return focusTasks
+    const bound = taskMap.get(currentTaskId)
+    if (!bound) return focusTasks
+    return [bound, ...focusTasks.filter((t) => t.id !== currentTaskId)]
+  }, [immersive, currentTaskId, focusTasks, taskMap])
+
   const handleCreate = useCallback(
     async (taskData: Partial<Task>): Promise<Task | null> => {
       try {
@@ -432,13 +438,13 @@ export function FocusTaskList({
           <div className="flex items-center justify-center h-[200px]">
             <Spin />
           </div>
-        ) : focusTasks.length === 0 ? (
+        ) : displayTasks.length === 0 ? (
           <div className="text-center text-[var(--text-secondary)] text-lg">
             {t('empty')}
           </div>
         ) : (
           <div className="space-y-3">
-            {focusTasks.map((task, index) => {
+            {displayTasks.map((task, index) => {
               const isSelected =
                 currentTaskId != null && task.id === currentTaskId
               const shouldFadeOut = immersive && !isSelected
@@ -453,7 +459,7 @@ export function FocusTaskList({
                   }`}
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  {index === 0 && focusTasks.length > 1 && (
+                  {index === 0 && displayTasks.length > 1 && (
                     <div
                       className={`text-xs font-bold tracking-[0.2em] uppercase text-[var(--text-secondary)] text-center mb-2 opacity-50 transition-opacity duration-700 ${immersive ? 'opacity-0' : ''}`}
                     >

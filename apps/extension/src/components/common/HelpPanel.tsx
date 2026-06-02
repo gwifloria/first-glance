@@ -9,6 +9,7 @@ import {
   CoffeeOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { POPOVER_CONTENT_STYLE } from '@/constants/styles'
 
 const LINKS = {
   feedback: 'https://github.com/gwifloria/first-glance/issues',
@@ -93,13 +94,7 @@ export function HelpPanel({ className }: HelpPanelProps) {
       open={open}
       onOpenChange={setOpen}
       arrow={false}
-      styles={{
-        body: {
-          padding: 0,
-          backgroundColor: 'var(--bg-primary)',
-          border: '1px solid var(--border)',
-        },
-      }}
+      styles={{ content: POPOVER_CONTENT_STYLE }}
     >
       <Button
         type="text"

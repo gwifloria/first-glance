@@ -1,47 +1,102 @@
-import { useState } from 'react'
-import { Tooltip } from 'antd'
-import { SettingOutlined } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
+import { Dropdown, Tooltip } from 'antd'
+import type { MenuProps } from 'antd'
+import { FolderOutlined, DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
-import { SurfaceIconButton } from '../common'
-import { DefaultProjectModal } from './DefaultProjectModal'
+import { getSettings, setSettings } from '@/services/settingsStorage'
+import { filterActiveProjects, isInboxProject } from '@/utils/project'
+import { ProjectColorDot } from '../common/ProjectColorDot'
+import { SurfaceIconButton, StampBadge } from '../common'
 
 interface SidebarFooterProps {
   collapsed?: boolean
 }
 
 export function SidebarFooter({ collapsed = false }: SidebarFooterProps) {
-  const { t } = useTranslation('sidebar')
+  const { t } = useTranslation('settings')
   const { data } = useTaskContext()
-  const [modalOpen, setModalOpen] = useState(false)
+  const [defaultProjectId, setDefaultProjectId] = useState<string | null>(null)
+  // 自增 key：每次切换成功 +1，用于重挂载 StampBadge 重放盖章动画
+  const [stampKey, setStampKey] = useState(0)
 
-  const button = (
+  useEffect(() => {
+    getSettings().then((s) => setDefaultProjectId(s.defaultProjectId))
+  }, [])
+
+  const availableProjects = filterActiveProjects(data.projects)
+  const inboxProject = availableProjects.find(isInboxProject)
+  // 当前默认清单：未设置时回退到收集箱
+  const currentId = defaultProjectId || inboxProject?.id
+  const current = availableProjects.find((p) => p.id === currentId)
+  const currentName =
+    current && !isInboxProject(current)
+      ? current.name
+      : t('defaultProject.inbox')
+
+  const handleSelect = async (id: string) => {
+    await setSettings({ defaultProjectId: id })
+    setDefaultProjectId(id)
+    setStampKey((k) => k + 1)
+  }
+
+  const items: MenuProps['items'] = availableProjects.map((p) => {
+    const inbox = isInboxProject(p)
+    return {
+      key: p.id,
+      label: (
+        <span className="flex items-center gap-2">
+          <ProjectColorDot color={inbox ? '#888' : p.color} size="xs" />
+          {inbox ? t('defaultProject.inbox') : p.name}
+        </span>
+      ),
+    }
+  })
+
+  const trigger = (
     <SurfaceIconButton
       surface="sidebar"
       size="small"
-      icon={<SettingOutlined />}
-      onClick={() => setModalOpen(true)}
-      className={collapsed ? '!w-full !justify-center' : 'w-full justify-start'}
+      icon={<FolderOutlined />}
+      className={
+        collapsed ? '!w-full !justify-center' : 'w-full !justify-start'
+      }
     >
-      {!collapsed && t('action.defaultProject')}
+      {!collapsed && (
+        <span className="flex-1 flex items-center gap-1 min-w-0 text-left">
+          <span className="truncate">{currentName}</span>
+          <DownOutlined className="text-[10px] opacity-60 shrink-0" />
+        </span>
+      )}
     </SurfaceIconButton>
   )
 
   return (
-    <div className="p-2 border-t border-[var(--border)]">
-      {collapsed ? (
-        <Tooltip title={t('action.defaultProject')} placement="right">
-          {button}
-        </Tooltip>
-      ) : (
-        button
+    <div className="relative p-2 border-t border-[var(--border)]">
+      {stampKey > 0 && (
+        <StampBadge
+          key={stampKey}
+          text={t('defaultProject.saved')}
+          className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-10"
+        />
       )}
-
-      <DefaultProjectModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        projects={data.projects}
-      />
+      <Dropdown
+        trigger={['click']}
+        placement={collapsed ? 'topRight' : 'top'}
+        menu={{
+          items,
+          selectable: true,
+          selectedKeys: currentId ? [currentId] : [],
+          onClick: ({ key }) => handleSelect(key),
+        }}
+      >
+        <Tooltip
+          title={t('defaultProject.label')}
+          placement={collapsed ? 'right' : 'top'}
+        >
+          {trigger}
+        </Tooltip>
+      </Dropdown>
     </div>
   )
 }

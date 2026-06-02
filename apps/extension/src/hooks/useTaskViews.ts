@@ -1,16 +1,18 @@
-import { useMemo, useCallback, useState, useRef } from 'react'
+import { useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   computeTaskViews,
   getFocusTasks,
   filterTasks,
   sortTasks,
+  groupTasks,
   type SortOption,
   type GroupOption,
   type TaskGroup,
   type TaskCounts,
   type ComputedViews,
 } from '@/utils/taskFilters'
+import { usePersistedState } from './usePersistedState'
 import type { Task } from '@/types'
 
 export type { SortOption, GroupOption, TaskGroup, TaskCounts, ComputedViews }
@@ -39,10 +41,125 @@ export interface TaskFilters {
   setSortBy: (sort: SortOption) => void
   groupBy: GroupOption
   setGroupBy: (group: GroupOption) => void
-  /** 获取指定筛选器的任务列表 */
-  getFilteredTasks: (filter: string, searchQuery?: string) => Task[]
   /** 获取指定筛选器的分组任务（用于 TaskList 显示） */
   getTaskGroups: (filter: string, searchQuery?: string) => TaskGroup[]
+}
+
+/**
+ * 日期分组：复用 computed.byDate（含置顶组、已按优先级预排序）与筛选结果求交。
+ * 默认 sortBy='priority' 时直接沿用预排序；选其它 sortBy 时对各桶重排（pinned 保持置顶序）。
+ */
+function buildDateGroups(
+  computed: ComputedViews,
+  filtered: Task[],
+  sortBy: SortOption,
+  t: (key: string) => string,
+  filter: string
+): TaskGroup[] {
+  const filteredSet = new Set(filtered.map((task) => task.id))
+  const pick = (bucket: Task[]) =>
+    bucket.filter((task) => filteredSet.has(task.id))
+
+  // 'week' 类别并入 later 桶；在「本周」视图下 later 经求交只剩本周内任务，
+  // 仍叫「更晚」会与视图自相矛盾，改标「本周稍后」。
+  // 注意：TaskDateGroup 按 group.id 走 i18n（id 在 TRANSLATABLE_GROUPS 里就用 group.<id>），
+  // 所以必须连 id 一起换成 'laterThisWeek'，光改 title 会被按 'later' 重新翻译覆盖。
+  const laterGroup =
+    filter === 'week'
+      ? { id: 'laterThisWeek', titleKey: 'group.laterThisWeek' }
+      : { id: 'later', titleKey: 'group.later' }
+
+  const configs = [
+    {
+      id: 'pinned',
+      titleKey: 'group.pinned',
+      tasks: pick(computed.byDate.pinned),
+    },
+    {
+      id: 'overdue',
+      titleKey: 'group.overdue',
+      tasks: pick(computed.byDate.overdue),
+    },
+    {
+      id: 'today',
+      titleKey: 'group.today',
+      tasks: pick(computed.byDate.today),
+    },
+    {
+      id: 'tomorrow',
+      titleKey: 'group.tomorrow',
+      tasks: pick(computed.byDate.tomorrow),
+    },
+    {
+      id: laterGroup.id,
+      titleKey: laterGroup.titleKey,
+      tasks: pick(computed.byDate.later),
+    },
+    {
+      id: 'nodate',
+      titleKey: 'group.noDate',
+      tasks: pick(computed.byDate.nodate),
+    },
+  ]
+
+  return configs
+    .filter((cfg) => cfg.tasks.length > 0)
+    .map((cfg) => ({
+      id: cfg.id,
+      title: t(cfg.titleKey),
+      tasks:
+        sortBy === 'priority' || cfg.id === 'pinned'
+          ? cfg.tasks
+          : sortTasks(cfg.tasks, sortBy),
+    }))
+}
+
+/**
+ * 上下文子任务补全（Todoist 风格）：
+ * 日期视图（today/week/overdue…）按 dueDate 一视同仁地筛任务，子任务若自身无日期
+ * 会在分组前被剔除，导致命中的父任务「光杆」展示。这里在分组之后，把已入选父任务
+ * 那些尚未展示的子孙任务补进父任务所在的组——TaskDateGroup 的同组嵌套逻辑会自动把
+ * 它们挂到父任务下作上下文。已自行命中筛选（在自己日期桶里）的子任务不重复补入。
+ */
+function attachContextSubtasks(
+  groups: TaskGroup[],
+  allTasks: Task[]
+): TaskGroup[] {
+  // parentId → 直接子任务
+  const childrenByParent = new Map<string, Task[]>()
+  for (const task of allTasks) {
+    if (!task.parentId) continue
+    const siblings = childrenByParent.get(task.parentId)
+    if (siblings) siblings.push(task)
+    else childrenByParent.set(task.parentId, [task])
+  }
+  if (childrenByParent.size === 0) return groups
+
+  // 已展示的任务 id（跨所有组），用于去重，避免同一子任务被补进多个组
+  const includedIds = new Set<string>()
+  for (const group of groups) {
+    for (const task of group.tasks) includedIds.add(task.id)
+  }
+
+  return groups.map((group) => {
+    const extras: Task[] = []
+    // BFS：从组内每个任务出发，补全尚未展示的子孙
+    const queue = group.tasks.map((task) => task.id)
+    while (queue.length > 0) {
+      const id = queue.shift() as string
+      const children = childrenByParent.get(id)
+      if (!children) continue
+      for (const child of children) {
+        if (includedIds.has(child.id)) continue
+        includedIds.add(child.id)
+        extras.push(child)
+        queue.push(child.id)
+      }
+    }
+    return extras.length > 0
+      ? { ...group, tasks: [...group.tasks, ...extras] }
+      : group
+  })
 }
 
 /**
@@ -51,24 +168,28 @@ export interface TaskFilters {
  */
 export function useTaskViews(tasks: Task[]) {
   const { t } = useTranslation('task')
-  const [sortBy, setSortBy] = useState<SortOption>('priority')
-  const [groupBy, setGroupBy] = useState<GroupOption>('none')
+  // 持久化排序/分组偏好。默认 sortOrder(各服务原生顺序，UI 标为 Default) + date 分组，
+  // 与 SortGroupControl 里名为「Default」的选项一致。
+  const [sortBy, setSortBy] = usePersistedState<SortOption>(
+    'list_sort_by',
+    'sortOrder'
+  )
+  const [groupBy, setGroupBy] = usePersistedState<GroupOption>(
+    'list_group_by',
+    'date'
+  )
 
-  // 分组结果缓存
+  // 分组结果缓存。失效判断用 computed 的对象引用：它按 tasks 身份 memo 化，
+  // tasks 一变就是新引用，既零碰撞又免去手写哈希（旧的首字符码求和会在
+  // 「完成一个 + 新建一个同首字母 id」时碰撞而返回过期分组）。
   const groupCacheRef = useRef<{
     key: string
-    tasksHash: number
+    computed: ComputedViews
     result: TaskGroup[]
   } | null>(null)
 
   // ============ 核心计算（单次遍历）============
   const computed = useMemo(() => computeTaskViews(tasks), [tasks])
-
-  // 任务列表的简单哈希值（用于缓存失效判断）
-  const tasksHash = useMemo(
-    () => tasks.reduce((acc, t) => acc + t.id.charCodeAt(0), tasks.length),
-    [tasks]
-  )
 
   // ============ 派生视图 ============
   const todayFocusTasks = useMemo(() => getFocusTasks(computed, 3), [computed])
@@ -83,87 +204,37 @@ export function useTaskViews(tasks: Task[]) {
     [computed]
   )
 
-  // ============ 筛选函数 ============
-  const getFilteredTasks = useCallback(
-    (filter: string, searchQuery?: string) => {
-      const filtered = filterTasks(tasks, filter, searchQuery)
-      return sortTasks(filtered, sortBy)
-    },
-    [tasks, sortBy]
-  )
-
-  // ============ 分组函数（基于 computed.byDate，带缓存）============
+  // ============ 分组函数（带缓存，缓存键含 groupBy/sortBy）============
   const getTaskGroups = useCallback(
     (filter: string, searchQuery?: string): TaskGroup[] => {
       // 检查缓存
-      const cacheKey = `${filter}-${searchQuery || ''}`
+      const cacheKey = `${filter}-${searchQuery || ''}-${groupBy}-${sortBy}`
       const cache = groupCacheRef.current
-      if (cache && cache.key === cacheKey && cache.tasksHash === tasksHash) {
+      if (cache && cache.key === cacheKey && cache.computed === computed) {
         return cache.result
       }
 
-      // 先筛选
       const filtered = filterTasks(tasks, filter, searchQuery)
 
-      // 基于筛选结果重新分组（复用 computed 的日期字符串缓存）
-      const categorized = {
-        pinned: [] as Task[],
-        overdue: [] as Task[],
-        today: [] as Task[],
-        tomorrow: [] as Task[],
-        later: [] as Task[],
-        nodate: [] as Task[],
+      let result: TaskGroup[]
+      if (groupBy === 'date') {
+        // 日期分组：复用 computed.byDate（含置顶/已排序），仅在非默认 sortBy 时重排各桶
+        result = buildDateGroups(computed, filtered, sortBy, t, filter)
+      } else {
+        // 其它分组：先按 sortBy 排序，再分组（标题由 TaskDateGroup 按 id 翻译/直接显示）
+        const sorted = sortTasks(filtered, sortBy)
+        result = groupTasks(sorted, groupBy, [])
       }
 
-      // 创建快速查找集合
-      const filteredSet = new Set(filtered.map((t) => t.id))
-
-      // 从 computed.byDate 中筛选
-      for (const task of computed.byDate.pinned) {
-        if (filteredSet.has(task.id)) categorized.pinned.push(task)
-      }
-      for (const task of computed.byDate.overdue) {
-        if (filteredSet.has(task.id)) categorized.overdue.push(task)
-      }
-      for (const task of computed.byDate.today) {
-        if (filteredSet.has(task.id)) categorized.today.push(task)
-      }
-      for (const task of computed.byDate.tomorrow) {
-        if (filteredSet.has(task.id)) categorized.tomorrow.push(task)
-      }
-      for (const task of computed.byDate.later) {
-        if (filteredSet.has(task.id)) categorized.later.push(task)
-      }
-      for (const task of computed.byDate.nodate) {
-        if (filteredSet.has(task.id)) categorized.nodate.push(task)
+      // 搜索时保持严格匹配；否则把命中父任务被筛掉的子任务带出来作上下文
+      if (!searchQuery?.trim()) {
+        result = attachContextSubtasks(result, tasks)
       }
 
-      // 分组配置
-      const groupConfigs: { id: keyof typeof categorized; titleKey: string }[] =
-        [
-          { id: 'pinned', titleKey: 'group.pinned' },
-          { id: 'overdue', titleKey: 'group.overdue' },
-          { id: 'today', titleKey: 'group.today' },
-          { id: 'tomorrow', titleKey: 'group.tomorrow' },
-          { id: 'later', titleKey: 'group.later' },
-          { id: 'nodate', titleKey: 'group.noDate' },
-        ]
-
-      // 构建结果（已排序，因为 computed.byDate 中已排序）
-      const result = groupConfigs
-        .filter((cfg) => categorized[cfg.id].length > 0)
-        .map((cfg) => ({
-          id: cfg.id,
-          title: t(cfg.titleKey),
-          tasks: categorized[cfg.id],
-        }))
-
-      // 更新缓存
-      groupCacheRef.current = { key: cacheKey, tasksHash, result }
-
+      groupCacheRef.current = { key: cacheKey, computed, result }
       return result
     },
-    [tasks, computed, tasksHash, t]
+    [tasks, computed, t, groupBy, sortBy]
   )
 
   // ============ 结构化返回 ============
@@ -183,7 +254,6 @@ export function useTaskViews(tasks: Task[]) {
     setSortBy,
     groupBy,
     setGroupBy,
-    getFilteredTasks,
     getTaskGroups,
   }
 

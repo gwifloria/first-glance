@@ -7,6 +7,7 @@ import {
   FontSizeOutlined,
   SkinOutlined,
   ClockCircleOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { usePremium } from '@/hooks/usePremium'
@@ -147,6 +148,12 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
               />
 
               <FeatureCard
+                icon={<BarChartOutlined />}
+                title={t('feature.statsDashboard')}
+                description={t('feature.statsDashboardDesc')}
+              />
+
+              <FeatureCard
                 icon={<SkinOutlined />}
                 title={t('feature.premiumThemes')}
                 description={t('feature.premiumThemesDesc')}
@@ -178,15 +185,17 @@ export function PremiumModal({ open, onClose }: PremiumModalProps) {
               <label className="block text-sm text-[var(--text-secondary)] mb-2">
                 {t('licenseLabel')}
               </label>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <Input
                   value={licenseKey}
                   onChange={(e) => setLicenseKey(e.target.value)}
                   placeholder={t('licensePlaceholder')}
                   onPressEnter={handleActivate}
+                  size="large"
                 />
                 <Button
                   type="primary"
+                  size="large"
                   onClick={handleActivate}
                   loading={loading}
                   disabled={!licenseKey.trim()}

@@ -1,0 +1,54 @@
+/* 手帐盖章：透明底、accent 双描边、微旋转，「啪」地盖下再淡出 */
+.stamp-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px 10px;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  /* 内描边做出图章的双线感 */
+  box-shadow: inset 0 0 0 1px var(--bg-content);
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: transparent;
+  pointer-events: none;
+  transform: rotate(-8deg);
+  transform-origin: center;
+  animation: stamp-in 0.95s ease forwards;
+}
+
+.stamp-badge__check {
+  font-size: 16px;
+}
+
+.stamp-badge__text {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* 0→18%：从大到小猛地盖下（impact）；18→28%：回弹归位；70→100%：淡出 */
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-8deg) scale(2.2);
+    filter: blur(1px);
+  }
+  18% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(0.9);
+    filter: blur(0);
+  }
+  28% {
+    transform: rotate(-8deg) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1);
+  }
+}

@@ -10,6 +10,8 @@ interface ImportMetaEnv {
   readonly VITE_BUDDY_BASE_URL?: string
   readonly VITE_BUDDY_API_KEY?: string
   readonly VITE_BUDDY_MODEL?: string
+  /** dev 模式灌入假番茄数据的开关（"true" 生效） */
+  readonly VITE_DEV_SEED_FOCUS_STATS?: string
 }
 
 interface ImportMeta {

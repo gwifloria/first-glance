@@ -52,7 +52,71 @@
     "weekTime": "本周专注",
     "noData": "还没有专注记录",
     "chartTooltip": "{{count}} 个番茄 · {{duration}}",
-    "days": ["一", "二", "三", "四", "五", "六", "日"]
+    "days": ["一", "二", "三", "四", "五", "六", "日"],
+    "viewFull": "查看完整统计",
+    "dashboardTitle": "专注统计",
+    "dashboardBadge": "Data Hub",
+    "dashboardSubtitle": "洞察你的注意力轨迹",
+    "unlockDashboard": "解锁完整统计",
+    "overall": {
+      "title": "近 90 天",
+      "totalCount": "累计番茄",
+      "totalTime": "累计专注",
+      "avgDaily": "活跃日均"
+    },
+    "streak": {
+      "title": "{{days}} 天连续专注",
+      "goal": "目标 {{goal}}",
+      "remaining": "再完成 {{count}} 个达成今日目标",
+      "secure": "完成 1 个番茄即可延续连胜",
+      "done": "今日目标已达成 🎉"
+    },
+    "tabs": {
+      "trend": "趋势",
+      "hourly": "时段",
+      "heatmap": "热力图",
+      "log": "日志"
+    },
+    "trend": {
+      "last7": "近 7 天趋势",
+      "caption": "每日完成数",
+      "delta": "环比 {{delta}}%"
+    },
+    "heatmap": {
+      "title": "专注热力图",
+      "tooltip": "{{count}} 个番茄",
+      "summary": "近 {{total}} 天 · {{days}} 天有专注",
+      "activeDays": "活跃天数",
+      "maxDay": "单日最高",
+      "longestStreak": "最长连续",
+      "dayUnit": "天",
+      "less": "少",
+      "more": "多"
+    },
+    "rhythm": {
+      "title": "时段分布",
+      "golden": "黄金时段",
+      "empty": "记录还不够，看不出规律",
+      "tooltip": "{{hour}} · {{count}} 个番茄",
+      "buckets": {
+        "morning": "早晨",
+        "forenoon": "上午",
+        "afternoon": "午后",
+        "evening": "傍晚",
+        "night": "夜间",
+        "lateNight": "深夜"
+      }
+    },
+    "log": {
+      "title": "近期专注",
+      "count": "共 {{count}} 次",
+      "free": "自由专注",
+      "priority": {
+        "high": "高",
+        "medium": "中",
+        "low": "低"
+      }
+    }
   },
   "ambient": {
     "title": "环境音",

@@ -1,0 +1,47 @@
+/* 手帐贴纸 toast：去掉 antd message 默认的白底胶囊，换成卡片色小贴纸 */
+.journal-toast .ant-message-notice-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.journal-toast__sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  /* 贴在页面表面上，用卡片色 + 卡片字色保证各主题可读 */
+  background: var(--bg-card);
+  color: var(--text-on-card, var(--text-primary));
+  border: 1.5px solid var(--accent);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  font-size: 15px;
+  line-height: 1.2;
+  /* 微微倾斜，像随手贴上的贴纸 */
+  transform: rotate(-2deg);
+  transform-origin: center;
+  animation: journal-toast-pop 0.34s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.journal-toast__check {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.journal-toast__deco {
+  color: var(--accent);
+  opacity: 0.75;
+  font-size: 13px;
+}
+
+@keyframes journal-toast-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) rotate(-2deg) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+}

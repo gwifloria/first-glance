@@ -4,6 +4,7 @@
  */
 
 import { clearBlockingRules, loadAndApplyBlockingRules } from './blockingRules'
+import { STORAGE_KEYS } from '@/services/storageKeys'
 
 export interface ChillModeState {
   active: boolean
@@ -14,8 +15,8 @@ export interface ChillModeState {
  * 检查 chill mode 是否处于激活状态
  */
 export async function isChillModeActive(): Promise<boolean> {
-  const result = await chrome.storage.local.get('chill_mode')
-  const state = result.chill_mode as ChillModeState | undefined
+  const result = await chrome.storage.local.get(STORAGE_KEYS.CHILL_MODE)
+  const state = result[STORAGE_KEYS.CHILL_MODE] as ChillModeState | undefined
   return !!state?.active && Date.now() < state.expiresAt
 }
 
@@ -23,10 +24,10 @@ export async function isChillModeActive(): Promise<boolean> {
  * 检查 chill mode 是否过期，如果过期则清除
  */
 export async function checkChillModeExpiry(): Promise<void> {
-  const result = await chrome.storage.local.get('chill_mode')
-  const state = result.chill_mode as ChillModeState | undefined
+  const result = await chrome.storage.local.get(STORAGE_KEYS.CHILL_MODE)
+  const state = result[STORAGE_KEYS.CHILL_MODE] as ChillModeState | undefined
   if (state?.active && Date.now() >= state.expiresAt) {
-    await chrome.storage.local.remove('chill_mode')
+    await chrome.storage.local.remove(STORAGE_KEYS.CHILL_MODE)
     console.log('[ChillMode] 休息模式已过期，已清除')
   }
 }
@@ -56,7 +57,7 @@ export async function handleChillModeChange(
  * 处理 chill mode 过期 alarm
  */
 export async function handleChillModeExpireAlarm(): Promise<void> {
-  await chrome.storage.local.remove('chill_mode')
+  await chrome.storage.local.remove(STORAGE_KEYS.CHILL_MODE)
   await loadAndApplyBlockingRules()
   console.log('[ChillMode] 休息模式自动过期')
 }
@@ -72,12 +73,12 @@ export function createChillModeChangeHandler(): (
   let isProcessing = false
 
   return (changes, areaName) => {
-    if (areaName === 'local' && changes.chill_mode) {
+    if (areaName === 'local' && changes[STORAGE_KEYS.CHILL_MODE]) {
       // 防止并发处理
       if (isProcessing) return
       isProcessing = true
 
-      handleChillModeChange(changes.chill_mode.newValue)
+      handleChillModeChange(changes[STORAGE_KEYS.CHILL_MODE].newValue)
         .catch((err) => console.error('[ChillMode] 状态变化处理失败:', err))
         .finally(() => {
           isProcessing = false

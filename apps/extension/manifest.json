@@ -21,12 +21,7 @@
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
-  "permissions": [
-    "storage",
-    "identity",
-    "declarativeNetRequest",
-    "alarms"
-  ],
+  "permissions": ["storage", "identity", "declarativeNetRequest", "alarms"],
   "host_permissions": [
     "https://api.dida365.com/*",
     "https://dida365.com/*",
@@ -34,12 +29,8 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "src/newtab/index.html"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["src/newtab/index.html"],
+      "matches": ["<all_urls>"]
     }
   ]
 }

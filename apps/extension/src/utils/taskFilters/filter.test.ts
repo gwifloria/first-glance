@@ -17,6 +17,7 @@ describe('filterTasks', () => {
       id: '1',
       dueDate: '2026-02-27',
       projectId: 'inbox-1',
+      isInbox: true,
       title: '今天',
     }),
     makeTask({
@@ -47,9 +48,10 @@ describe('filterTasks', () => {
     }),
   ]
 
-  it('today 只返回今天的任务', () => {
+  it('today 返回今天到期 + 已过期的任务', () => {
     const result = filterTasks(tasks, 'today')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    // 1=今天, 3=过期，都纳入 Today 视图
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 
   it('tomorrow 只返回明天的任务', () => {
@@ -73,7 +75,7 @@ describe('filterTasks', () => {
     expect(result.map((t) => t.id)).toEqual(['1', '2', '5'])
   })
 
-  it('inbox 按 projectId.startsWith("inbox") 筛选', () => {
+  it('inbox 按 task.isInbox 标记筛选', () => {
     const result = filterTasks(tasks, 'inbox')
     expect(result.map((t) => t.id)).toEqual(['1'])
   })
@@ -96,11 +98,11 @@ describe('filterTasks', () => {
 
   it('空搜索不过滤', () => {
     const result = filterTasks(tasks, 'today', '')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 
   it('空格搜索不过滤', () => {
     const result = filterTasks(tasks, 'today', '   ')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 })

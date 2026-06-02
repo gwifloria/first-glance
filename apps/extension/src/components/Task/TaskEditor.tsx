@@ -4,15 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { getPriorityOptions, FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
 import { formatDateStr } from '@/utils/date'
-import { isInboxProject } from '@/utils/project'
-import {
-  FORM_INPUT_STYLE,
-  FORM_SELECT_STYLE,
-  MODAL_STYLE,
-  MODAL_OK_BUTTON_STYLE,
-  MODAL_CANCEL_BUTTON_STYLE,
-  FORM_LAYOUT_STYLE,
-} from '@/constants/styles'
+import { isInboxProject, resolveDefaultProjectId } from '@/utils/project'
+import { MODAL_STYLE, MODAL_BUTTON_STYLE } from '@/constants/styles'
 import type { Task, Project } from '@/types'
 
 interface TaskEditorProps {
@@ -55,13 +48,11 @@ export function TaskEditor({
         } else if (filter?.startsWith('project:')) {
           projectId = filter.replace('project:', '')
         } else {
+          // 默认清单；收集箱当作未指定，回退到本地解析出的 inbox 项目用于表单展示
           const settings = await getSettings()
-          const isDefaultInbox =
-            !settings.defaultProjectId ||
-            settings.defaultProjectId.startsWith('inbox')
-          projectId = isDefaultInbox
-            ? inboxProject?.id
-            : (settings.defaultProjectId ?? undefined)
+          projectId =
+            resolveDefaultProjectId(settings.defaultProjectId, projects) ??
+            inboxProject?.id
         }
       }
 
@@ -73,7 +64,7 @@ export function TaskEditor({
     }
 
     initForm()
-  }, [open, task, isNew, filter, inboxProject?.id, form])
+  }, [open, task, isNew, filter, inboxProject?.id, projects, form])
 
   const handleOk = async () => {
     if (saving) return
@@ -119,13 +110,13 @@ export function TaskEditor({
       onCancel={onCancel}
       okText={t('common:button.save')}
       cancelText={t('common:button.cancel')}
-      destroyOnClose
+      destroyOnHidden
       width={400}
       className={MODAL_STYLE}
-      okButtonProps={{ className: MODAL_OK_BUTTON_STYLE, loading: saving }}
-      cancelButtonProps={{ className: MODAL_CANCEL_BUTTON_STYLE }}
+      okButtonProps={{ className: MODAL_BUTTON_STYLE, loading: saving }}
+      cancelButtonProps={{ className: MODAL_BUTTON_STYLE }}
     >
-      <Form form={form} layout="vertical" className={FORM_LAYOUT_STYLE}>
+      <Form form={form} layout="vertical">
         <Form.Item
           name="title"
           label={t('editor.labelTitle')}
@@ -134,10 +125,7 @@ export function TaskEditor({
             { whitespace: true, message: t('validation.titleRequired') },
           ]}
         >
-          <Input
-            placeholder={t('editor.placeholderTitle')}
-            className={FORM_INPUT_STYLE}
-          />
+          <Input placeholder={t('editor.placeholderTitle')} />
         </Form.Item>
 
         <Form.Item
@@ -145,7 +133,7 @@ export function TaskEditor({
           label={t('editor.labelProject')}
           className="!mb-4"
         >
-          <Select className={FORM_SELECT_STYLE}>
+          <Select>
             {projects
               .filter((p) => !p.closed)
               .map((project) => {

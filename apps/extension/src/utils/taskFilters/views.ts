@@ -3,13 +3,58 @@
  * 核心：computeTaskViews 单次遍历计算所有派生数据
  */
 import type { Task } from '@/types'
-import type { TaskCounts, ComputedViews } from './types'
+import type { ComputedViews } from './types'
 import {
   extractDateStr,
   getTodayStr,
   getTomorrowStr,
   getNextWeekStr,
 } from '../date'
+
+/** 单个任务按 dueDate 落入的日期类别（与 byDate 桶/各 count 一一对应） */
+type DateLabel = 'overdue' | 'today' | 'tomorrow' | 'week' | 'later' | 'nodate'
+
+/**
+ * 把 dueDate 的日期串归一为单一类别。入桶与计数都从这个类别派生，
+ * 避免 pinned / 非 pinned 两条分支各写一份日期阶梯而漂移。
+ */
+function classifyDueDate(
+  dateStr: string | null,
+  todayStr: string,
+  tomorrowStr: string,
+  nextWeekStr: string
+): DateLabel {
+  if (!dateStr) return 'nodate'
+  if (dateStr < todayStr) return 'overdue'
+  if (dateStr === todayStr) return 'today'
+  if (dateStr === tomorrowStr) return 'tomorrow'
+  if (dateStr < nextWeekStr) return 'week'
+  return 'later'
+}
+
+/** 按日期类别累加各 count（pinned 与非 pinned 共用同一规则） */
+function bumpDateCounts(
+  counts: ComputedViews['counts'],
+  label: DateLabel
+): void {
+  switch (label) {
+    case 'overdue':
+      counts.overdue++
+      break
+    case 'today':
+      counts.today++
+      counts.week++
+      break
+    case 'tomorrow':
+      counts.tomorrow++
+      counts.week++
+      break
+    case 'week':
+      counts.week++
+      break
+    // later / nodate 不计入任何日期 count
+  }
+}
 
 /**
  * 单次遍历计算所有任务视图数据
@@ -39,54 +84,24 @@ export function computeTaskViews(tasks: Task[]): ComputedViews {
     const pid = task.projectId ?? ''
     result.projectCounts.set(pid, (result.projectCounts.get(pid) ?? 0) + 1)
 
-    // 2. Inbox 任务
-    if (pid.startsWith('inbox')) {
+    // 2. Inbox 任务（归属由 adapter 层统一标记，各服务用各自规则）
+    if (task.isInbox) {
       result.inbox.push(task)
       result.counts.inbox++
     }
 
-    // 3. 按日期分组
+    // 3. 按日期分组：先归一为单一类别，计数对 pinned/非 pinned 一视同仁，
+    //    仅「落哪个桶」不同（置顶任务统一进 pinned 桶）。
     const dateStr = task.dueDate ? extractDateStr(task.dueDate) : null
+    const label = classifyDueDate(dateStr, todayStr, tomorrowStr, nextWeekStr)
+    bumpDateCounts(result.counts, label)
 
-    // 置顶任务（sortOrder > 0）
-    if (task.sortOrder > 0) {
+    if (task.isPinned) {
       result.byDate.pinned.push(task)
-      // 置顶任务也计入对应日期的 count
-      if (dateStr === todayStr) {
-        result.counts.today++
-        result.counts.week++
-      } else if (dateStr === tomorrowStr) {
-        result.counts.tomorrow++
-        result.counts.week++
-      } else if (dateStr && dateStr < todayStr) {
-        result.counts.overdue++
-      } else if (dateStr && dateStr < nextWeekStr) {
-        result.counts.week++
-      }
-    } else if (!dateStr) {
-      // 无日期任务
-      result.byDate.nodate.push(task)
-    } else if (dateStr < todayStr) {
-      // 过期任务
-      result.byDate.overdue.push(task)
-      result.counts.overdue++
-    } else if (dateStr === todayStr) {
-      // 今日任务
-      result.byDate.today.push(task)
-      result.counts.today++
-      result.counts.week++
-    } else if (dateStr === tomorrowStr) {
-      // 明日任务
-      result.byDate.tomorrow.push(task)
-      result.counts.tomorrow++
-      result.counts.week++
-    } else if (dateStr < nextWeekStr) {
-      // 本周稍后（不含今日明日）
-      result.byDate.later.push(task)
-      result.counts.week++
     } else {
-      // 更远的未来
-      result.byDate.later.push(task)
+      // 'week' 类别没有独立桶，并入 later；其余类别名即桶名
+      const bucket = label === 'week' ? 'later' : label
+      result.byDate[bucket].push(task)
     }
   }
 
@@ -121,11 +136,4 @@ export function getFocusTasks(views: ComputedViews, limit = 3): Task[] {
 
   const combined = [...pinnedFocus, ...today, ...overdue]
   return combined.slice(0, limit)
-}
-
-// ============ 兼容性函数（供旧代码过渡使用）============
-
-/** @deprecated 使用 computeTaskViews 替代 */
-export function getTaskCounts(tasks: Task[]): TaskCounts {
-  return computeTaskViews(tasks).counts
 }

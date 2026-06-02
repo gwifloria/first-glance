@@ -17,6 +17,7 @@ import {
   twilightTheme,
 } from '@/themes'
 import { getTheme, setTheme, subscribeTheme } from '@/services/themeStorage'
+import { deriveSurfaceTokens } from '@/themes/surface'
 import { contrastText } from '@/utils/color'
 import { ThemeContext } from './ThemeContext'
 import { PremiumContext } from './PremiumContext'
@@ -172,6 +173,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty('--border-on-card')
       root.style.removeProperty('--bg-secondary-on-card')
     }
+
+    // 卡片表面派生色（与 antdTheme 的 antd token 同一来源 deriveSurfaceTokens）：
+    // 抬升填充 / hover / 选中 / 轨道线，按卡片明暗自适应。
+    const surface = deriveSurfaceTokens(theme)
+    root.style.setProperty('--surface-raised', surface.surfaceRaised)
+    root.style.setProperty('--track', surface.track)
+    // 页面/侧边栏（非卡片）表面 hover 叠加，供非 antd 元素（侧边栏/导航/列表行）共用，
+    // 替代散落的 bg-black/[0.0x] 字面量（在深色表面上不可见）
+    root.style.setProperty(
+      '--overlay-hover-surface',
+      surface.overlayHoverSurface
+    )
+    // 卡片上的"强调底色"：把 accent 按比例混进卡片色，保证 7 个主题都有可见
+    // 但不刺眼的强调（dark 主题 accent 近白，避免像 --accent-light 那样回退成卡片同色）。
+    root.style.setProperty(
+      '--surface-accent',
+      `color-mix(in srgb, ${theme.colors.accent} 15%, ${theme.colors.bgCard})`
+    )
 
     // Texture class - 用 CSS 控制纹理显示，避免组件调用 useTheme
     root.classList.toggle('theme-with-texture', theme.showTexture)

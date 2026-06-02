@@ -6,13 +6,40 @@
     "tomorrow": "Tomorrow",
     "week": "Next 7 Days",
     "later": "Later",
+    "laterThisWeek": "Later This Week",
     "noDate": "No Date",
     "all": "All Tasks",
     "inbox": "Inbox",
     "high": "High Priority",
     "medium": "Medium Priority",
     "low": "Low Priority",
-    "none": "No Priority"
+    "none": "No Priority",
+    "nodate": "No Date",
+    "addedWeek": "Added This Week",
+    "addedEarlier": "Added Earlier",
+    "nodeadline": "No Deadline",
+    "nolabel": "No Label",
+    "unknown": "Other"
+  },
+  "listControl": {
+    "grouping": "Grouping",
+    "sorting": "Sorting",
+    "group": {
+      "none": "None",
+      "date": "Date",
+      "dateAdded": "Date added",
+      "deadline": "Deadline",
+      "priority": "Priority",
+      "label": "Label"
+    },
+    "sort": {
+      "sortOrder": "Default",
+      "name": "Name",
+      "dueDate": "Date",
+      "createdTime": "Date added",
+      "deadline": "Deadline",
+      "priority": "Priority"
+    }
   },
   "filter": {
     "all": "All Tasks",
@@ -36,6 +63,15 @@
     "labelPriority": "Priority",
     "placeholderTitle": "Task title",
     "placeholderContent": "Task description (optional)"
+  },
+  "detail": {
+    "subtasks": "Subtasks",
+    "addSubtask": "Add subtask",
+    "date": "Date",
+    "labels": "Labels",
+    "addLabel": "Add label",
+    "noDate": "No date",
+    "saved": "Saved"
   },
   "confirm": {
     "delete": "Delete this task?"

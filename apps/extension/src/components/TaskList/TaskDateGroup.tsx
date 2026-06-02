@@ -22,6 +22,13 @@ const TRANSLATABLE_GROUPS = new Set([
   'low',
   'none',
   'pinned',
+  // 新增分组桶（按添加日期 / 截止日 / 标签）
+  'addedWeek',
+  'addedEarlier',
+  'nodeadline',
+  'nolabel',
+  'unknown',
+  'laterThisWeek',
 ])
 
 const MAX_DEPTH = 3
@@ -35,8 +42,8 @@ function TaskTree({
   getProjectById,
   onToggleExpand,
   onComplete,
-  onDelete,
   onEdit,
+  onStartPomodoro,
 }: {
   task: Task
   depth: number
@@ -46,8 +53,8 @@ function TaskTree({
   getProjectById: (id: string) => Project | undefined
   onToggleExpand: (id: string) => void
   onComplete: (task: Task) => void
-  onDelete: (task: Task) => void
   onEdit: (task: Task) => void
+  onStartPomodoro?: (task: Task) => void
 }) {
   const children = childrenMap.get(task.id)
   const hasChildren = !!children && children.length > 0
@@ -61,10 +68,11 @@ function TaskTree({
         parentTitle={getParentTitle(task, taskMap)}
         expandable={hasChildren}
         expanded={isExpanded}
+        nested={depth > 0}
         onToggleExpand={() => onToggleExpand(task.id)}
         onComplete={onComplete}
-        onDelete={onDelete}
         onEdit={onEdit}
+        onStartPomodoro={onStartPomodoro}
       />
       {hasChildren && isExpanded && (
         <div className="pl-7 flex flex-col gap-1">
@@ -80,17 +88,18 @@ function TaskTree({
                 getProjectById={getProjectById}
                 onToggleExpand={onToggleExpand}
                 onComplete={onComplete}
-                onDelete={onDelete}
                 onEdit={onEdit}
+                onStartPomodoro={onStartPomodoro}
               />
             ) : (
               <TaskItem
                 key={child.id}
                 task={child}
                 project={getProjectById(child.projectId)}
+                nested
                 onComplete={onComplete}
-                onDelete={onDelete}
                 onEdit={onEdit}
+                onStartPomodoro={onStartPomodoro}
               />
             )
           )}
@@ -107,8 +116,8 @@ interface TaskDateGroupProps {
   showGroupTitle: boolean
   onToggle: () => void
   onComplete: (task: Task) => void
-  onDelete: (task: Task) => void
   onEdit: (task: Task) => void
+  onStartPomodoro?: (task: Task) => void
 }
 
 export const TaskDateGroup = memo(function TaskDateGroup({
@@ -118,8 +127,8 @@ export const TaskDateGroup = memo(function TaskDateGroup({
   showGroupTitle,
   onToggle,
   onComplete,
-  onDelete,
   onEdit,
+  onStartPomodoro,
 }: TaskDateGroupProps) {
   const { t } = useTranslation('task')
   const {
@@ -202,8 +211,8 @@ export const TaskDateGroup = memo(function TaskDateGroup({
               getProjectById={getProjectById}
               onToggleExpand={toggleExpand}
               onComplete={onComplete}
-              onDelete={onDelete}
               onEdit={onEdit}
+              onStartPomodoro={onStartPomodoro}
             />
           ))}
         </div>

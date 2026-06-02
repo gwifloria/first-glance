@@ -20,6 +20,8 @@ export interface Task {
   isAllDay?: boolean
   startDate?: string
   dueDate?: string
+  /** 截止日（独立于 dueDate 的硬约束）。仅 Todoist 开放 API 提供 */
+  deadline?: string
   timeZone?: string
   reminders?: string[]
   repeatFlag?: string
@@ -35,6 +37,16 @@ export interface Task {
   tags?: string[]
   /** 父任务 ID（子任务才有） */
   parentId?: string
+  /**
+   * 是否属于收集箱。由 adapter 层统一标记（各服务用各自规则：
+   * Todoist 比对真实 inbox 项目 id，滴答用 id 前缀），通用层只读此标记。
+   */
+  isInbox?: boolean
+  /**
+   * 是否置顶。由 adapter 层统一标记：滴答用 sortOrder>0，Todoist/本地无置顶概念恒 false。
+   * 不能在通用层用 sortOrder 猜——Todoist 的 sortOrder 来自 childOrder（位置序号，恒>0）。
+   */
+  isPinned?: boolean
 }
 
 /** 本地任务（访客模式） */

@@ -13,7 +13,7 @@ interface NavFolderProps {
 }
 
 const baseButtonClass =
-  'flex items-center cursor-pointer rounded-lg transition-all duration-200 ease-out hover:bg-black/[0.04] select-none'
+  'flex items-center cursor-pointer rounded-lg transition-all duration-200 ease-out hover:bg-[var(--overlay-hover-surface)] select-none'
 
 export const NavFolder = memo(function NavFolder({
   folder,

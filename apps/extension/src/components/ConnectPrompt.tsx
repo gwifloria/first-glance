@@ -89,7 +89,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
       footer={null}
       width={400}
       className="connect-prompt-modal"
-      destroyOnClose
+      destroyOnHidden
     >
       <div className="p-6">
         <div className="text-center mb-6">
@@ -117,7 +117,7 @@ export const ConnectPrompt = memo(function ConnectPrompt({
                 onClick={() => onConnect(provider)}
                 loading={connectingProvider === provider}
                 disabled={isConnecting && connectingProvider !== provider}
-                className="!h-12 !rounded-lg !flex !items-center !justify-start !px-4 hover:!border-[var(--accent)]"
+                className="!h-12 !flex !items-center !justify-start !px-4"
               >
                 <div className="mr-3 flex-shrink-0">
                   <Logo />

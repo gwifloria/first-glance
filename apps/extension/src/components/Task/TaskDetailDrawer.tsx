@@ -121,13 +121,6 @@ export function TaskDetailDrawer({
   const dueKey = (d?: string) => (d ? extractDateStr(d) : '')
   const trimmedTitle = title.trim()
   const tagsChanged = JSON.stringify(tags) !== JSON.stringify(task.tags ?? [])
-  const isDirty =
-    (trimmedTitle !== '' && trimmedTitle !== task.title) ||
-    projectId !== task.projectId ||
-    priority !== (task.priority ?? 0) ||
-    dueKey(dueDate) !== dueKey(task.dueDate) ||
-    content !== (task.content ?? '') ||
-    tagsChanged
 
   const handleSave = () => {
     const updates: Partial<Task> = {}
@@ -216,7 +209,7 @@ export function TaskDetailDrawer({
             <Button onClick={discardAndClose}>
               {t('common:button.cancel')}
             </Button>
-            <Button type="primary" disabled={!isDirty} onClick={handleSave}>
+            <Button type="primary" onClick={handleSave}>
               {t('common:button.save')}
             </Button>
           </div>
@@ -239,17 +232,16 @@ export function TaskDetailDrawer({
     >
       <div className="flex flex-col gap-5">
         {/* 标题 + 完成 */}
-        <div className="flex items-start gap-3">
-          <div className="pt-0.5 shrink-0">
-            <TaskCheckbox
-              completing={false}
-              onComplete={() => {
-                onComplete(task)
-                onClose()
-              }}
-              priorityColor={getPriorityColor(priority)}
-            />
-          </div>
+        <div className="flex items-center gap-3">
+          <TaskCheckbox
+            className="!mt-0"
+            completing={false}
+            onComplete={() => {
+              onComplete(task)
+              onClose()
+            }}
+            priorityColor={getPriorityColor(priority)}
+          />
           <Input.TextArea
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -258,7 +250,7 @@ export function TaskDetailDrawer({
             }}
             autoSize
             variant="borderless"
-            className="!px-0 !text-[17px] !font-semibold !text-[var(--text-primary)] !leading-snug"
+            className="!px-0 !py-0 !text-[17px] !font-semibold !text-[var(--text-primary)] !leading-snug"
           />
         </div>
 

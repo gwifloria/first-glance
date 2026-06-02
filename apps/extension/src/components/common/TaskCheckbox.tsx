@@ -7,6 +7,8 @@ interface TaskCheckboxProps {
   variant?: 'default' | 'focus'
   priorityColor?: string
   disabled?: boolean
+  /** 额外类名，用于按需覆盖默认对齐（如抽屉标题需取消 mt-0.5） */
+  className?: string
 }
 
 export function TaskCheckbox({
@@ -15,6 +17,7 @@ export function TaskCheckbox({
   variant = 'default',
   priorityColor = 'var(--accent)',
   disabled = false,
+  className = '',
 }: TaskCheckboxProps) {
   if (variant === 'focus') {
     return (
@@ -49,6 +52,7 @@ export function TaskCheckbox({
         transition-all duration-300 ease-out shrink-0 mt-0.5 flex items-center justify-center
         -rotate-12 hover:rotate-0 hover:bg-[var(--accent-light)] hover:scale-110
         ${completing ? '!bg-[var(--accent)] !border-[var(--accent)] !rotate-0' : ''}
+        ${className}
       `}
     >
       <div

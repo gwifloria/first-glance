@@ -168,21 +168,17 @@ export function useTaskViews(tasks: Task[]) {
     'date'
   )
 
-  // 分组结果缓存
+  // 分组结果缓存。失效判断用 computed 的对象引用：它按 tasks 身份 memo 化，
+  // tasks 一变就是新引用，既零碰撞又免去手写哈希（旧的首字符码求和会在
+  // 「完成一个 + 新建一个同首字母 id」时碰撞而返回过期分组）。
   const groupCacheRef = useRef<{
     key: string
-    tasksHash: number
+    computed: ComputedViews
     result: TaskGroup[]
   } | null>(null)
 
   // ============ 核心计算（单次遍历）============
   const computed = useMemo(() => computeTaskViews(tasks), [tasks])
-
-  // 任务列表的简单哈希值（用于缓存失效判断）
-  const tasksHash = useMemo(
-    () => tasks.reduce((acc, t) => acc + t.id.charCodeAt(0), tasks.length),
-    [tasks]
-  )
 
   // ============ 派生视图 ============
   const todayFocusTasks = useMemo(() => getFocusTasks(computed, 3), [computed])
@@ -203,7 +199,7 @@ export function useTaskViews(tasks: Task[]) {
       // 检查缓存
       const cacheKey = `${filter}-${searchQuery || ''}-${groupBy}-${sortBy}`
       const cache = groupCacheRef.current
-      if (cache && cache.key === cacheKey && cache.tasksHash === tasksHash) {
+      if (cache && cache.key === cacheKey && cache.computed === computed) {
         return cache.result
       }
 
@@ -224,10 +220,10 @@ export function useTaskViews(tasks: Task[]) {
         result = attachContextSubtasks(result, tasks)
       }
 
-      groupCacheRef.current = { key: cacheKey, tasksHash, result }
+      groupCacheRef.current = { key: cacheKey, computed, result }
       return result
     },
-    [tasks, computed, tasksHash, t, groupBy, sortBy]
+    [tasks, computed, t, groupBy, sortBy]
   )
 
   // ============ 结构化返回 ============

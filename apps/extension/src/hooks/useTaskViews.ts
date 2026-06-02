@@ -168,10 +168,11 @@ function attachContextSubtasks(
  */
 export function useTaskViews(tasks: Task[]) {
   const { t } = useTranslation('task')
-  // 持久化排序/分组偏好。默认 priority + date 保持现有「按日期分组、组内按优先级」观感
+  // 持久化排序/分组偏好。默认 sortOrder(各服务原生顺序，UI 标为 Default) + date 分组，
+  // 与 SortGroupControl 里名为「Default」的选项一致。
   const [sortBy, setSortBy] = usePersistedState<SortOption>(
     'list_sort_by',
-    'priority'
+    'sortOrder'
   )
   const [groupBy, setGroupBy] = usePersistedState<GroupOption>(
     'list_group_by',

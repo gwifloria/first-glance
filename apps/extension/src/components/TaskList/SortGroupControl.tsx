@@ -45,8 +45,8 @@ export function SortGroupControl() {
     (o) => !o.needs || capabilities[o.needs]
   ).map((o) => ({ value: o.value, label: t(`listControl.sort.${o.value}`) }))
 
-  // 非默认（date 分组 + 优先级排序）时给图标加个小圆点提示
-  const isActive = groupBy !== 'date' || sortBy !== 'priority'
+  // 非默认（date 分组 + Default 排序）时给图标加个小圆点提示
+  const isActive = groupBy !== 'date' || sortBy !== 'sortOrder'
 
   const content = (
     <div className="card-surface flex flex-col gap-3 w-56 p-1">

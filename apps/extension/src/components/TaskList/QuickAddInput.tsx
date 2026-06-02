@@ -1,5 +1,7 @@
 import { FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
+import { useTaskContext } from '@/contexts/TaskContext'
+import { resolveDefaultProjectId } from '@/utils/project'
 import type { Task } from '@/types'
 import { formatDateStr } from '@/utils/date'
 import { Input } from 'antd'
@@ -19,6 +21,7 @@ export const QuickAddInput = memo(function QuickAddInput({
   onOpenEditor,
 }: QuickAddInputProps) {
   const { t } = useTranslation('task')
+  const { data } = useTaskContext()
   const [quickAddValue, setQuickAddValue] = useState('')
   const [creating, setCreating] = useState(false)
 
@@ -48,14 +51,11 @@ export const QuickAddInput = memo(function QuickAddInput({
       // 选中具体项目时，使用该项目
       projectId = filter.replace('project:', '')
     } else {
-      // today/tomorrow 使用 defaultProjectId
-      // 如果 defaultProjectId 是 inbox 或未设置，不传 projectId（API 默认放到 inbox）
-      const isInbox =
-        !settings.defaultProjectId ||
-        settings.defaultProjectId.startsWith('inbox')
-      if (!isInbox && settings.defaultProjectId) {
-        projectId = settings.defaultProjectId
-      }
+      // today/tomorrow 用默认清单；收集箱当作未指定（resolveDefaultProjectId 内处理）
+      projectId = resolveDefaultProjectId(
+        settings.defaultProjectId,
+        data.projects
+      )
     }
 
     // 根据 filter 设置 dueDate（全天任务，纯日期字符串）

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { LoadingOutlined } from '@ant-design/icons'
 import { formatDateStr } from '@/utils/date'
 import { getSettings } from '@/services/settingsStorage'
+import { useTaskContext } from '@/contexts/TaskContext'
+import { resolveDefaultProjectId } from '@/utils/project'
 import { RefreshButton } from '../common/RefreshButton'
 import type { Task } from '@/types'
 
@@ -22,6 +24,7 @@ export function FocusTaskInput({
   showRefresh,
 }: FocusTaskInputProps) {
   const { t } = useTranslation('focus')
+  const { data } = useTaskContext()
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [creating, setCreating] = useState(false)
 
@@ -30,18 +33,12 @@ export function FocusTaskInput({
 
     setCreating(true)
     try {
-      // 获取 defaultProjectId
+      // Focus View 始终用默认清单；收集箱当作未指定，交给 adapter 落到收集箱
       const settings = await getSettings()
-      let projectId: string | undefined
-
-      // Focus View 始终使用 defaultProjectId
-      // 如果 defaultProjectId 是 inbox 或未设置，不传 projectId（API 默认放到 inbox）
-      const isInbox =
-        !settings.defaultProjectId ||
-        settings.defaultProjectId.startsWith('inbox')
-      if (!isInbox && settings.defaultProjectId) {
-        projectId = settings.defaultProjectId
-      }
+      const projectId = resolveDefaultProjectId(
+        settings.defaultProjectId,
+        data.projects
+      )
 
       // 全天任务，使用纯日期字符串
       const dueDate = formatDateStr(new Date())

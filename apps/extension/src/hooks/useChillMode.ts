@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { CHILL_MODE_DURATION_MS } from '@/constants'
+import { STORAGE_KEYS } from '@/services/storageKeys'
 
 export interface ChillModeState {
   active: boolean
@@ -29,8 +30,10 @@ export function useChillMode() {
   useEffect(() => {
     // 初始加载
     const currentTime = Date.now()
-    chrome.storage.local.get('chill_mode').then((result) => {
-      const state = result.chill_mode as ChillModeState | undefined
+    chrome.storage.local.get(STORAGE_KEYS.CHILL_MODE).then((result) => {
+      const state = result[STORAGE_KEYS.CHILL_MODE] as
+        | ChillModeState
+        | undefined
       if (state?.active && currentTime < state.expiresAt) {
         setChillMode(state)
       } else {
@@ -43,8 +46,10 @@ export function useChillMode() {
       changes: { [key: string]: chrome.storage.StorageChange },
       areaName: string
     ) => {
-      if (areaName === 'local' && changes.chill_mode) {
-        const state = changes.chill_mode.newValue as ChillModeState | undefined
+      if (areaName === 'local' && changes[STORAGE_KEYS.CHILL_MODE]) {
+        const state = changes[STORAGE_KEYS.CHILL_MODE].newValue as
+          | ChillModeState
+          | undefined
         const time = Date.now()
         if (state?.active && time < state.expiresAt) {
           setChillMode(state)
@@ -94,7 +99,7 @@ export function useChillMode() {
 
   // 结束 chill mode
   const endChillMode = useCallback(async () => {
-    await chrome.storage.local.remove('chill_mode')
+    await chrome.storage.local.remove(STORAGE_KEYS.CHILL_MODE)
     setChillMode(null)
   }, [])
 

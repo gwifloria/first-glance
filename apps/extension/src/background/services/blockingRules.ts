@@ -5,8 +5,9 @@
 
 import type { AppSettings } from '@/types/settings'
 import { isChillModeActive } from './chillMode'
+import { STORAGE_KEYS } from '@/services/storageKeys'
 
-const SETTINGS_KEY = 'app_settings'
+const SETTINGS_KEY = STORAGE_KEYS.APP_SETTINGS
 const RULE_ID_BASE = 1000
 const BLOCKED_PAGE_URL = `${chrome.runtime.getURL('/src/newtab/index.html')}?blocked=1#\\1`
 

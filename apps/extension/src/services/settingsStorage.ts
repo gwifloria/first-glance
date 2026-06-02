@@ -1,7 +1,8 @@
 import { defaultSettings, type AppSettings } from '@/types/settings'
 import { createStorageSubscriber } from './storageSubscriber'
+import { STORAGE_KEYS } from './storageKeys'
 
-const STORAGE_KEY = 'app_settings'
+const STORAGE_KEY = STORAGE_KEYS.APP_SETTINGS
 const VERSION_KEY = 'settings_version'
 const CURRENT_VERSION = 7
 

@@ -1,5 +1,6 @@
 import type { ThemeType } from '@/themes'
 import { createStorageSubscriber } from './storageSubscriber'
+import { STORAGE_KEYS } from './storageKeys'
 
 const THEME_KEY = 'app_theme'
 const DEFAULT_THEME: ThemeType = 'cream'
@@ -13,7 +14,7 @@ const THEME_MIGRATION: Record<string, ThemeType> = {
 }
 
 // 旧版存储键（用于迁移）
-const LEGACY_SETTINGS_KEY = 'app_settings'
+const LEGACY_SETTINGS_KEY = STORAGE_KEYS.APP_SETTINGS
 const LEGACY_THEME_KEY = 'theme_preference'
 const LEGACY_USER_SETTINGS_KEY = 'user_settings'
 

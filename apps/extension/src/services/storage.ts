@@ -1,15 +1,5 @@
 import type { AuthToken, AdapterType } from '@/types'
-
-const STORAGE_KEYS = {
-  AUTH_TOKEN: 'auth_token',
-  TODOIST_TOKEN: 'todoist_auth_token',
-  ADAPTER_TYPE: 'adapter_type',
-  CACHED_TASKS: 'cached_tasks',
-  CACHED_PROJECTS: 'cached_projects',
-  LAST_SYNC: 'last_sync',
-  LOCAL_TASKS: 'local_tasks', // Guest mode local tasks
-  POMODORO: 'pomodoro', // Pomodoro timer state
-} as const
+import { STORAGE_KEYS } from './storageKeys'
 
 // 番茄时钟存储结构
 export interface PomodoroStorage {

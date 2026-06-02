@@ -1,7 +1,8 @@
 import type { LocalTask } from '@/types'
 import { formatDateTimeWithTimezone } from '@/utils/date'
+import { STORAGE_KEYS } from './storageKeys'
 
-const STORAGE_KEY = 'local_tasks'
+const STORAGE_KEY = STORAGE_KEYS.LOCAL_TASKS
 const MAX_LOCAL_TASKS = 3
 
 export const localTaskStorage = {

@@ -334,6 +334,7 @@ describe('Todoist transforms', () => {
         name: '工作',
         sortOrder: 1,
         kind: undefined,
+        color: '#4073ff', // 'blue' → hex
       })
     })
 

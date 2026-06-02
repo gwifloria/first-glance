@@ -31,6 +31,7 @@ interface TaskListProps {
   onUpdate: (taskId: string, updates: Partial<Task>) => void
   onCreate: (task: Partial<Task>) => Promise<Task>
   onFocus?: () => void
+  onStartPomodoro?: (task: Task) => void
 }
 
 export const TaskList = memo(function TaskList({
@@ -45,6 +46,7 @@ export const TaskList = memo(function TaskList({
   onUpdate,
   onCreate,
   onFocus,
+  onStartPomodoro,
 }: TaskListProps) {
   const { t } = useTranslation('task')
   // TaskEditor 仅用于「新建任务」（QuickAdd 的展开入口）
@@ -144,6 +146,7 @@ export const TaskList = memo(function TaskList({
               onComplete={onComplete}
               onDelete={onDelete}
               onEdit={handleEdit}
+              onStartPomodoro={onStartPomodoro}
             />
           ))
         )}

@@ -1,6 +1,11 @@
 import { memo } from 'react'
 import { Button, Popconfirm } from 'antd'
-import { DeleteOutlined, RightOutlined, TagOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  RightOutlined,
+  TagOutlined,
+  AimOutlined,
+} from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { formatShortDate } from '@/utils/date'
 import { isOverdue } from '@/utils/taskFilters'
@@ -25,6 +30,8 @@ interface TaskItemProps {
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
+  /** 从列表直接开启番茄钟（绑定该任务并切到 Focus） */
+  onStartPomodoro?: (task: Task) => void
 }
 
 export const TaskItem = memo(function TaskItem({
@@ -38,6 +45,7 @@ export const TaskItem = memo(function TaskItem({
   onComplete,
   onDelete,
   onEdit,
+  onStartPomodoro,
 }: TaskItemProps) {
   const { t } = useTranslation()
   const { completing, handleComplete } = useTaskCompletion(onComplete)
@@ -142,6 +150,16 @@ export const TaskItem = memo(function TaskItem({
         className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={(e) => e.stopPropagation()}
       >
+        {onStartPomodoro && (
+          <Button
+            type="text"
+            size="small"
+            icon={<AimOutlined />}
+            onClick={() => onStartPomodoro(task)}
+            className="!w-7 !h-7 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
+            aria-label={t('focus:pomodoro.start')}
+          />
+        )}
         <Popconfirm
           title={t('task:confirm.delete')}
           onConfirm={() => onDelete(task)}

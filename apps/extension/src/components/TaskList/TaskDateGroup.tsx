@@ -42,6 +42,7 @@ function TaskTree({
   onComplete,
   onDelete,
   onEdit,
+  onStartPomodoro,
 }: {
   task: Task
   depth: number
@@ -53,6 +54,7 @@ function TaskTree({
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
+  onStartPomodoro?: (task: Task) => void
 }) {
   const children = childrenMap.get(task.id)
   const hasChildren = !!children && children.length > 0
@@ -71,6 +73,7 @@ function TaskTree({
         onComplete={onComplete}
         onDelete={onDelete}
         onEdit={onEdit}
+        onStartPomodoro={onStartPomodoro}
       />
       {hasChildren && isExpanded && (
         <div className="pl-7 flex flex-col gap-1">
@@ -88,6 +91,7 @@ function TaskTree({
                 onComplete={onComplete}
                 onDelete={onDelete}
                 onEdit={onEdit}
+                onStartPomodoro={onStartPomodoro}
               />
             ) : (
               <TaskItem
@@ -98,6 +102,7 @@ function TaskTree({
                 onComplete={onComplete}
                 onDelete={onDelete}
                 onEdit={onEdit}
+                onStartPomodoro={onStartPomodoro}
               />
             )
           )}
@@ -116,6 +121,7 @@ interface TaskDateGroupProps {
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
+  onStartPomodoro?: (task: Task) => void
 }
 
 export const TaskDateGroup = memo(function TaskDateGroup({
@@ -127,6 +133,7 @@ export const TaskDateGroup = memo(function TaskDateGroup({
   onComplete,
   onDelete,
   onEdit,
+  onStartPomodoro,
 }: TaskDateGroupProps) {
   const { t } = useTranslation('task')
   const {
@@ -211,6 +218,7 @@ export const TaskDateGroup = memo(function TaskDateGroup({
               onComplete={onComplete}
               onDelete={onDelete}
               onEdit={onEdit}
+              onStartPomodoro={onStartPomodoro}
             />
           ))}
         </div>

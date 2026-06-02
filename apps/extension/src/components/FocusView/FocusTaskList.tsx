@@ -25,7 +25,7 @@ const RANK_OFFSETS = [
 ]
 
 const CONTENT_POPOVER_CLASS =
-  'max-w-[320px] max-h-[240px] overflow-y-auto text-sm leading-relaxed text-[var(--text-primary)] [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:my-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--bg-secondary)] [&_code]:px-1 [&_code]:rounded [&_s]:line-through [&_del]:line-through [&_mark]:bg-[var(--accent-light)] [&_mark]:text-[var(--text-primary)] [&_mark]:px-0.5 [&_mark]:rounded-sm'
+  'card-surface max-w-[320px] max-h-[240px] overflow-y-auto text-sm leading-relaxed text-[var(--text-primary)] [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0.5 [&_strong]:font-semibold [&_h1]:text-base [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-semibold [&_p]:my-1 [&_a]:text-[var(--accent)] [&_a]:underline [&_code]:bg-[var(--bg-secondary)] [&_code]:px-1 [&_code]:rounded [&_s]:line-through [&_del]:line-through [&_mark]:bg-[var(--accent-light)] [&_mark]:text-[var(--text-primary)] [&_mark]:px-0.5 [&_mark]:rounded-sm'
 
 // 番茄钟 / 绑定任务的 hover 按钮
 function ActionButtons({

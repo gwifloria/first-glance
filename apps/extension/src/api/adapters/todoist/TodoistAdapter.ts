@@ -207,6 +207,7 @@ export function transformUpdateTaskToTodoist(
 
 export class TodoistAdapter implements ITaskAdapter {
   readonly name = 'todoist'
+  readonly capabilities = { subtasks: true, deadline: true, labels: true }
 
   // Todoist 的 inbox 项目 id 是数字（如 '2254282139'），无前缀可认。
   // 由 inboxProject 标志解析后缓存，用于给任务打 isInbox 标记。

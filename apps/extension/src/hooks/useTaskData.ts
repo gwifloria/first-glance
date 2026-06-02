@@ -164,5 +164,5 @@ export function useTaskData(
     createTask,
   }
 
-  return { data, actions }
+  return { data, actions, capabilities: adapter.capabilities }
 }

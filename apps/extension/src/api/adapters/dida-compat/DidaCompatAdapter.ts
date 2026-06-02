@@ -14,6 +14,8 @@ import type {
 
 export class DidaCompatAdapter implements ITaskAdapter {
   readonly name: string
+  // 滴答/TickTick 开放 API 不支持真实子任务、独立 deadline，也不暴露 tags
+  readonly capabilities = { subtasks: false, deadline: false, labels: false }
   private tasksApi: TasksApi
   private projectsApi: ProjectsApi
 

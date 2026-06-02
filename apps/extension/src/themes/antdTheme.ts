@@ -79,6 +79,9 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         // 抽屉面板（section）底色走卡片色；圆角/阴影/留白在组件里用 styles.section 配
         colorBgElevated: colors.bgCard,
         colorText: textOnCard,
+        // footer 内边距走 token（原先靠 styles.footer.padding）
+        footerPaddingBlock: 12,
+        footerPaddingInline: 24,
         // 关掉 antd 给外层 wrapper（直角）的默认阴影，避免从圆角缝里露出直角暗块；
         // 阴影改由 styles.section 自己出（跟着圆角走）。
         // 这些是 antd6 内部计算 token、未在公开类型暴露，用 as object 绕过类型检查
@@ -119,6 +122,23 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         hoverBorderColor: colors.accent,
         activeBorderColor: colors.accent,
         borderRadius: 12,
+      },
+      Radio: {
+        // 优先级 Radio.Group 用 flex gap 控间距，去掉每项默认右外边距
+        wrapperMarginInlineEnd: 0,
+      },
+      Segmented: {
+        // Segmented 多在页面表面浮层（如设置 Popover）里：字色用 CSS 变量，
+        // 借 .card-surface 重映射做到「页面/卡片表面自适应」，避免 twilight 深底隐身
+        itemColor: 'var(--text-secondary)',
+        itemHoverColor: 'var(--text-primary)',
+        itemSelectedBg: 'var(--accent-light)',
+        itemSelectedColor: 'var(--text-primary)',
+        trackBg: 'var(--bg-secondary)',
+      },
+      DatePicker: {
+        // 抽屉里日期面板：hover/选中跟随主题强调色
+        cellHoverBg: 'var(--accent-light)',
       },
       Slider: {
         railBg: isDarkCard

@@ -30,6 +30,7 @@ import {
 } from '@/utils/onboarding'
 import { useAppMode } from '@/contexts/useAppMode'
 import { useConnectPrompt } from '@/contexts/useConnectPrompt'
+import { POPOVER_CONTENT_STYLE } from '@/constants/styles'
 import { usePremium } from '@/hooks/usePremium'
 import {
   getDevPremiumOverride,
@@ -373,13 +374,7 @@ export function SettingsPanel({ className }: SettingsPanelProps) {
           open={open}
           onOpenChange={handleOpenChange}
           arrow={false}
-          styles={{
-            content: {
-              padding: 0,
-              backgroundColor: 'var(--bg-primary)',
-              border: '1px solid var(--border)',
-            },
-          }}
+          styles={{ content: POPOVER_CONTENT_STYLE }}
         >
           <Button
             type="text"

@@ -189,7 +189,7 @@ export function TaskDetailDrawer({
           boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.16)',
         },
         header: { borderBottom: 'none', paddingBottom: 8 },
-        footer: { borderTop: '1px dashed var(--border)', padding: '12px 24px' },
+        footer: { borderTop: '1px dashed var(--border)' },
         close: { color: 'var(--text-secondary)' },
       }}
       footer={
@@ -383,7 +383,7 @@ export function TaskDetailDrawer({
             <Radio.Group
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="!flex !gap-3 [&_.ant-radio-wrapper]:!mr-0"
+              className="!flex !gap-3"
             >
               {priorityOptions.map((opt) => (
                 <Radio key={opt.value} value={opt.value}>

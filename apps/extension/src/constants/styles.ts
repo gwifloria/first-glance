@@ -13,6 +13,14 @@ export const MODAL_STYLE =
 // 圆角(=全局 8)、字重(=Button.fontWeight 500)、去阴影(=Button.*Shadow:none) 已走 token
 export const MODAL_BUTTON_STYLE = '!px-5 !h-9'
 
+// 页面表面浮层 Popover 的内容样式（字体切换/设置/环境音/帮助 4 处菜单共用）：
+// 无内边距（内容自管）、页面底色、页面边框。Popover 是页面表面，故用 --bg-primary。
+export const POPOVER_CONTENT_STYLE = {
+  padding: 0,
+  backgroundColor: 'var(--bg-primary)',
+  border: '1px solid var(--border)',
+} as const
+
 // 任务详情抽屉的正文排版：为「长读」调过 —— 行高 1.7、段落/列表间距收紧，
 // 杀掉 loose markdown 在 <li> 里塞 <p> 造成的大间距，列表标记走次字色
 export const TASK_DETAIL_PROSE_CLASS =

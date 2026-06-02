@@ -2,6 +2,7 @@ import { Popover, Button } from 'antd'
 import { CustomerServiceOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useAmbientSound } from '@/hooks/useAmbientSound'
+import { POPOVER_CONTENT_STYLE } from '@/constants/styles'
 import { AmbientSoundPanel } from './AmbientSoundPanel'
 
 export function AmbientSoundButton() {
@@ -25,13 +26,7 @@ export function AmbientSoundButton() {
       open={open}
       onOpenChange={setOpen}
       arrow={false}
-      styles={{
-        content: {
-          padding: 0,
-          backgroundColor: 'var(--bg-primary)',
-          border: '1px solid var(--border)',
-        },
-      }}
+      styles={{ content: POPOVER_CONTENT_STYLE }}
     >
       <Button
         type="text"

@@ -29,5 +29,8 @@ export function resolveDefaultProjectId(
 ): string | undefined {
   if (!defaultProjectId) return undefined
   const project = projects.find((p) => p.id === defaultProjectId)
-  return isInboxProject(project) ? undefined : defaultProjectId
+  // 未找到（清单已删除/收集箱未在列表中）或本就是收集箱 → 按「未指定」交给 API 落收集箱，
+  // 不把一个可能已不存在的 id 硬传给 API。
+  if (!project || isInboxProject(project)) return undefined
+  return defaultProjectId
 }

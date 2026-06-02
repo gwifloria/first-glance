@@ -48,7 +48,8 @@ async function withConcurrencyLimit<T, R>(
 
 export interface ProjectsApi {
   getAll(): Promise<Project[]>
-  getData(projectId: string): Promise<{ tasks: Task[] }>
+  // /project/{id}/data 响应含 project 对象，即使该清单当前没有任务也会返回
+  getData(projectId: string): Promise<{ project?: Project; tasks: Task[] }>
   getInboxTasks(): Promise<Task[]>
   getAllTasks(): Promise<{ tasks: Task[]; projects: Project[] }>
 }
@@ -90,26 +91,28 @@ export function createProjectsApi(req: RequestFn): ProjectsApi {
         }
       }
 
-      // 先获取收集箱任务
-      const inboxTasks = await withRetry(() => api.getData('inbox'))
-        .then((data) => data.tasks || [])
-        .catch((err) => {
+      // 先获取收集箱数据（含 project 对象 + 任务）
+      const inboxData = await withRetry(() => api.getData('inbox')).catch(
+        (err) => {
           const errorMsg = err instanceof Error ? err.message : '未知错误'
-          console.error('[API] 获取收集箱任务失败:', errorMsg)
-          return [] as Task[]
-        })
-
-      // 从 inbox 任务中提取真实的 inboxProjectId
-      let inboxProject: Project | null = null
-      if (inboxTasks.length > 0) {
-        const realInboxId = inboxTasks[0].projectId
-        inboxProject = {
-          id: realInboxId,
-          name: '收集箱', // Inbox 名称会在 UI 层通过 i18n 处理
-          sortOrder: -1, // 确保排在最前面
-          kind: 'INBOX',
+          console.error('[API] 获取收集箱数据失败:', errorMsg)
+          return { project: undefined, tasks: [] as Task[] }
         }
-      }
+      )
+      const inboxTasks = inboxData.tasks || []
+
+      // 真实 inbox id：优先用接口返回的 project（收集箱为空也会返回），
+      // 退而从任意收集箱任务推断。即使收集箱为空也尽量构造 inbox project，
+      // 否则 projects 缺收集箱会让 resolveDefaultProjectId 把 inbox id 误当普通清单。
+      const realInboxId = inboxData.project?.id ?? inboxTasks[0]?.projectId
+      const inboxProject: Project | null = realInboxId
+        ? {
+            id: realInboxId,
+            name: '收集箱', // Inbox 名称会在 UI 层通过 i18n 处理
+            sortOrder: -1, // 确保排在最前面
+            kind: 'INBOX',
+          }
+        : null
 
       // 使用并发限制获取项目任务
       const projectTaskArrays = await withConcurrencyLimit(

@@ -77,7 +77,13 @@ export type TaskMetaResolver = (
 
 export function usePomodoro(
   config?: Partial<PomodoroConfig>,
-  getTaskMeta?: TaskMetaResolver
+  getTaskMeta?: TaskMetaResolver,
+  /**
+   * work 阶段结束（自然到点或手动 skip）且有绑定任务时触发，用于弹「任务完成?」确认。
+   * 自然到点走 switchToNextPhase 的 shouldNotify 去重分支，多 Tab 只有赢家触发；
+   * skip 是单 Tab 用户动作，仅执行的那个 Tab 触发——都保证一次会话只弹一次。
+   */
+  onWorkSessionComplete?: (taskId: string) => void
 ): PomodoroState & PomodoroActions {
   const mergedConfig = useMemo(
     () => ({ ...DEFAULT_CONFIG, ...config }),
@@ -88,10 +94,17 @@ export function usePomodoro(
   const storageRef = useRef<PomodoroStorage | null>(null)
   const switchToNextPhaseRef = useRef<(() => Promise<void>) | null>(null)
   const taskMetaRef = useRef<TaskMetaResolver | undefined>(getTaskMeta)
+  const onWorkCompleteRef = useRef<((taskId: string) => void) | undefined>(
+    onWorkSessionComplete
+  )
 
   useEffect(() => {
     taskMetaRef.current = getTaskMeta
   }, [getTaskMeta])
+
+  useEffect(() => {
+    onWorkCompleteRef.current = onWorkSessionComplete
+  }, [onWorkSessionComplete])
 
   const [state, setState] = useState<PomodoroState>({
     mode: 'idle',
@@ -160,6 +173,10 @@ export function usePomodoro(
           taskTitle: meta?.title ?? null,
           priority: meta?.priority ?? null,
         })
+        // 弹「任务完成?」确认：放在 shouldNotify 去重分支内，多 Tab 只弹一次
+        if (stored.currentTaskId) {
+          onWorkCompleteRef.current?.(stored.currentTaskId)
+        }
       }
     }
 
@@ -308,6 +325,11 @@ export function usePomodoro(
   const skip = useCallback(async () => {
     const stored = storageRef.current
     if (!stored || stored.mode === 'idle') return
+
+    // 手动跳过 work 且有绑定任务时，同样弹完成确认（仅当前 Tab 触发，天然单次）
+    if (stored.mode === 'work' && stored.currentTaskId) {
+      onWorkCompleteRef.current?.(stored.currentTaskId)
+    }
 
     const newStored: PomodoroStorage = {
       ...stored,

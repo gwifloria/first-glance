@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { App, Button } from 'antd'
 import { BarChartOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
@@ -56,7 +56,27 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     },
     [data.tasks]
   )
-  const pomodoro = usePomodoro(pomodoroConfig, getTaskMeta)
+  // work 阶段结束（到点/skip）弹「任务完成?」。去重在 usePomodoro 内部完成，
+  // 这里只负责弹窗，避免多 Tab 各自反应式监听 mode 变化而重复弹、重复 completeTask。
+  const handleWorkSessionComplete = useCallback(
+    (taskId: string) => {
+      const task = data.tasks.find((t) => t.id === taskId)
+      if (!task) return
+      modal.confirm({
+        title: t('pomodoro.taskDone.title'),
+        content: task.title,
+        okText: t('pomodoro.taskDone.confirm'),
+        cancelText: t('pomodoro.taskDone.cancel'),
+        onOk: () => actions.completeTask(task),
+      })
+    },
+    [data.tasks, modal, t, actions]
+  )
+  const pomodoro = usePomodoro(
+    pomodoroConfig,
+    getTaskMeta,
+    handleWorkSessionComplete
+  )
   const isPomodoroActive = pomodoro.mode !== 'idle'
   // 进入动画门控：若 FocusView 挂载时番茄钟已在运行（从 ListView 开启番茄钟切过来），
   // 先以非沉浸态渲染一帧，再翻转到沉浸态，复刻 idle→immersive 的卡片 morph 动效。
@@ -75,30 +95,8 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     }
   }, [entered])
   const isImmersive = isPomodoroActive && entered
-  const prevModeRef = useRef(pomodoro.mode)
   const [statsOpen, setStatsOpen] = useState(false)
   const openStats = useCallback(() => setStatsOpen(true), [])
-
-  // 监听 work → break 切换，弹出任务完成确认
-  useEffect(() => {
-    const prevMode = prevModeRef.current
-    const currMode = pomodoro.mode
-
-    if (prevMode === 'work' && currMode === 'break' && pomodoro.currentTaskId) {
-      const task = data.tasks.find((t) => t.id === pomodoro.currentTaskId)
-      if (task) {
-        modal.confirm({
-          title: t('pomodoro.taskDone.title'),
-          content: task.title,
-          okText: t('pomodoro.taskDone.confirm'),
-          cancelText: t('pomodoro.taskDone.cancel'),
-          onOk: () => actions.completeTask(task),
-        })
-      }
-    }
-
-    prevModeRef.current = currMode
-  }, [pomodoro.mode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStartPomodoro = useCallback(
     (task: Task) => {

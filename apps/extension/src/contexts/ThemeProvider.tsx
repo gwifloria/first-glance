@@ -17,6 +17,7 @@ import {
   twilightTheme,
 } from '@/themes'
 import { getTheme, setTheme, subscribeTheme } from '@/services/themeStorage'
+import { deriveSurfaceTokens } from '@/themes/surface'
 import { contrastText } from '@/utils/color'
 import { ThemeContext } from './ThemeContext'
 import { PremiumContext } from './PremiumContext'
@@ -173,18 +174,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty('--bg-secondary-on-card')
     }
 
-    // 卡片在弹窗/纸面内的"抬升"填充：与卡片表面拉开层次。
-    // 按卡片明暗自适应——浅色卡片用极淡的暗色叠加，深色卡片用极淡的亮色叠加。
-    const isDarkCard = (theme.isDark ?? false) && !theme.colors.textOnCard
+    // 卡片表面派生色（与 antdTheme 的 antd token 同一来源 deriveSurfaceTokens）：
+    // 抬升填充 / hover / 选中 / 轨道线，按卡片明暗自适应。
+    const surface = deriveSurfaceTokens(theme)
+    root.style.setProperty('--surface-raised', surface.surfaceRaised)
+    root.style.setProperty('--track', surface.track)
+    // 页面/侧边栏（非卡片）表面 hover 叠加，供非 antd 元素（侧边栏/导航/列表行）共用，
+    // 替代散落的 bg-black/[0.0x] 字面量（在深色表面上不可见）
     root.style.setProperty(
-      '--surface-raised',
-      isDarkCard ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'
-    )
-    // 比 --surface-raised 更明显的"轨道线"色，用于进度环轨道、分隔等
-    // （--border 在深色主题里过淡，会与卡片同色）
-    root.style.setProperty(
-      '--track',
-      isDarkCard ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.1)'
+      '--overlay-hover-surface',
+      surface.overlayHoverSurface
     )
     // 卡片上的"强调底色"：把 accent 按比例混进卡片色，保证 7 个主题都有可见
     // 但不刺眼的强调（dark 主题 accent 近白，避免像 --accent-light 那样回退成卡片同色）。

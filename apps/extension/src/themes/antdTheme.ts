@@ -1,29 +1,24 @@
 import type { ThemeConfig } from 'antd'
 import type { Theme } from './index'
 import { contrastText } from '@/utils/color'
+import { deriveSurfaceTokens } from './surface'
 
 /**
  * 根据应用主题生成 Ant Design 主题配置
  */
 export function createAntdTheme(theme: Theme): ThemeConfig {
   const { colors } = theme
-  const isDark = theme.isDark ?? theme.type === 'modern'
-  // 卡片/modal 表面是否为深色（有 textOnCard 说明卡片是浅色）
-  const isDarkCard = isDark && !colors.textOnCard
+  // 卡片表面派生色（与 ThemeProvider 的 CSS 变量同一来源）
+  const {
+    darkCard: isDarkCard,
+    overlaySelected,
+    overlayHover,
+  } = deriveSurfaceTokens(theme)
   // antd 组件主要渲染在卡片/modal 内，使用卡片上的文字颜色
   const textOnCard = colors.textOnCard ?? colors.textPrimary
   const textSecondaryOnCard = colors.textSecondaryOnCard ?? colors.textSecondary
   // antd 组件的输入框/标签等背景色（卡片上的次级背景）
   const bgSecondaryOnCard = colors.bgSecondaryOnCard ?? colors.bgSecondary
-  // 卡片表面上的交互叠加色（多个组件复用）：
-  // dark 卡片用浅色半透明（accentLight==bgCard 会与面板同色而隐形），
-  // 浅色/journal 卡片仍用 accent 柔色调（选中）/ 黑色低透明（hover）
-  const overlaySelected = isDarkCard
-    ? 'rgba(255, 255, 255, 0.12)'
-    : colors.accentLight
-  const overlayHover = isDarkCard
-    ? 'rgba(255, 255, 255, 0.08)'
-    : 'rgba(0, 0, 0, 0.04)'
 
   return {
     token: {

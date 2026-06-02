@@ -4,7 +4,7 @@ import { useTaskContext } from '@/contexts/TaskContext'
 import { resolveDefaultProjectId } from '@/utils/project'
 import type { Task } from '@/types'
 import { formatDateStr } from '@/utils/date'
-import { Input } from 'antd'
+import { SurfaceInput } from '../common'
 import { LoadingOutlined } from '@ant-design/icons'
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -77,7 +77,7 @@ export const QuickAddInput = memo(function QuickAddInput({
 
   return (
     <div className="mb-6">
-      <Input
+      <SurfaceInput
         placeholder={t('placeholder.quickAdd')}
         value={quickAddValue}
         onChange={(e) => setQuickAddValue(e.target.value)}

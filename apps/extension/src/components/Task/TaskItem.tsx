@@ -58,7 +58,7 @@ export const TaskItem = memo(function TaskItem({
       className={`
         group flex items-start justify-between px-3 -mx-3 rounded-lg cursor-pointer
         transition-all duration-200 ease-out
-        hover:bg-black/[0.02] hover:-translate-y-0.5
+        hover:bg-[var(--overlay-hover-surface)] hover:-translate-y-0.5
         ${nested ? 'py-2' : 'py-3'}
         ${completing ? 'animate-[taskComplete_0.8s_ease-in-out_forwards] overflow-hidden' : ''}
       `}

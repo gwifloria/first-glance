@@ -1,6 +1,6 @@
-import { Input } from 'antd'
 import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { SurfaceInput } from '../common'
 
 interface SearchInputProps {
   value: string
@@ -17,7 +17,7 @@ export function SearchInput({
   const placeholderText = placeholder ?? t('placeholder.search')
   return (
     <div className="px-3 py-2">
-      <Input
+      <SurfaceInput
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholderText}
@@ -30,7 +30,7 @@ export function SearchInput({
             />
           )
         }
-        className="!bg-black/[0.04] !rounded-lg !py-1.5 !text-sm [&_.ant-input]:!bg-transparent [&_.ant-input]:!text-[var(--text-primary)] [&_.ant-input::placeholder]:!text-[var(--text-secondary)]"
+        className="!bg-[var(--overlay-hover-surface)] !rounded-lg !py-1.5 !text-sm"
         variant="borderless"
       />
     </div>

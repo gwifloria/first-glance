@@ -1,5 +1,5 @@
 import { storage } from './storage'
-import { didaConfig } from './didaCompatConfig'
+import { didaConfig, refreshDidaCompatToken } from './didaCompatConfig'
 import type { DidaCompatProviderConfig } from './didaCompatConfig'
 import type { AuthToken } from '@/types'
 
@@ -116,46 +116,20 @@ class AuthService {
     }
 
     const refreshToken = currentToken.refresh_token
-    const { clientId, clientSecret, tokenUrl } = this.config
 
-    // 创建刷新 Promise，并在完成后清理
+    // 创建刷新 Promise，并在完成后清理（refreshPromise 充当并发互斥）
     this.refreshPromise = (async () => {
       try {
-        const response = await fetch(tokenUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
-          },
-          body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-          }),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
-          const errorMessage =
-            errorData.error_description || errorData.error || 'Token 刷新失败'
-          console.error(
-            `[Auth] Token 刷新失败 (${response.status}):`,
-            errorMessage
-          )
+        const token = await refreshDidaCompatToken(this.config, refreshToken)
+        if (!token) {
+          console.error('[Auth] Token 刷新失败，清除本地 token')
           await storage.clearToken()
           this.emit('token_invalid')
           return null
         }
-
-        const token: AuthToken = await response.json()
         await storage.setToken(token)
         this.emit('token_refreshed')
         return token
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : '未知错误'
-        console.error('[Auth] Token 刷新异常:', errorMsg)
-        await storage.clearToken()
-        this.emit('token_invalid')
-        return null
       } finally {
         this.refreshPromise = null
       }

@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { Button, Tooltip } from 'antd'
 import { RightOutlined, TagOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { formatShortDate } from '@/utils/date'
@@ -10,7 +9,7 @@ import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import { contentToSummary } from '@/utils/contentRendering'
 import { ProjectColorDot } from '../common/ProjectColorDot'
 import { TaskCheckbox } from '../common/TaskCheckbox'
-import { TomatoIcon } from '../FocusView/TomatoIcon'
+import { StartPomodoroButton } from '../common'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import type { Task, Project } from '@/types'
 
@@ -146,16 +145,7 @@ export const TaskItem = memo(function TaskItem({
           className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(e) => e.stopPropagation()}
         >
-          <Tooltip title={t('focus:pomodoro.start')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<TomatoIcon size={14} />}
-              onClick={() => onStartPomodoro(task)}
-              className="!text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-              aria-label={t('focus:pomodoro.start')}
-            />
-          </Tooltip>
+          <StartPomodoroButton task={task} onStart={onStartPomodoro} />
         </div>
       )}
     </div>

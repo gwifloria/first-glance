@@ -5,12 +5,12 @@ import { getParentTitle } from '@/utils/taskMap'
 import { renderMarkdownLinks } from '@/utils/renderMarkdownLinks'
 import { parseContent, contentToSummary } from '@/utils/contentRendering'
 import type { Task } from '@/types'
-import { Button, Checkbox, message, Popover, Spin, Tooltip } from 'antd'
+import { Button, Checkbox, message, Popover, Spin } from 'antd'
 import { AimOutlined } from '@ant-design/icons'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TaskCheckbox } from '../common/TaskCheckbox'
-import { TomatoIcon } from './TomatoIcon'
+import { StartPomodoroButton } from '../common'
 import { FocusTaskInput } from './FocusTaskInput'
 
 const MAX_LOCAL_TASKS = 3
@@ -47,16 +47,11 @@ function ActionButtons({
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {isIdle && onStartPomodoro && (
-        <Tooltip title={t('pomodoro.start')}>
-          <Button
-            type="text"
-            size="small"
-            icon={<TomatoIcon size={14} />}
-            onClick={() => onStartPomodoro(task)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 !text-[var(--text-secondary)] hover:!text-[var(--accent)]"
-            aria-label={t('pomodoro.start')}
-          />
-        </Tooltip>
+        <StartPomodoroButton
+          task={task}
+          onStart={onStartPomodoro}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        />
       )}
       {isFocusingUnbound && onBindTask && (
         <Button

@@ -2,7 +2,7 @@ import type { ThemeType } from '@/themes'
 import { createStorageSubscriber } from './storageSubscriber'
 import { STORAGE_KEYS } from './storageKeys'
 
-const THEME_KEY = 'app_theme'
+const THEME_KEY = STORAGE_KEYS.APP_THEME
 const DEFAULT_THEME: ThemeType = 'cream'
 
 // 旧主题名 -> 新主题名映射

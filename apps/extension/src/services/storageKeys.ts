@@ -20,6 +20,8 @@ export const STORAGE_KEYS = {
   POMODORO: 'pomodoro',
   // 设置（app_settings 也被 background 屏蔽规则、主题迁移读取）
   APP_SETTINGS: 'app_settings',
+  // 主题（存于 chrome.storage.sync）
+  APP_THEME: 'app_theme',
   // 休息模式（background 写、前台读，跨进程）
   CHILL_MODE: 'chill_mode',
 } as const

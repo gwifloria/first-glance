@@ -29,7 +29,7 @@ export function TaskCheckbox({
           ) : undefined
         }
         className={`
-          !w-6 !h-6 !min-w-0 !p-0 !rounded-md !border-2 !border-[var(--border)] !flex !items-center !justify-center
+          !w-6 !h-6 !min-w-0 !p-0 !rounded-md !border-2 !border-[var(--text-secondary)] !flex !items-center !justify-center
           !bg-transparent hover:!border-[var(--accent)] hover:!bg-[var(--accent-light)]
           !transition-all !duration-300 !ease-out
           !-rotate-6 hover:!rotate-0 hover:!scale-110
@@ -53,7 +53,7 @@ export function TaskCheckbox({
     >
       <div
         className={`
-          w-2 h-2 rounded-full bg-[var(--border)] transition-opacity
+          w-2 h-2 rounded-full bg-[var(--text-secondary)] transition-opacity
           ${completing ? 'opacity-100 !bg-white' : 'opacity-0 group-hover:opacity-100'}
         `}
       />

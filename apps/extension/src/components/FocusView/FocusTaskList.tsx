@@ -408,6 +408,15 @@ export function FocusTaskList({
   const canAddMore = isGuest ? focusTasks.length < MAX_LOCAL_TASKS : true
   const focusingUnbound = !!immersive && !currentTaskId
 
+  // 沉浸时把「绑定任务」置顶为 hero——它可能不在 focusTasks（今天/逾期前 3）里
+  // （如从 ListView 对一个无日期/靠后的任务开启番茄钟），否则会全部淡出、看不到正在专注的任务。
+  const displayTasks = useMemo(() => {
+    if (!immersive || !currentTaskId) return focusTasks
+    const bound = taskMap.get(currentTaskId)
+    if (!bound) return focusTasks
+    return [bound, ...focusTasks.filter((t) => t.id !== currentTaskId)]
+  }, [immersive, currentTaskId, focusTasks, taskMap])
+
   const handleCreate = useCallback(
     async (taskData: Partial<Task>): Promise<Task | null> => {
       try {
@@ -429,13 +438,13 @@ export function FocusTaskList({
           <div className="flex items-center justify-center h-[200px]">
             <Spin />
           </div>
-        ) : focusTasks.length === 0 ? (
+        ) : displayTasks.length === 0 ? (
           <div className="text-center text-[var(--text-secondary)] text-lg">
             {t('empty')}
           </div>
         ) : (
           <div className="space-y-3">
-            {focusTasks.map((task, index) => {
+            {displayTasks.map((task, index) => {
               const isSelected =
                 currentTaskId != null && task.id === currentTaskId
               const shouldFadeOut = immersive && !isSelected
@@ -450,7 +459,7 @@ export function FocusTaskList({
                   }`}
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  {index === 0 && focusTasks.length > 1 && (
+                  {index === 0 && displayTasks.length > 1 && (
                     <div
                       className={`text-xs font-bold tracking-[0.2em] uppercase text-[var(--text-secondary)] text-center mb-2 opacity-50 transition-opacity duration-700 ${immersive ? 'opacity-0' : ''}`}
                     >

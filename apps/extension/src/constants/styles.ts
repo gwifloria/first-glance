@@ -13,8 +13,10 @@ export const FORM_INPUT_STYLE =
 export const FORM_SELECT_STYLE =
   '[&_.ant-select-selector]:!bg-[var(--surface-raised)] [&_.ant-select-selector]:!rounded-xl [&_.ant-select-selector]:!border [&_.ant-select-selector]:!border-solid [&_.ant-select-selector]:!border-[var(--border-on-card,var(--border))] [&_.ant-select-selector]:!py-2 [&_.ant-select-selector]:!px-4 [&_.ant-select-selector]:!h-auto [&_.ant-select-selector]:!shadow-none [&_.ant-select-selector]:transition-colors [&:hover_.ant-select-selector]:!border-[var(--accent)] [&.ant-select-focused_.ant-select-selector]:!border-[var(--accent)] [&_.ant-select-selection-item]:!text-sm'
 
+// 圆角(=Modal.borderRadiusLG 16)、header 下边框(=headerBorderBottom none)、
+// footer 虚线分隔(=footerBorderTop) 已走 token；这里只留无精确 token 的间距
 export const MODAL_STYLE =
-  '[&_.ant-modal-content]:!rounded-2xl [&_.ant-modal-header]:!border-0 [&_.ant-modal-header]:!pb-0 [&_.ant-modal-body]:!pt-4 [&_.ant-modal-footer]:!border-t [&_.ant-modal-footer]:!border-dashed [&_.ant-modal-footer]:!border-[var(--border)] [&_.ant-modal-footer]:!mt-2 [&_.ant-modal-footer]:!pt-4'
+  '[&_.ant-modal-header]:!pb-0 [&_.ant-modal-body]:!pt-4 [&_.ant-modal-footer]:!mt-2 [&_.ant-modal-footer]:!pt-4'
 
 // 弹窗按钮仅保留尺寸偏好（20px 内边距 / 36px 高）；
 // 圆角(=全局 8)、字重(=Button.fontWeight 500)、去阴影(=Button.*Shadow:none) 已走 token

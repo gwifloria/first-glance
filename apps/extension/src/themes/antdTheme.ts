@@ -68,6 +68,12 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         headerBg: colors.bgCard,
         titleColor: textOnCard,
         borderRadiusLG: 16,
+        // 内部 ModalToken（未在公开 ComponentToken 暴露，用 as object 绕类型，与 Drawer 同款）：
+        // header 不要下边框；footer 走手帐风虚线分隔（原先靠 MODAL_STYLE 的 class）
+        ...({
+          headerBorderBottom: 'none',
+          footerBorderTop: '1px dashed var(--border)',
+        } as object),
       },
       Drawer: {
         // 抽屉面板（section）底色走卡片色；圆角/阴影/留白在组件里用 styles.section 配

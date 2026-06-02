@@ -64,6 +64,7 @@
   },
   "detail": {
     "subtasks": "Subtasks",
+    "addSubtask": "Add subtask",
     "date": "Date",
     "labels": "Labels",
     "addLabel": "Add label",

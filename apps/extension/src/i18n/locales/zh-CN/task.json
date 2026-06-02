@@ -64,6 +64,7 @@
   },
   "detail": {
     "subtasks": "子任务",
+    "addSubtask": "添加子任务",
     "date": "日期",
     "labels": "标签",
     "addLabel": "添加标签",

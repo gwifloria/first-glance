@@ -17,6 +17,7 @@ import {
   FlagOutlined,
   TagOutlined,
   DownOutlined,
+  PlusOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { getPriorityOptions, getPriorityColor } from '@/constants/task'
@@ -84,7 +85,7 @@ export function TaskDetailDrawer({
 }: TaskDetailDrawerProps) {
   const { t } = useTranslation('task')
   const { t: tSettings } = useTranslation('settings')
-  const { data } = useTaskContext()
+  const { data, actions, capabilities } = useTaskContext()
   const { showSaved } = useJournalToast()
   const priorityOptions = getPriorityOptions(t)
 
@@ -100,6 +101,8 @@ export function TaskDetailDrawer({
   const [content, setContent] = useState(task?.content ?? '')
   const [editingContent, setEditingContent] = useState(false)
   const [tags, setTags] = useState<string[]>(task?.tags ?? [])
+  const [newSubtask, setNewSubtask] = useState('')
+  const [addingSubtask, setAddingSubtask] = useState(false)
 
   if (!task) return null
 
@@ -110,6 +113,29 @@ export function TaskDetailDrawer({
   const project = projects.find((p) => p.id === projectId)
   const isInbox = isInboxProject(project)
   const hasSubtasks = childTasks.length > 0 || (task.items?.length ?? 0) > 0
+  // 子任务完成进度（真实子任务 status===2 / checklist item status!==0 视为已完成）
+  const subtaskDone =
+    childTasks.filter((c) => c.status === 2).length +
+    (task.items?.filter((i) => i.status !== 0).length ?? 0)
+  const subtaskTotal = childTasks.length + (task.items?.length ?? 0)
+  // 仅 Todoist 等支持真实子任务的服务展示「添加子任务」入口
+  const canAddSubtask = capabilities.subtasks
+
+  const handleAddSubtask = async () => {
+    const title = newSubtask.trim()
+    if (!title || addingSubtask) return
+    setAddingSubtask(true)
+    try {
+      await actions.createTask({
+        title,
+        parentId: task.id,
+        projectId: task.projectId,
+      })
+      setNewSubtask('')
+    } finally {
+      setAddingSubtask(false)
+    }
+  }
   const openProjects = projects.filter((p) => !p.closed)
   // 标签建议：汇总全部任务里出现过的标签去重，供下拉补全
   const allTags = Array.from(
@@ -282,9 +308,20 @@ export function TaskDetailDrawer({
           </Button>
         )}
 
-        {/* 子任务（只读） */}
-        {hasSubtasks && (
+        {/* 子任务：标题 + 进度 + 列表 +（Todoist）添加入口 */}
+        {(hasSubtasks || canAddSubtask) && (
           <div className="flex flex-col gap-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-[var(--text-secondary)]">
+                {t('detail.subtasks')}
+              </span>
+              {subtaskTotal > 0 && (
+                <span className="text-xs text-[var(--text-secondary)]">
+                  {subtaskDone}/{subtaskTotal}
+                </span>
+              )}
+            </div>
+
             {childTasks.map((child) => (
               <div key={child.id} className="flex items-center gap-2.5">
                 <TaskCheckbox
@@ -316,6 +353,21 @@ export function TaskDetailDrawer({
                 </span>
               </div>
             ))}
+
+            {canAddSubtask && (
+              <div className="flex items-center gap-2.5 text-[var(--text-secondary)]">
+                <PlusOutlined className="text-xs" />
+                <Input
+                  value={newSubtask}
+                  onChange={(e) => setNewSubtask(e.target.value)}
+                  onPressEnter={handleAddSubtask}
+                  placeholder={t('detail.addSubtask')}
+                  variant="borderless"
+                  disabled={addingSubtask}
+                  className="!px-0 !text-sm"
+                />
+              </div>
+            )}
           </div>
         )}
 

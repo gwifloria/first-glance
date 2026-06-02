@@ -55,7 +55,10 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         textHoverBg: isDarkCard
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
-        // 通用
+        // 通用：手帐风全局去掉按钮投影（原先靠各处 !shadow-none）
+        defaultShadow: 'none',
+        primaryShadow: 'none',
+        dangerShadow: 'none',
         fontWeight: 500,
         paddingInline: 16,
         paddingBlock: 6,

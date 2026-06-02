@@ -9,8 +9,7 @@ import {
   FORM_INPUT_STYLE,
   FORM_SELECT_STYLE,
   MODAL_STYLE,
-  MODAL_OK_BUTTON_STYLE,
-  MODAL_CANCEL_BUTTON_STYLE,
+  MODAL_BUTTON_STYLE,
   FORM_LAYOUT_STYLE,
 } from '@/constants/styles'
 import type { Task, Project } from '@/types'
@@ -122,8 +121,8 @@ export function TaskEditor({
       destroyOnHidden
       width={400}
       className={MODAL_STYLE}
-      okButtonProps={{ className: MODAL_OK_BUTTON_STYLE, loading: saving }}
-      cancelButtonProps={{ className: MODAL_CANCEL_BUTTON_STYLE }}
+      okButtonProps={{ className: MODAL_BUTTON_STYLE, loading: saving }}
+      cancelButtonProps={{ className: MODAL_BUTTON_STYLE }}
     >
       <Form form={form} layout="vertical" className={FORM_LAYOUT_STYLE}>
         <Form.Item

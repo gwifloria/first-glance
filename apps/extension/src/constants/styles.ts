@@ -16,11 +16,9 @@ export const FORM_SELECT_STYLE =
 export const MODAL_STYLE =
   '[&_.ant-modal-content]:!rounded-2xl [&_.ant-modal-header]:!border-0 [&_.ant-modal-header]:!pb-0 [&_.ant-modal-body]:!pt-4 [&_.ant-modal-footer]:!border-t [&_.ant-modal-footer]:!border-dashed [&_.ant-modal-footer]:!border-[var(--border)] [&_.ant-modal-footer]:!mt-2 [&_.ant-modal-footer]:!pt-4'
 
-export const MODAL_OK_BUTTON_STYLE =
-  '!rounded-lg !px-5 !h-9 !text-sm !font-medium !shadow-none'
-
-export const MODAL_CANCEL_BUTTON_STYLE =
-  '!rounded-lg !px-5 !h-9 !text-sm !shadow-none'
+// 弹窗按钮仅保留尺寸偏好（20px 内边距 / 36px 高）；
+// 圆角(=全局 8)、字重(=Button.fontWeight 500)、去阴影(=Button.*Shadow:none) 已走 token
+export const MODAL_BUTTON_STYLE = '!px-5 !h-9'
 
 export const FORM_LAYOUT_STYLE =
   '[&_.ant-form-item]:!mb-4 [&_.ant-form-item-label>label]:!text-xs [&_.ant-form-item-label>label]:!font-normal [&_.ant-form-item-label]:!pb-1.5'

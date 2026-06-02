@@ -53,11 +53,17 @@ function buildDateGroups(
   computed: ComputedViews,
   filtered: Task[],
   sortBy: SortOption,
-  t: (key: string) => string
+  t: (key: string) => string,
+  filter: string
 ): TaskGroup[] {
   const filteredSet = new Set(filtered.map((task) => task.id))
   const pick = (bucket: Task[]) =>
     bucket.filter((task) => filteredSet.has(task.id))
+
+  // 'week' 类别并入 later 桶；在「本周」视图下 later 经求交只剩本周内任务，
+  // 仍叫「更晚」会与视图自相矛盾，改标「本周稍后」。
+  const laterTitleKey =
+    filter === 'week' ? 'group.laterThisWeek' : 'group.later'
 
   const configs = [
     {
@@ -82,7 +88,7 @@ function buildDateGroups(
     },
     {
       id: 'later',
-      titleKey: 'group.later',
+      titleKey: laterTitleKey,
       tasks: pick(computed.byDate.later),
     },
     {
@@ -208,7 +214,7 @@ export function useTaskViews(tasks: Task[]) {
       let result: TaskGroup[]
       if (groupBy === 'date') {
         // 日期分组：复用 computed.byDate（含置顶/已排序），仅在非默认 sortBy 时重排各桶
-        result = buildDateGroups(computed, filtered, sortBy, t)
+        result = buildDateGroups(computed, filtered, sortBy, t, filter)
       } else {
         // 其它分组：先按 sortBy 排序，再分组（标题由 TaskDateGroup 按 id 翻译/直接显示）
         const sorted = sortTasks(filtered, sortBy)

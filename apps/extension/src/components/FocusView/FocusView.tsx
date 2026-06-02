@@ -57,7 +57,24 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     [data.tasks]
   )
   const pomodoro = usePomodoro(pomodoroConfig, getTaskMeta)
-  const isImmersive = pomodoro.mode !== 'idle'
+  const isPomodoroActive = pomodoro.mode !== 'idle'
+  // 进入动画门控：若 FocusView 挂载时番茄钟已在运行（从 ListView 开启番茄钟切过来），
+  // 先以非沉浸态渲染一帧，再翻转到沉浸态，复刻 idle→immersive 的卡片 morph 动效。
+  // 在 FocusView 内部点「开始」时番茄钟原为 idle，entered 初始即 true，正常的状态过渡不受影响。
+  const [entered, setEntered] = useState(() => !isPomodoroActive)
+  useEffect(() => {
+    if (entered) return
+    // 双 rAF：保证 idle 帧先完成绘制，再翻转，使 CSS 过渡有「起点」可播
+    let raf2 = 0
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setEntered(true))
+    })
+    return () => {
+      cancelAnimationFrame(raf1)
+      if (raf2) cancelAnimationFrame(raf2)
+    }
+  }, [entered])
+  const isImmersive = isPomodoroActive && entered
   const prevModeRef = useRef(pomodoro.mode)
   const [statsOpen, setStatsOpen] = useState(false)
   const openStats = useCallback(() => setStatsOpen(true), [])

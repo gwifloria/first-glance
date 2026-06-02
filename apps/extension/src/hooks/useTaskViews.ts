@@ -62,8 +62,12 @@ function buildDateGroups(
 
   // 'week' 类别并入 later 桶；在「本周」视图下 later 经求交只剩本周内任务，
   // 仍叫「更晚」会与视图自相矛盾，改标「本周稍后」。
-  const laterTitleKey =
-    filter === 'week' ? 'group.laterThisWeek' : 'group.later'
+  // 注意：TaskDateGroup 按 group.id 走 i18n（id 在 TRANSLATABLE_GROUPS 里就用 group.<id>），
+  // 所以必须连 id 一起换成 'laterThisWeek'，光改 title 会被按 'later' 重新翻译覆盖。
+  const laterGroup =
+    filter === 'week'
+      ? { id: 'laterThisWeek', titleKey: 'group.laterThisWeek' }
+      : { id: 'later', titleKey: 'group.later' }
 
   const configs = [
     {
@@ -87,8 +91,8 @@ function buildDateGroups(
       tasks: pick(computed.byDate.tomorrow),
     },
     {
-      id: 'later',
-      titleKey: laterTitleKey,
+      id: laterGroup.id,
+      titleKey: laterGroup.titleKey,
       tasks: pick(computed.byDate.later),
     },
     {

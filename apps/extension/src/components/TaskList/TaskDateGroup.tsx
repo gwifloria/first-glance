@@ -28,6 +28,7 @@ const TRANSLATABLE_GROUPS = new Set([
   'nodeadline',
   'nolabel',
   'unknown',
+  'laterThisWeek',
 ])
 
 const MAX_DEPTH = 3

@@ -48,9 +48,10 @@ describe('filterTasks', () => {
     }),
   ]
 
-  it('today 只返回今天的任务', () => {
+  it('today 返回今天到期 + 已过期的任务', () => {
     const result = filterTasks(tasks, 'today')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    // 1=今天, 3=过期，都纳入 Today 视图
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 
   it('tomorrow 只返回明天的任务', () => {
@@ -97,11 +98,11 @@ describe('filterTasks', () => {
 
   it('空搜索不过滤', () => {
     const result = filterTasks(tasks, 'today', '')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 
   it('空格搜索不过滤', () => {
     const result = filterTasks(tasks, 'today', '   ')
-    expect(result.map((t) => t.id)).toEqual(['1'])
+    expect(result.map((t) => t.id).sort()).toEqual(['1', '3'])
   })
 })

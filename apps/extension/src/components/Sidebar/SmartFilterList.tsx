@@ -1,6 +1,5 @@
 import {
   CalendarOutlined,
-  ClockCircleOutlined,
   FieldTimeOutlined,
   InboxOutlined,
 } from '@ant-design/icons'
@@ -30,10 +29,14 @@ export const SmartFilterList = memo(function SmartFilterList({
 
   const smartFilters = [
     { id: 'inbox', icon: <InboxOutlined />, count: counts.inbox },
-    { id: 'today', icon: <FieldTimeOutlined />, count: counts.today },
+    // Today 含已过期，计数合并 today + overdue，与视图实际展示一致
+    {
+      id: 'today',
+      icon: <FieldTimeOutlined />,
+      count: counts.today + counts.overdue,
+    },
     { id: 'tomorrow', icon: <CalendarOutlined />, count: counts.tomorrow },
     { id: 'week', icon: <CalendarOutlined />, count: counts.week },
-    { id: 'overdue', icon: <ClockCircleOutlined />, count: counts.overdue },
   ]
 
   return (

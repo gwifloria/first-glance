@@ -21,4 +21,4 @@ export { sortTasks } from './sort'
 export { groupTasks } from './group'
 
 // 视图计算（核心）
-export { computeTaskViews, getFocusTasks, getTaskCounts } from './views'
+export { computeTaskViews, getFocusTasks } from './views'

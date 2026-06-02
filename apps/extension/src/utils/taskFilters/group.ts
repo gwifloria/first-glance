@@ -11,6 +11,11 @@ import {
   getNextWeekStr,
 } from '../date'
 
+/**
+ * 通用分组入口。注意：`groupBy==='date'` 在生产中并不走这里——
+ * useTaskViews.getTaskGroups 对日期分组改用 buildDateGroups（复用 computed.byDate
+ * 的置顶/已排序/缓存）。这里的 groupByDate 仅供单元测试与非 date 分组路径复用。
+ */
 export function groupTasks(
   tasks: Task[],
   groupBy: GroupOption,

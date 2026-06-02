@@ -3,7 +3,7 @@
  * 核心：computeTaskViews 单次遍历计算所有派生数据
  */
 import type { Task } from '@/types'
-import type { TaskCounts, ComputedViews } from './types'
+import type { ComputedViews } from './types'
 import {
   extractDateStr,
   getTodayStr,
@@ -121,11 +121,4 @@ export function getFocusTasks(views: ComputedViews, limit = 3): Task[] {
 
   const combined = [...pinnedFocus, ...today, ...overdue]
   return combined.slice(0, limit)
-}
-
-// ============ 兼容性函数（供旧代码过渡使用）============
-
-/** @deprecated 使用 computeTaskViews 替代 */
-export function getTaskCounts(tasks: Task[]): TaskCounts {
-  return computeTaskViews(tasks).counts
 }

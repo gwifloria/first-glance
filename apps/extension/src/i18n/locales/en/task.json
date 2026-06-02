@@ -12,7 +12,32 @@
     "high": "High Priority",
     "medium": "Medium Priority",
     "low": "Low Priority",
-    "none": "No Priority"
+    "none": "No Priority",
+    "nodate": "No Date",
+    "addedWeek": "Added This Week",
+    "addedEarlier": "Added Earlier",
+    "nodeadline": "No Deadline",
+    "nolabel": "No Label"
+  },
+  "listControl": {
+    "grouping": "Grouping",
+    "sorting": "Sorting",
+    "group": {
+      "none": "None",
+      "date": "Date",
+      "dateAdded": "Date added",
+      "deadline": "Deadline",
+      "priority": "Priority",
+      "label": "Label"
+    },
+    "sort": {
+      "sortOrder": "Default",
+      "name": "Name",
+      "dueDate": "Date",
+      "createdTime": "Date added",
+      "deadline": "Deadline",
+      "priority": "Priority"
+    }
   },
   "filter": {
     "all": "All Tasks",

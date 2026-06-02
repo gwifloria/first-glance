@@ -12,7 +12,32 @@
     "high": "高优先级",
     "medium": "中优先级",
     "low": "低优先级",
-    "none": "无优先级"
+    "none": "无优先级",
+    "nodate": "无日期",
+    "addedWeek": "本周添加",
+    "addedEarlier": "更早添加",
+    "nodeadline": "无截止日",
+    "nolabel": "无标签"
+  },
+  "listControl": {
+    "grouping": "分组",
+    "sorting": "排序",
+    "group": {
+      "none": "不分组",
+      "date": "日期",
+      "dateAdded": "添加日期",
+      "deadline": "截止日",
+      "priority": "优先级",
+      "label": "标签"
+    },
+    "sort": {
+      "sortOrder": "默认",
+      "name": "名称",
+      "dueDate": "日期",
+      "createdTime": "添加日期",
+      "deadline": "截止日",
+      "priority": "优先级"
+    }
   },
   "filter": {
     "all": "所有任务",

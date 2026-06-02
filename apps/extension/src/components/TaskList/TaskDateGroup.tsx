@@ -22,6 +22,11 @@ const TRANSLATABLE_GROUPS = new Set([
   'low',
   'none',
   'pinned',
+  // 新增分组桶（按添加日期 / 截止日 / 标签）
+  'addedWeek',
+  'addedEarlier',
+  'nodeadline',
+  'nolabel',
 ])
 
 const MAX_DEPTH = 3

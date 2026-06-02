@@ -4,6 +4,7 @@ import { AppstoreOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { Clock } from '../common/Clock'
 import { RefreshButton } from '../common/RefreshButton'
+import { SortGroupControl } from './SortGroupControl'
 import type { Project } from '@/types'
 
 const FILTER_KEYS: Record<string, string> = {
@@ -63,6 +64,7 @@ export function TaskListHeader({
         </div>
       </div>
       <div className="flex items-start gap-4">
+        <SortGroupControl />
         <RefreshButton className="mt-1" />
         {onFocus && (
           <Button

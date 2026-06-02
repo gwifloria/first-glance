@@ -1,7 +1,22 @@
 import type { Task } from '@/types'
 
-export type SortOption = 'priority' | 'dueDate' | 'createdTime' | 'sortOrder'
-export type GroupOption = 'date' | 'priority' | 'project' | 'none'
+// sortOrder=Default, name=Name, dueDate=Date, createdTime=Date added, deadline, priority
+export type SortOption =
+  | 'priority'
+  | 'dueDate'
+  | 'createdTime'
+  | 'sortOrder'
+  | 'name'
+  | 'deadline'
+// none, date, dateAdded=Date added, deadline, priority, label, project(内部用)
+export type GroupOption =
+  | 'date'
+  | 'priority'
+  | 'project'
+  | 'none'
+  | 'dateAdded'
+  | 'deadline'
+  | 'label'
 
 export interface TaskGroup {
   id: string

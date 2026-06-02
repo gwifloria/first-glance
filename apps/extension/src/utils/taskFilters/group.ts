@@ -5,6 +5,7 @@ import type { Task, Project } from '@/types'
 import type { GroupOption, TaskGroup } from './types'
 import {
   extractDateStr,
+  formatDateStr,
   getTodayStr,
   getTomorrowStr,
   getNextWeekStr,
@@ -15,57 +16,136 @@ export function groupTasks(
   groupBy: GroupOption,
   projects: Project[]
 ): TaskGroup[] {
-  if (groupBy === 'none') {
-    return [{ id: 'all', title: '所有任务', tasks }]
-  }
-
   switch (groupBy) {
     case 'date':
       return groupByDate(tasks)
+    case 'deadline':
+      return groupByDeadline(tasks)
+    case 'dateAdded':
+      return groupByDateAdded(tasks)
     case 'priority':
       return groupByPriority(tasks)
     case 'project':
       return groupByProject(tasks, projects)
+    case 'label':
+      return groupByLabel(tasks)
+    case 'none':
     default:
       return [{ id: 'all', title: '所有任务', tasks }]
   }
 }
 
-function groupByDate(tasks: Task[]): TaskGroup[] {
+/**
+ * 按未来向日期字段分桶（已过期/今天/明天/最近7天/更晚/无）。
+ * dueDate 与 deadline 共用此逻辑，仅取值字段与「无」桶标识不同。
+ */
+function bucketByFutureDate(
+  tasks: Task[],
+  getDate: (t: Task) => string | undefined,
+  noneId: string,
+  noneTitle: string
+): TaskGroup[] {
   const todayStr = getTodayStr()
   const tomorrowStr = getTomorrowStr()
   const nextWeekStr = getNextWeekStr()
 
-  const groups: TaskGroup[] = [
-    { id: 'overdue', title: '已过期', tasks: [] },
-    { id: 'today', title: '今天', tasks: [] },
-    { id: 'tomorrow', title: '明天', tasks: [] },
-    { id: 'week', title: '最近7天', tasks: [] },
-    { id: 'later', title: '更晚', tasks: [] },
-    { id: 'nodate', title: '无日期', tasks: [] },
-  ]
+  const overdue: Task[] = []
+  const today: Task[] = []
+  const tomorrow: Task[] = []
+  const week: Task[] = []
+  const later: Task[] = []
+  const none: Task[] = []
 
   for (const task of tasks) {
-    if (!task.dueDate) {
-      groups[5].tasks.push(task)
-    } else {
-      const dateStr = extractDateStr(task.dueDate)
-      if (dateStr < todayStr) {
-        groups[0].tasks.push(task)
-      } else if (dateStr === todayStr) {
-        groups[1].tasks.push(task)
-      } else if (dateStr === tomorrowStr) {
-        groups[2].tasks.push(task)
-      } else if (dateStr < nextWeekStr) {
-        groups[3].tasks.push(task)
-      } else {
-        groups[4].tasks.push(task)
-      }
+    const raw = getDate(task)
+    if (!raw) {
+      none.push(task)
+      continue
+    }
+    const dateStr = extractDateStr(raw)
+    if (dateStr < todayStr) overdue.push(task)
+    else if (dateStr === todayStr) today.push(task)
+    else if (dateStr === tomorrowStr) tomorrow.push(task)
+    else if (dateStr < nextWeekStr) week.push(task)
+    else later.push(task)
+  }
+
+  return [
+    { id: 'overdue', title: '已过期', tasks: overdue },
+    { id: 'today', title: '今天', tasks: today },
+    { id: 'tomorrow', title: '明天', tasks: tomorrow },
+    { id: 'week', title: '最近7天', tasks: week },
+    { id: 'later', title: '更晚', tasks: later },
+    { id: noneId, title: noneTitle, tasks: none },
+  ].filter((g) => g.tasks.length > 0)
+}
+
+function groupByDate(tasks: Task[]): TaskGroup[] {
+  return bucketByFutureDate(tasks, (t) => t.dueDate, 'nodate', '无日期')
+}
+
+function groupByDeadline(tasks: Task[]): TaskGroup[] {
+  return bucketByFutureDate(tasks, (t) => t.deadline, 'nodeadline', '无截止日')
+}
+
+/** 按创建时间分桶（过去向：今天添加 / 本周添加 / 更早 / 无） */
+function groupByDateAdded(tasks: Task[]): TaskGroup[] {
+  const todayStr = getTodayStr()
+  const weekAgo = new Date()
+  weekAgo.setDate(weekAgo.getDate() - 7)
+  const weekAgoStr = formatDateStr(weekAgo)
+
+  const today: Task[] = []
+  const week: Task[] = []
+  const earlier: Task[] = []
+  const none: Task[] = []
+
+  for (const task of tasks) {
+    if (!task.createdTime) {
+      none.push(task)
+      continue
+    }
+    const dateStr = extractDateStr(task.createdTime)
+    if (dateStr >= todayStr) today.push(task)
+    else if (dateStr >= weekAgoStr) week.push(task)
+    else earlier.push(task)
+  }
+
+  return [
+    { id: 'today', title: '今天添加', tasks: today },
+    { id: 'addedWeek', title: '本周添加', tasks: week },
+    { id: 'addedEarlier', title: '更早', tasks: earlier },
+    { id: 'nodate', title: '无日期', tasks: none },
+  ].filter((g) => g.tasks.length > 0)
+}
+
+/** 按标签分组：多标签任务会出现在多个组；无标签归「无标签」。组标题即标签名 */
+function groupByLabel(tasks: Task[]): TaskGroup[] {
+  const byTag = new Map<string, Task[]>()
+  const noLabel: Task[] = []
+
+  for (const task of tasks) {
+    const tags = task.tags ?? []
+    if (tags.length === 0) {
+      noLabel.push(task)
+      continue
+    }
+    for (const tag of tags) {
+      const list = byTag.get(tag) ?? []
+      list.push(task)
+      byTag.set(tag, list)
     }
   }
 
-  // 过滤掉空分组
-  return groups.filter((g) => g.tasks.length > 0)
+  const result: TaskGroup[] = [...byTag.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([tag, tasks]) => ({ id: tag, title: tag, tasks }))
+
+  if (noLabel.length > 0) {
+    result.push({ id: 'nolabel', title: '无标签', tasks: noLabel })
+  }
+
+  return result
 }
 
 function groupByPriority(tasks: Task[]): TaskGroup[] {

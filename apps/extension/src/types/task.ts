@@ -20,6 +20,8 @@ export interface Task {
   isAllDay?: boolean
   startDate?: string
   dueDate?: string
+  /** 截止日（独立于 dueDate 的硬约束）。仅 Todoist 开放 API 提供 */
+  deadline?: string
   timeZone?: string
   reminders?: string[]
   repeatFlag?: string

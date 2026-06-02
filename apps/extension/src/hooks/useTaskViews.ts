@@ -1,16 +1,18 @@
-import { useMemo, useCallback, useState, useRef } from 'react'
+import { useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   computeTaskViews,
   getFocusTasks,
   filterTasks,
   sortTasks,
+  groupTasks,
   type SortOption,
   type GroupOption,
   type TaskGroup,
   type TaskCounts,
   type ComputedViews,
 } from '@/utils/taskFilters'
+import { usePersistedState } from './usePersistedState'
 import type { Task } from '@/types'
 
 export type { SortOption, GroupOption, TaskGroup, TaskCounts, ComputedViews }
@@ -39,10 +41,67 @@ export interface TaskFilters {
   setSortBy: (sort: SortOption) => void
   groupBy: GroupOption
   setGroupBy: (group: GroupOption) => void
-  /** 获取指定筛选器的任务列表 */
-  getFilteredTasks: (filter: string, searchQuery?: string) => Task[]
   /** 获取指定筛选器的分组任务（用于 TaskList 显示） */
   getTaskGroups: (filter: string, searchQuery?: string) => TaskGroup[]
+}
+
+/**
+ * 日期分组：复用 computed.byDate（含置顶组、已按优先级预排序）与筛选结果求交。
+ * 默认 sortBy='priority' 时直接沿用预排序；选其它 sortBy 时对各桶重排（pinned 保持置顶序）。
+ */
+function buildDateGroups(
+  computed: ComputedViews,
+  filtered: Task[],
+  sortBy: SortOption,
+  t: (key: string) => string
+): TaskGroup[] {
+  const filteredSet = new Set(filtered.map((task) => task.id))
+  const pick = (bucket: Task[]) =>
+    bucket.filter((task) => filteredSet.has(task.id))
+
+  const configs = [
+    {
+      id: 'pinned',
+      titleKey: 'group.pinned',
+      tasks: pick(computed.byDate.pinned),
+    },
+    {
+      id: 'overdue',
+      titleKey: 'group.overdue',
+      tasks: pick(computed.byDate.overdue),
+    },
+    {
+      id: 'today',
+      titleKey: 'group.today',
+      tasks: pick(computed.byDate.today),
+    },
+    {
+      id: 'tomorrow',
+      titleKey: 'group.tomorrow',
+      tasks: pick(computed.byDate.tomorrow),
+    },
+    {
+      id: 'later',
+      titleKey: 'group.later',
+      tasks: pick(computed.byDate.later),
+    },
+    {
+      id: 'nodate',
+      titleKey: 'group.noDate',
+      tasks: pick(computed.byDate.nodate),
+    },
+  ]
+
+  return configs
+    .filter((cfg) => cfg.tasks.length > 0)
+    .map((cfg) => ({
+      id: cfg.id,
+      title: t(cfg.titleKey),
+      tasks:
+        sortBy === 'priority' || cfg.id === 'pinned'
+          ? cfg.tasks
+          : sortTasks(cfg.tasks, sortBy),
+    }))
 }
 
 /**
@@ -51,8 +110,15 @@ export interface TaskFilters {
  */
 export function useTaskViews(tasks: Task[]) {
   const { t } = useTranslation('task')
-  const [sortBy, setSortBy] = useState<SortOption>('priority')
-  const [groupBy, setGroupBy] = useState<GroupOption>('none')
+  // 持久化排序/分组偏好。默认 priority + date 保持现有「按日期分组、组内按优先级」观感
+  const [sortBy, setSortBy] = usePersistedState<SortOption>(
+    'list_sort_by',
+    'priority'
+  )
+  const [groupBy, setGroupBy] = usePersistedState<GroupOption>(
+    'list_group_by',
+    'date'
+  )
 
   // 分组结果缓存
   const groupCacheRef = useRef<{
@@ -83,87 +149,32 @@ export function useTaskViews(tasks: Task[]) {
     [computed]
   )
 
-  // ============ 筛选函数 ============
-  const getFilteredTasks = useCallback(
-    (filter: string, searchQuery?: string) => {
-      const filtered = filterTasks(tasks, filter, searchQuery)
-      return sortTasks(filtered, sortBy)
-    },
-    [tasks, sortBy]
-  )
-
-  // ============ 分组函数（基于 computed.byDate，带缓存）============
+  // ============ 分组函数（带缓存，缓存键含 groupBy/sortBy）============
   const getTaskGroups = useCallback(
     (filter: string, searchQuery?: string): TaskGroup[] => {
       // 检查缓存
-      const cacheKey = `${filter}-${searchQuery || ''}`
+      const cacheKey = `${filter}-${searchQuery || ''}-${groupBy}-${sortBy}`
       const cache = groupCacheRef.current
       if (cache && cache.key === cacheKey && cache.tasksHash === tasksHash) {
         return cache.result
       }
 
-      // 先筛选
       const filtered = filterTasks(tasks, filter, searchQuery)
 
-      // 基于筛选结果重新分组（复用 computed 的日期字符串缓存）
-      const categorized = {
-        pinned: [] as Task[],
-        overdue: [] as Task[],
-        today: [] as Task[],
-        tomorrow: [] as Task[],
-        later: [] as Task[],
-        nodate: [] as Task[],
+      let result: TaskGroup[]
+      if (groupBy === 'date') {
+        // 日期分组：复用 computed.byDate（含置顶/已排序），仅在非默认 sortBy 时重排各桶
+        result = buildDateGroups(computed, filtered, sortBy, t)
+      } else {
+        // 其它分组：先按 sortBy 排序，再分组（标题由 TaskDateGroup 按 id 翻译/直接显示）
+        const sorted = sortTasks(filtered, sortBy)
+        result = groupTasks(sorted, groupBy, [])
       }
 
-      // 创建快速查找集合
-      const filteredSet = new Set(filtered.map((t) => t.id))
-
-      // 从 computed.byDate 中筛选
-      for (const task of computed.byDate.pinned) {
-        if (filteredSet.has(task.id)) categorized.pinned.push(task)
-      }
-      for (const task of computed.byDate.overdue) {
-        if (filteredSet.has(task.id)) categorized.overdue.push(task)
-      }
-      for (const task of computed.byDate.today) {
-        if (filteredSet.has(task.id)) categorized.today.push(task)
-      }
-      for (const task of computed.byDate.tomorrow) {
-        if (filteredSet.has(task.id)) categorized.tomorrow.push(task)
-      }
-      for (const task of computed.byDate.later) {
-        if (filteredSet.has(task.id)) categorized.later.push(task)
-      }
-      for (const task of computed.byDate.nodate) {
-        if (filteredSet.has(task.id)) categorized.nodate.push(task)
-      }
-
-      // 分组配置
-      const groupConfigs: { id: keyof typeof categorized; titleKey: string }[] =
-        [
-          { id: 'pinned', titleKey: 'group.pinned' },
-          { id: 'overdue', titleKey: 'group.overdue' },
-          { id: 'today', titleKey: 'group.today' },
-          { id: 'tomorrow', titleKey: 'group.tomorrow' },
-          { id: 'later', titleKey: 'group.later' },
-          { id: 'nodate', titleKey: 'group.noDate' },
-        ]
-
-      // 构建结果（已排序，因为 computed.byDate 中已排序）
-      const result = groupConfigs
-        .filter((cfg) => categorized[cfg.id].length > 0)
-        .map((cfg) => ({
-          id: cfg.id,
-          title: t(cfg.titleKey),
-          tasks: categorized[cfg.id],
-        }))
-
-      // 更新缓存
       groupCacheRef.current = { key: cacheKey, tasksHash, result }
-
       return result
     },
-    [tasks, computed, tasksHash, t]
+    [tasks, computed, tasksHash, t, groupBy, sortBy]
   )
 
   // ============ 结构化返回 ============
@@ -183,7 +194,6 @@ export function useTaskViews(tasks: Task[]) {
     setSortBy,
     groupBy,
     setGroupBy,
-    getFilteredTasks,
     getTaskGroups,
   }
 

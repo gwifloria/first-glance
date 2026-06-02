@@ -41,6 +41,8 @@ export interface TodoistTask {
   addedAt: string | null
   labels: string[]
   parentId?: string
+  /** 截止日（独立于 due，Todoist 2025 起支持） */
+  deadline?: { date: string; lang?: string } | null
 }
 
 /** Todoist 项目（API 响应，经 camelCase 转换后） */
@@ -121,6 +123,7 @@ export function transformTaskFromTodoist(raw: TodoistTask): Task {
     title: raw.content,
     content: raw.description || undefined,
     dueDate: raw.due?.datetime ?? raw.due?.date,
+    deadline: raw.deadline?.date,
     isAllDay: raw.due ? !raw.due.datetime : true,
     priority: priorityFromTodoist(raw.priority),
     status: raw.checked ? 2 : 0,

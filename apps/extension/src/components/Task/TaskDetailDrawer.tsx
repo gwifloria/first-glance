@@ -231,14 +231,9 @@ export function TaskDetailDrawer({
               {t('common:button.delete')}
             </Button>
           </Popconfirm>
-          <div className="flex gap-2">
-            <Button onClick={discardAndClose}>
-              {t('common:button.cancel')}
-            </Button>
-            <Button type="primary" onClick={handleSave}>
-              {t('common:button.save')}
-            </Button>
-          </div>
+          <Button type="primary" onClick={handleSave}>
+            {t('common:button.save')}
+          </Button>
         </div>
       }
       title={

@@ -105,6 +105,54 @@ function buildDateGroups(
 }
 
 /**
+ * 上下文子任务补全（Todoist 风格）：
+ * 日期视图（today/week/overdue…）按 dueDate 一视同仁地筛任务，子任务若自身无日期
+ * 会在分组前被剔除，导致命中的父任务「光杆」展示。这里在分组之后，把已入选父任务
+ * 那些尚未展示的子孙任务补进父任务所在的组——TaskDateGroup 的同组嵌套逻辑会自动把
+ * 它们挂到父任务下作上下文。已自行命中筛选（在自己日期桶里）的子任务不重复补入。
+ */
+function attachContextSubtasks(
+  groups: TaskGroup[],
+  allTasks: Task[]
+): TaskGroup[] {
+  // parentId → 直接子任务
+  const childrenByParent = new Map<string, Task[]>()
+  for (const task of allTasks) {
+    if (!task.parentId) continue
+    const siblings = childrenByParent.get(task.parentId)
+    if (siblings) siblings.push(task)
+    else childrenByParent.set(task.parentId, [task])
+  }
+  if (childrenByParent.size === 0) return groups
+
+  // 已展示的任务 id（跨所有组），用于去重，避免同一子任务被补进多个组
+  const includedIds = new Set<string>()
+  for (const group of groups) {
+    for (const task of group.tasks) includedIds.add(task.id)
+  }
+
+  return groups.map((group) => {
+    const extras: Task[] = []
+    // BFS：从组内每个任务出发，补全尚未展示的子孙
+    const queue = group.tasks.map((task) => task.id)
+    while (queue.length > 0) {
+      const id = queue.shift() as string
+      const children = childrenByParent.get(id)
+      if (!children) continue
+      for (const child of children) {
+        if (includedIds.has(child.id)) continue
+        includedIds.add(child.id)
+        extras.push(child)
+        queue.push(child.id)
+      }
+    }
+    return extras.length > 0
+      ? { ...group, tasks: [...group.tasks, ...extras] }
+      : group
+  })
+}
+
+/**
  * 任务视图计算 Hook
  * 核心：单次遍历计算所有派生数据
  */
@@ -169,6 +217,11 @@ export function useTaskViews(tasks: Task[]) {
         // 其它分组：先按 sortBy 排序，再分组（标题由 TaskDateGroup 按 id 翻译/直接显示）
         const sorted = sortTasks(filtered, sortBy)
         result = groupTasks(sorted, groupBy, [])
+      }
+
+      // 搜索时保持严格匹配；否则把命中父任务被筛掉的子任务带出来作上下文
+      if (!searchQuery?.trim()) {
+        result = attachContextSubtasks(result, tasks)
       }
 
       groupCacheRef.current = { key: cacheKey, tasksHash, result }

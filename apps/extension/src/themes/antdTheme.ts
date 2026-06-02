@@ -46,13 +46,15 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
     },
     components: {
       Button: {
-        // 默认按钮
+        // 默认按钮。字色走 var(--text-primary)：页面上是页面字色，进入
+        // .ant-modal-container / .card-surface 作用域会自动重映射成卡片字色，
+        // 避免 modal.confirm 的取消按钮（如「Not yet」）在 twilight 浅卡片上隐身。
         defaultBg: 'transparent',
         defaultBorderColor: colors.border,
-        defaultColor: colors.textPrimary,
+        defaultColor: 'var(--text-primary)',
         defaultHoverBg: colors.accentLight,
         defaultHoverBorderColor: colors.accent,
-        defaultHoverColor: colors.textPrimary,
+        defaultHoverColor: 'var(--text-primary)',
         // 主按钮：根据 accent 亮度自动计算对比色
         primaryColor: contrastText(colors.accent),
         // 文本按钮

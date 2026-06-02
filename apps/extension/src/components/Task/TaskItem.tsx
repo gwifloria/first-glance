@@ -19,6 +19,8 @@ interface TaskItemProps {
   parentTitle?: string
   expandable?: boolean
   expanded?: boolean
+  /** 作为子任务嵌套展示：字号/行距略缩小，体现层级 */
+  nested?: boolean
   onToggleExpand?: () => void
   onComplete: (task: Task) => void
   onDelete: (task: Task) => void
@@ -31,6 +33,7 @@ export const TaskItem = memo(function TaskItem({
   parentTitle,
   expandable,
   expanded,
+  nested,
   onToggleExpand,
   onComplete,
   onDelete,
@@ -51,9 +54,10 @@ export const TaskItem = memo(function TaskItem({
     <div
       onClick={() => onEdit(task)}
       className={`
-        group flex items-start justify-between py-3 px-3 -mx-3 rounded-lg cursor-pointer
+        group flex items-start justify-between px-3 -mx-3 rounded-lg cursor-pointer
         transition-all duration-200 ease-out
         hover:bg-black/[0.02] hover:-translate-y-0.5
+        ${nested ? 'py-2' : 'py-3'}
         ${completing ? 'animate-[taskComplete_0.8s_ease-in-out_forwards] overflow-hidden' : ''}
       `}
     >
@@ -91,7 +95,9 @@ export const TaskItem = memo(function TaskItem({
               ${summary ? 'mb-0.5' : 'mb-1'}
               ${completing ? 'task-strike-through text-[var(--text-secondary)]' : ''}
             `}
-            style={{ fontSize: 'calc(0.9375rem * var(--font-hand-scale, 1))' }}
+            style={{
+              fontSize: `calc(${nested ? '0.85rem' : '0.9375rem'} * var(--font-hand-scale, 1))`,
+            }}
           >
             {renderMarkdownLinks(task.title)}
           </div>

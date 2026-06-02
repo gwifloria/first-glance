@@ -66,6 +66,7 @@ function TaskTree({
         parentTitle={getParentTitle(task, taskMap)}
         expandable={hasChildren}
         expanded={isExpanded}
+        nested={depth > 0}
         onToggleExpand={() => onToggleExpand(task.id)}
         onComplete={onComplete}
         onDelete={onDelete}
@@ -93,6 +94,7 @@ function TaskTree({
                 key={child.id}
                 task={child}
                 project={getProjectById(child.projectId)}
+                nested
                 onComplete={onComplete}
                 onDelete={onDelete}
                 onEdit={onEdit}

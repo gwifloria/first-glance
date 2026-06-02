@@ -120,16 +120,32 @@ class AuthService {
     // 创建刷新 Promise，并在完成后清理（refreshPromise 充当并发互斥）
     this.refreshPromise = (async () => {
       try {
-        const token = await refreshDidaCompatToken(this.config, refreshToken)
-        if (!token) {
-          console.error('[Auth] Token 刷新失败，清除本地 token')
-          await storage.clearToken()
-          this.emit('token_invalid')
+        const result = await refreshDidaCompatToken(this.config, refreshToken)
+        if (!result.ok) {
+          if (result.reason === 'invalid') {
+            // 跨上下文兜底：若 storage 里的 refresh_token 已与我们用的不同，
+            // 说明 background 已并发刷新成功并轮换了 token，本次 400 是用了旧 token，
+            // 不能清——否则会把刚刷新好的登录态误登出。
+            const latest = await storage.getToken()
+            if (
+              latest?.refresh_token &&
+              latest.refresh_token !== refreshToken
+            ) {
+              console.warn('[Auth] refresh_token 已被并发刷新轮换，跳过清除')
+              return latest
+            }
+            console.error('[Auth] refresh_token 已失效，清除本地 token')
+            await storage.clearToken()
+            this.emit('token_invalid')
+          } else {
+            // 网络/临时故障：保留 token，下次再试，不登出
+            console.warn('[Auth] Token 刷新临时失败（网络），保留 token')
+          }
           return null
         }
-        await storage.setToken(token)
+        await storage.setToken(result.token)
         this.emit('token_refreshed')
-        return token
+        return result.token
       } finally {
         this.refreshPromise = null
       }

@@ -94,13 +94,26 @@ export const PomodoroControls = memo(function PomodoroControls({
             className={BTN_SECONDARY}
           />
 
-          {/* 结束（长按确认） */}
-          <LongPressButton
-            onConfirm={onReset}
-            icon={<PoweroffOutlined />}
-            label={t('pomodoro.finish')}
-            className={BTN_SECONDARY}
-          />
+          {/* 结束：work 阶段长按防误触中断专注；break 阶段番茄已跑完，
+              退出去挑下个任务是低风险动作，改单击即可，不必长按添堵 */}
+          {mode === 'break' ? (
+            <Button
+              type="text"
+              size="large"
+              icon={<PoweroffOutlined />}
+              onClick={onReset}
+              className={`${BTN_SECONDARY} ${BTN_RUN_NORMALIZE}`}
+            >
+              {t('pomodoro.finish')}
+            </Button>
+          ) : (
+            <LongPressButton
+              onConfirm={onReset}
+              icon={<PoweroffOutlined />}
+              label={t('pomodoro.finish')}
+              className={BTN_SECONDARY}
+            />
+          )}
         </>
       )}
 

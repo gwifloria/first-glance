@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useAppMode } from '@/contexts/useAppMode'
 import { usePremium } from '@/hooks/usePremium'
 import { getSettings } from '@/services/settingsStorage'
+import { storage } from '@/services/storage'
 import { TaskProvider } from '@/contexts/TaskProvider'
 import { FocusLayout, ListLayout } from '@/components/layouts'
 import { BlockedPage } from '@/components/BlockedPage'
@@ -19,10 +20,15 @@ function AppContent() {
   const { premiumModalOpen, closePremiumModal } = usePremium()
   const [viewMode, setViewMode] = useState<ViewMode>('focus')
 
-  // 按用户设置的默认视图初始化（游客由下方渲染门控强制 focus）
+  // 初始视图：番茄钟正在进行（work/break，含暂停）时强制 Focus，
+  // 这样刷新/重开页面能留在专注界面；否则按用户设置的默认视图。
   useEffect(() => {
-    getSettings().then((s) => {
-      if (s.defaultView === 'list') setViewMode('list')
+    Promise.all([getSettings(), storage.getPomodoro()]).then(([s, pomo]) => {
+      if (pomo && pomo.mode !== 'idle') {
+        setViewMode('focus')
+      } else if (s.defaultView === 'list') {
+        setViewMode('list')
+      }
     })
   }, [])
 

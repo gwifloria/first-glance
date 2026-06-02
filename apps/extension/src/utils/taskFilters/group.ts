@@ -3,6 +3,7 @@
  */
 import type { Task, Project } from '@/types'
 import type { GroupOption, TaskGroup } from './types'
+import { isInboxProject } from '../project'
 import {
   extractDateStr,
   formatDateStr,
@@ -179,12 +180,14 @@ function groupByPriority(tasks: Task[]): TaskGroup[] {
 function groupByProject(tasks: Task[], projects: Project[]): TaskGroup[] {
   const projectMap = new Map<string, TaskGroup>()
 
-  // 初始化收集箱
-  projectMap.set('inbox', { id: 'inbox', title: '收集箱', tasks: [] })
+  // 收集箱归一为单一 'inbox' 组（归属由 adapter stamp 的 task.isInbox 决定，
+  // 不靠 id 前缀猜——Todoist inbox 是数字 id，前缀法识别不到）。
+  const INBOX_ID = 'inbox'
+  projectMap.set(INBOX_ID, { id: INBOX_ID, title: '收集箱', tasks: [] })
 
-  // 初始化其他项目
+  // 初始化其他项目；跳过 inbox 项目本身，避免与归一组重复
   for (const project of projects) {
-    if (!project.closed) {
+    if (!project.closed && !isInboxProject(project)) {
       projectMap.set(project.id, {
         id: project.id,
         title: project.name,
@@ -193,26 +196,35 @@ function groupByProject(tasks: Task[], projects: Project[]): TaskGroup[] {
     }
   }
 
+  // 未匹配到任何项目的任务兜底组，避免静默丢弃（如已关闭/已删除但仍被缓存的项目）
+  const orphan: TaskGroup = { id: 'unknown', title: '其他', tasks: [] }
+
   // 分配任务
   for (const task of tasks) {
-    if (task.projectId?.startsWith('inbox')) {
-      projectMap.get('inbox')?.tasks.push(task)
+    if (task.isInbox) {
+      projectMap.get(INBOX_ID)!.tasks.push(task)
     } else if (projectMap.has(task.projectId)) {
-      projectMap.get(task.projectId)?.tasks.push(task)
+      projectMap.get(task.projectId)!.tasks.push(task)
+    } else {
+      orphan.tasks.push(task)
     }
   }
 
-  // 过滤空分组，收集箱放第一个
+  // 过滤空分组，收集箱放第一个，兜底组放最后
   const result: TaskGroup[] = []
-  const inbox = projectMap.get('inbox')
+  const inbox = projectMap.get(INBOX_ID)
   if (inbox && inbox.tasks.length > 0) {
     result.push(inbox)
   }
 
   for (const [id, group] of projectMap) {
-    if (id !== 'inbox' && group.tasks.length > 0) {
+    if (id !== INBOX_ID && group.tasks.length > 0) {
       result.push(group)
     }
+  }
+
+  if (orphan.tasks.length > 0) {
+    result.push(orphan)
   }
 
   return result

@@ -17,7 +17,8 @@
     "addedWeek": "Added This Week",
     "addedEarlier": "Added Earlier",
     "nodeadline": "No Deadline",
-    "nolabel": "No Label"
+    "nolabel": "No Label",
+    "unknown": "Other"
   },
   "listControl": {
     "grouping": "Grouping",

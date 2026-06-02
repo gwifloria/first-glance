@@ -140,7 +140,7 @@ describe('groupTasks', () => {
   describe('project', () => {
     it('按项目分组，inbox 在前', () => {
       const projectTasks = [
-        makeTask({ id: '1', projectId: 'inbox-1' }),
+        makeTask({ id: '1', projectId: 'inbox-1', isInbox: true }),
         makeTask({ id: '2', projectId: 'proj-a' }),
         makeTask({ id: '3', projectId: 'proj-b' }),
       ]
@@ -155,15 +155,17 @@ describe('groupTasks', () => {
       expect(groups[0].tasks.map((t) => t.id)).toEqual(['1'])
     })
 
-    it('closed 项目不创建组', () => {
+    it('closed 项目的任务落入兜底组而非被丢弃', () => {
       const projectTasks = [makeTask({ id: '1', projectId: 'proj-closed' })]
       const projects = [
         makeProject({ id: 'proj-closed', name: 'Closed', closed: true }),
       ]
 
       const groups = groupTasks(projectTasks, 'project', projects)
-      // closed 项目不会在 projectMap 中，任务被丢弃
-      expect(groups).toHaveLength(0)
+      // closed 项目不在 projectMap 中，任务归入 '其他' 兜底组，不静默丢弃
+      expect(groups).toHaveLength(1)
+      expect(groups[0].id).toBe('unknown')
+      expect(groups[0].tasks.map((t) => t.id)).toEqual(['1'])
     })
 
     it('空组被过滤', () => {

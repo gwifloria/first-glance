@@ -17,7 +17,8 @@
     "addedWeek": "本周添加",
     "addedEarlier": "更早添加",
     "nodeadline": "无截止日",
-    "nolabel": "无标签"
+    "nolabel": "无标签",
+    "unknown": "其他"
   },
   "listControl": {
     "grouping": "分组",

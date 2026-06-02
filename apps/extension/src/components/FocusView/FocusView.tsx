@@ -78,13 +78,16 @@ export function FocusView({ quote, onSwitchView }: FocusViewProps) {
     handleWorkSessionComplete
   )
   const isPomodoroActive = pomodoro.mode !== 'idle'
-  // 进入动画门控：若 FocusView 挂载时番茄钟已在运行（从 ListView 开启番茄钟切过来），
-  // 先以非沉浸态渲染一帧，再翻转到沉浸态，复刻 idle→immersive 的卡片 morph 动效。
-  // 在 FocusView 内部点「开始」时番茄钟原为 idle，entered 初始即 true，正常的状态过渡不受影响。
-  const [entered, setEntered] = useState(() => !isPomodoroActive)
+  // 进入动画门控：复刻 idle→immersive 的卡片 morph。
+  // 关键：番茄钟状态由 storage 异步水合，mount 时 pomodoro.mode 恒为 idle，
+  // 之后 getPomodoro().then() 在「微任务」里把 mode 翻成 active——这早于浏览器绘制，
+  // 若直接进入沉浸态，CSS 过渡没有「起点帧」可播，会硬切。
+  // 所以 entered 一律从 false 起，用双 rAF 保证至少一帧 idle 已绘制后再翻转，
+  // 让「从 ListView 带着进行中番茄钟切进来 / 刷新落在进行中」也能播放 morph。
+  // （FocusView 内点「开始」时 entered 早已为 true，idle→work 自然 toggle，不受影响。）
+  const [entered, setEntered] = useState(false)
   useEffect(() => {
     if (entered) return
-    // 双 rAF：保证 idle 帧先完成绘制，再翻转，使 CSS 过渡有「起点」可播
     let raf2 = 0
     const raf1 = requestAnimationFrame(() => {
       raf2 = requestAnimationFrame(() => setEntered(true))

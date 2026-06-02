@@ -5,13 +5,7 @@ import { getPriorityOptions, FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
 import { formatDateStr } from '@/utils/date'
 import { isInboxProject } from '@/utils/project'
-import {
-  FORM_INPUT_STYLE,
-  FORM_SELECT_STYLE,
-  MODAL_STYLE,
-  MODAL_BUTTON_STYLE,
-  FORM_LAYOUT_STYLE,
-} from '@/constants/styles'
+import { MODAL_STYLE, MODAL_BUTTON_STYLE } from '@/constants/styles'
 import type { Task, Project } from '@/types'
 
 interface TaskEditorProps {
@@ -124,7 +118,7 @@ export function TaskEditor({
       okButtonProps={{ className: MODAL_BUTTON_STYLE, loading: saving }}
       cancelButtonProps={{ className: MODAL_BUTTON_STYLE }}
     >
-      <Form form={form} layout="vertical" className={FORM_LAYOUT_STYLE}>
+      <Form form={form} layout="vertical">
         <Form.Item
           name="title"
           label={t('editor.labelTitle')}
@@ -133,10 +127,7 @@ export function TaskEditor({
             { whitespace: true, message: t('validation.titleRequired') },
           ]}
         >
-          <Input
-            placeholder={t('editor.placeholderTitle')}
-            className={FORM_INPUT_STYLE}
-          />
+          <Input placeholder={t('editor.placeholderTitle')} />
         </Form.Item>
 
         <Form.Item
@@ -144,7 +135,7 @@ export function TaskEditor({
           label={t('editor.labelProject')}
           className="!mb-4"
         >
-          <Select className={FORM_SELECT_STYLE}>
+          <Select>
             {projects
               .filter((p) => !p.closed)
               .map((project) => {

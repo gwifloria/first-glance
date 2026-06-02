@@ -90,16 +90,24 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         } as object),
       },
       Input: {
-        activeBg: 'transparent',
-        hoverBg: 'transparent',
-        colorBgContainer: bgSecondaryOnCard,
+        // 输入框观感统一走 token（原先靠 FORM_INPUT_STYLE 一串 class）：
+        // 卡片抬升填充 + 圆角 12 + 内边距 + hover/focus 转 accent + 去 focus 阴影
+        colorBgContainer: 'var(--surface-raised)',
+        hoverBg: 'var(--surface-raised)',
+        activeBg: 'var(--surface-raised)',
         colorText: textOnCard,
         colorTextPlaceholder: textSecondaryOnCard,
         activeBorderColor: colors.accent,
-        hoverBorderColor: colors.border,
+        hoverBorderColor: colors.accent,
+        borderRadius: 12,
+        paddingBlock: 10,
+        paddingInline: 16,
+        inputFontSize: 14,
+        activeShadow: 'none',
       },
       Select: {
-        colorBgContainer: colors.bgCard,
+        // selector 填充用卡片抬升色（与 Input 一致）；下拉面板仍用 bgElevated
+        selectorBg: 'var(--surface-raised)',
         colorBgElevated: colors.bgCard,
         colorText: textOnCard,
         optionSelectedBg: colors.accentLight,
@@ -107,6 +115,10 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         optionActiveBg: isDarkCard
           ? 'rgba(255, 255, 255, 0.08)'
           : 'rgba(0, 0, 0, 0.04)',
+        optionFontSize: 14,
+        hoverBorderColor: colors.accent,
+        activeBorderColor: colors.accent,
+        borderRadius: 12,
       },
       Slider: {
         railBg: isDarkCard
@@ -132,6 +144,8 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
       Form: {
         labelColor: textOnCard,
         itemMarginBottom: 16,
+        labelFontSize: 12,
+        verticalLabelPadding: '0 0 6px',
       },
       Empty: {
         colorText: colors.textSecondary,

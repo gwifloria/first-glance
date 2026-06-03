@@ -29,6 +29,14 @@
   font-size: 14px;
 }
 
+/* 失败贴纸：边框与叉号换成 danger 色，其余与成功款一致 */
+.journal-toast--error .journal-toast__sticker {
+  border-color: var(--danger);
+}
+.journal-toast--error .journal-toast__check {
+  color: var(--danger);
+}
+
 .journal-toast__deco {
   color: var(--accent);
   opacity: 0.75;

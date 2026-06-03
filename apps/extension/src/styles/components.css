@@ -65,6 +65,15 @@
 }
 /* .ant-input 的字色/占位/透明背景由 SurfaceInput（surface="page"）统一处理 */
 
+/* 添加任务「保存中」占位：换手写体 + accent 色，配合右侧转圈，让「正在记下」更明显。
+   QuickAddInput 走 .ant-input（antd），FocusTaskInput 是原生 input，共用此规则。 */
+.quick-add-input.is-saving .ant-input::placeholder,
+.task-add-saving::placeholder {
+  color: var(--accent) !important;
+  font-family: var(--font-hand, 'Lora', serif) !important;
+  opacity: 1 !important;
+}
+
 /* Onboarding 按钮 */
 .onboarding-btn-skip {
   flex: 1 !important;

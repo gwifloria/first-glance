@@ -34,3 +34,35 @@ export function resolveDefaultProjectId(
   if (!project || isInboxProject(project)) return undefined
   return defaultProjectId
 }
+
+/**
+ * 快速添加时根据当前 filter 解析要提交的 projectId。
+ * 抽出 QuickAddInput 原内联逻辑，让「目的地提示」与实际提交共用一个真相源：
+ * - inbox：不传，交给 adapter/API 落收集箱
+ * - project:<id>：用该项目
+ * - 其它（today/tomorrow/smart list）：用默认清单
+ */
+export function resolveQuickAddProjectId(
+  filter: string,
+  defaultProjectId: string | null | undefined,
+  projects: Project[]
+): string | undefined {
+  if (filter === 'inbox') return undefined
+  if (filter.startsWith('project:')) return filter.replace('project:', '')
+  return resolveDefaultProjectId(defaultProjectId, projects)
+}
+
+/**
+ * 把要提交的 projectId 解析成展示用清单名，供输入框「会写到哪」的提示与成功 toast 复用。
+ * undefined / 收集箱 / 已删除的 id → 回退到 inboxLabel（由调用方传 i18n 文案）。
+ */
+export function projectDisplayName(
+  projectId: string | undefined,
+  projects: Project[],
+  inboxLabel: string
+): string {
+  if (!projectId) return inboxLabel
+  const project = projects.find((p) => p.id === projectId)
+  if (!project || isInboxProject(project)) return inboxLabel
+  return project.name
+}

@@ -44,5 +44,12 @@
   "disconnectConfirm": {
     "title": "Disconnect",
     "description": "Are you sure you want to disconnect?"
+  },
+  "quickAdd": {
+    "saving": "Jotting down…",
+    "added": "Added to {{list}}",
+    "destination": "→ {{list}}",
+    "inbox": "Inbox",
+    "failed": "Couldn't add — try again"
   }
 }

@@ -4,7 +4,11 @@ import type { MenuProps } from 'antd'
 import { FolderOutlined, DownOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@/contexts/TaskContext'
-import { getSettings, setSettings } from '@/services/settingsStorage'
+import {
+  getSettings,
+  setSettings,
+  subscribeSettings,
+} from '@/services/settingsStorage'
 import { filterActiveProjects, isInboxProject } from '@/utils/project'
 import { ProjectColorDot } from '../common/ProjectColorDot'
 import { SurfaceIconButton, StampBadge } from '../common'
@@ -20,8 +24,10 @@ export function SidebarFooter({ collapsed = false }: SidebarFooterProps) {
   // 自增 key：每次切换成功 +1，用于重挂载 StampBadge 重放盖章动画
   const [stampKey, setStampKey] = useState(0)
 
+  // 订阅 settings：FocusView 的项目 chip 也写 defaultProjectId，需实时回灌保持两处一致
   useEffect(() => {
     getSettings().then((s) => setDefaultProjectId(s.defaultProjectId))
+    return subscribeSettings((s) => setDefaultProjectId(s.defaultProjectId))
   }, [])
 
   const availableProjects = filterActiveProjects(data.projects)
@@ -35,8 +41,14 @@ export function SidebarFooter({ collapsed = false }: SidebarFooterProps) {
       : t('defaultProject.inbox')
 
   const handleSelect = async (id: string) => {
-    await setSettings({ defaultProjectId: id })
-    setDefaultProjectId(id)
+    // 收集箱归一为 null，与 FocusView/ListView 的写入一致，不把 inbox 真实 id 存进默认清单
+    const normalized = isInboxProject(
+      availableProjects.find((p) => p.id === id)
+    )
+      ? null
+      : id
+    await setSettings({ defaultProjectId: normalized })
+    setDefaultProjectId(normalized)
     setStampKey((k) => k + 1)
   }
 

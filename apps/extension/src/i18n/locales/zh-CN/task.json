@@ -61,8 +61,10 @@
     "labelContent": "描述",
     "labelProject": "所属项目",
     "labelPriority": "优先级",
+    "labelDate": "日期",
     "placeholderTitle": "任务标题",
-    "placeholderContent": "任务描述（可选）"
+    "placeholderContent": "任务描述（可选）",
+    "placeholderDate": "选择日期"
   },
   "detail": {
     "subtasks": "子任务",

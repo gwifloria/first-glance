@@ -32,7 +32,9 @@ export const twilightTheme: Theme = {
     danger: '#e06c6c',
     priorityHigh: '#e06c6c',
     priorityMedium: '#ffb74d',
-    priorityLow: 'rgba(240, 235, 225, 0.4)',
+    // 中性蓝灰：twilight 是「深页面 + 浅卡片」双表面，旧值（近白奶油 40%）只在深页面可见，
+    // 放到抽屉/弹窗的浅奶油卡片上就隐身。换成中间调，两面都有对比。
+    priorityLow: '#7d8694',
     pomodoroWork: '#d4a574',
     pomodoroBreak: '#81c784',
     // BlockedPage

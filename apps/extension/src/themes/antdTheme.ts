@@ -1,3 +1,4 @@
+import { theme as antdAlgorithm } from 'antd'
 import type { ThemeConfig } from 'antd'
 import type { Theme } from './index'
 import { contrastText } from '@/utils/color'
@@ -21,9 +22,19 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
   const bgSecondaryOnCard = colors.bgSecondaryOnCard ?? colors.bgSecondary
 
   return {
+    // 只有「深页面 + 深卡片」主题（dark）才用 darkAlgorithm：antd 据此把所有中性色
+    // （下拉箭头/清除×/禁用/次级文字/边框/hover 叠加）按深底重推，根治「浅色算法推出的
+    // 中性色在深卡片上隐身」这类反复出现的暗色 bug。twilight 卡片是浅色，仍走默认算法。
+    algorithm: isDarkCard
+      ? antdAlgorithm.darkAlgorithm
+      : antdAlgorithm.defaultAlgorithm,
     token: {
       // 颜色
       colorPrimary: colors.accent,
+      // 选中态用 colorPrimary 做底（如 DatePicker 选中日期格）时的前景字色。
+      // 深色主题 accent 近白，antd 默认 colorTextLightSolid=#fff 会白底白字，按 accent
+      // 亮度算对比色才看得见。
+      colorTextLightSolid: contrastText(colors.accent),
       colorLink: colors.accent,
       colorLinkHover: colors.accent,
       colorLinkActive: colors.accent,
@@ -138,9 +149,28 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         itemHoverBg: overlayHover,
         itemActiveBg: overlayHover,
       },
+      Checkbox: {
+        // 勾选标记色：antd 默认走 colorWhite(#fff)，但选中框底是 colorPrimary=accent。
+        // 深色主题 accent 近白 → 白勾贴近白框隐身。按 accent 亮度取对比色（深主题得深勾）。
+        // 浅色主题 accent 偏深 → 对比色仍是白，与默认一致。
+        ...({ colorWhite: contrastText(colors.accent) } as object),
+      },
       Radio: {
         // 优先级 Radio.Group 用 flex gap 控间距，去掉每项默认右外边距
         wrapperMarginInlineEnd: 0,
+        // 未选中圈圈的边框：各主题那条细分隔线 border 太淡，撑不起 Radio 这种「控件轮廓」，
+        // 任何浅卡片上都嫌隐身（默认只在 hover 时才看得见）。改为按卡片明暗给足够强度的叠加：
+        // - 浅卡片（含 twilight/pink/milk…白/奶油/粉底）→ 中灰轮廓
+        // - dark 深卡片 → 浅色叠加
+        colorBorder: isDarkCard
+          ? 'rgba(255, 255, 255, 0.28)'
+          : 'rgba(0, 0, 0, 0.25)',
+      },
+      Tabs: {
+        // 选中 tab 字默认=colorPrimary(深主题近白)，与正文层级混乱；焊到卡片字色
+        itemSelectedColor: textOnCard,
+        itemHoverColor: textOnCard,
+        inkBarColor: colors.accent,
       },
       Segmented: {
         // Segmented 多在页面表面浮层（如设置 Popover）里：字色用 CSS 变量，
@@ -152,8 +182,9 @@ export function createAntdTheme(theme: Theme): ThemeConfig {
         trackBg: 'var(--bg-secondary)',
       },
       DatePicker: {
-        // 抽屉里日期面板：hover/选中跟随主题强调色
-        cellHoverBg: 'var(--accent-light)',
+        // 日期格 hover：accentLight 在 dark 主题 == bgCard（隐形），改走可见叠加层
+        cellHoverBg: overlayHover,
+        cellActiveWithRangeBg: overlaySelected,
       },
       Slider: {
         railBg: isDarkCard

@@ -34,3 +34,52 @@ export function resolveDefaultProjectId(
   if (!project || isInboxProject(project)) return undefined
   return defaultProjectId
 }
+
+/**
+ * 当前视图是否自带「清单归属」：某个项目视图 / 收集箱。
+ * 这类视图里加任务天然落在该清单，改 chip 只是本次临时覆盖；
+ * 日期/智能视图没有清单归属，改 chip 走「持久默认清单」。
+ */
+export function isListContextFilter(filter: string): boolean {
+  return filter === 'inbox' || filter.startsWith('project:')
+}
+
+/**
+ * 快速添加时根据当前 filter 解析要提交的 projectId。
+ * 抽出 QuickAddInput 原内联逻辑，让「目的地提示」与实际提交共用一个真相源：
+ * - inbox：不传，交给 adapter/API 落收集箱
+ * - project:<id>：用该项目
+ * - 其它（today/tomorrow/smart list）：用默认清单
+ */
+export function resolveQuickAddProjectId(
+  filter: string,
+  defaultProjectId: string | null | undefined,
+  projects: Project[]
+): string | undefined {
+  if (filter === 'inbox') return undefined
+  if (filter.startsWith('project:')) return filter.replace('project:', '')
+  return resolveDefaultProjectId(defaultProjectId, projects)
+}
+
+export interface TaskDestination {
+  /** 展示用清单名 */
+  name: string
+  /** 是否落到收集箱（决定图标用 inbox 还是 folder） */
+  isInbox: boolean
+}
+
+/**
+ * 把要提交的 projectId 解析成展示用目的地，供输入框「会写到哪」的 chip 与成功 toast 复用。
+ * undefined / 收集箱 / 已删除的 id → 回退到 inboxLabel（由调用方传 i18n 文案）并标记为收集箱。
+ */
+export function describeDestination(
+  projectId: string | undefined,
+  projects: Project[],
+  inboxLabel: string
+): TaskDestination {
+  if (!projectId) return { name: inboxLabel, isInbox: true }
+  const project = projects.find((p) => p.id === projectId)
+  if (!project || isInboxProject(project))
+    return { name: inboxLabel, isInbox: true }
+  return { name: project.name, isInbox: false }
+}

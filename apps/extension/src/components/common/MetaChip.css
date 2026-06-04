@@ -1,0 +1,75 @@
+/* 任务元信息「贴纸 chip」共用样式：手写体 + 微斜 + 小图标/色点，
+   不做规整 Tag 框，从周围 plain text 里轻轻跳出来又不像可点的标签。
+   用于目的地 / 日期 / 优先级三种 chip，可只读（DestinationChip）或可点（DateChip/PriorityChip）。 */
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 9rem;
+  font-family: var(--font-hand, 'Lora', serif);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  /* 像随手贴的小贴纸，微微歪一点 */
+  transform: rotate(-2deg);
+  transform-origin: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* 可点的 chip：给一点点交互反馈，hover 时摆正 + 字色提亮 */
+.meta-chip--button {
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+.meta-chip--button:hover {
+  transform: rotate(0deg);
+  color: var(--text-primary);
+}
+
+.meta-chip__icon {
+  color: var(--accent);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* 优先级色点 */
+.meta-chip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.meta-chip__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 日期 chip 是个 borderless DatePicker，套上同款手写体 + accent 图标，贴近其它 chip。
+   字色用页面表面变量并 !important 压过 antd 的卡片字色 token（picker 在页面上而非卡片内）。 */
+.meta-chip-picker {
+  padding-inline: 0 !important;
+}
+.meta-chip-picker .ant-picker-input > input {
+  font-family: var(--font-hand, 'Lora', serif);
+  font-size: 13px !important;
+  /* 按内容自适应宽度：中文「明天」窄、英文「Tomorrow」宽都能完整显示，避免截断 */
+  field-sizing: content;
+  min-width: 2.5rem;
+  max-width: 6rem;
+  text-align: center;
+  color: var(--text-secondary) !important;
+}
+.meta-chip-picker .ant-picker-input > input::placeholder {
+  color: var(--text-secondary) !important;
+}
+.meta-chip-picker:hover .ant-picker-input > input {
+  color: var(--text-primary) !important;
+}
+.meta-chip-picker .ant-picker-suffix {
+  color: var(--accent);
+}

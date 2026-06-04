@@ -16,6 +16,9 @@ export type { ChillModeState } from './useChillMode'
 // 时间相关
 export { useCurrentTime } from './useCurrentTime'
 
+// UI 微交互
+export { useEllipsis } from './useEllipsis'
+
 // 持久化
 export { usePersistedState, setSerializer } from './usePersistedState'
 export { usePersistedBoolean } from './usePersistedBoolean'

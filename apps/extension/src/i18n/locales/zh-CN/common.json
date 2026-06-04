@@ -44,5 +44,16 @@
   "disconnectConfirm": {
     "title": "断开连接",
     "description": "确定要断开连接吗？"
+  },
+  "quickAdd": {
+    "saving": "记下来",
+    "added": "已添加到 {{list}}",
+    "inbox": "收集箱",
+    "failed": "没记上，再试一次"
+  },
+  "dateChip": {
+    "today": "今天",
+    "tomorrow": "明天",
+    "none": "无日期"
   }
 }

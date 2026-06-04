@@ -1,0 +1,1 @@
+pnpm --filter @first-glance/extension test

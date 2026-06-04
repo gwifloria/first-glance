@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Modal, Form, Input, Select, Radio, message } from 'antd'
+import { Modal, Form, Input, Select, Radio, DatePicker, message } from 'antd'
+import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { getPriorityOptions, FILTER_NAMES } from '@/constants/task'
 import { getSettings } from '@/services/settingsStorage'
-import { formatDateStr } from '@/utils/date'
+import { extractDateStr } from '@/utils/date'
 import { isInboxProject, resolveDefaultProjectId } from '@/utils/project'
 import { MODAL_STYLE, MODAL_BUTTON_STYLE } from '@/constants/styles'
 import type { Task, Project } from '@/types'
@@ -29,6 +31,8 @@ export function TaskEditor({
   const { t: tSettings } = useTranslation('settings')
   const [form] = Form.useForm()
   const [saving, setSaving] = useState(false)
+  // 编辑时是否动过日期：没动就保留任务原 dueDate（含时间），避免被规范化成纯日期丢掉时间
+  const [dateTouched, setDateTouched] = useState(false)
   const isNew = !task
   const priorityOptions = getPriorityOptions(t)
 
@@ -56,11 +60,25 @@ export function TaskEditor({
         }
       }
 
+      // 日期默认值：新建时跟随当前视图（今天/明天），编辑时取任务已有日期；其余无日期
+      let dueDate: Dayjs | null = null
+      if (isNew) {
+        if (filter === FILTER_NAMES.TODAY) dueDate = dayjs()
+        else if (filter === FILTER_NAMES.TOMORROW)
+          dueDate = dayjs().add(1, 'day')
+      } else if (task?.dueDate) {
+        dueDate = dayjs(extractDateStr(task.dueDate))
+      }
+
       form.setFieldsValue({
         title: task?.title || '',
         priority: task?.priority || 0,
         projectId,
+        dueDate,
       })
+      // 必须在 setFieldsValue 之后重置：setFieldsValue 会触发 onValuesChange 把 dateTouched
+      // 误置真，这里同步覆盖回 false（同一批 React 更新，false 最终生效），否则编辑含时间任务仍会丢时间
+      setDateTouched(false)
     }
 
     initForm()
@@ -72,17 +90,15 @@ export function TaskEditor({
     try {
       const values = await form.validateFields()
 
-      // 新建任务时根据 filter 设置 dueDate（全天任务，纯日期字符串）
-      let dueDate = task?.dueDate
-      if (isNew) {
-        if (filter === FILTER_NAMES.TODAY) {
-          dueDate = formatDateStr(new Date())
-        } else if (filter === FILTER_NAMES.TOMORROW) {
-          const tomorrow = new Date()
-          tomorrow.setDate(tomorrow.getDate() + 1)
-          dueDate = formatDateStr(tomorrow)
-        }
-      }
+      // 新建或用户改过日期：用表单值（全天纯日期/清空为无日期）；
+      // 编辑且没动日期：保留任务原 dueDate（可能含时间），不规范化成纯日期。
+      const due = values.dueDate as Dayjs | null | undefined
+      const dueDate =
+        isNew || dateTouched
+          ? due
+            ? due.format('YYYY-MM-DD')
+            : undefined
+          : task?.dueDate
 
       await onSave(task?.id || null, {
         title: values.title?.trim(),
@@ -116,7 +132,13 @@ export function TaskEditor({
       okButtonProps={{ className: MODAL_BUTTON_STYLE, loading: saving }}
       cancelButtonProps={{ className: MODAL_BUTTON_STYLE }}
     >
-      <Form form={form} layout="vertical">
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={(changed) => {
+          if ('dueDate' in changed) setDateTouched(true)
+        }}
+      >
         <Form.Item
           name="title"
           label={t('editor.labelTitle')}
@@ -157,6 +179,20 @@ export function TaskEditor({
                 )
               })}
           </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="dueDate"
+          label={t('editor.labelDate')}
+          className="!mb-4"
+        >
+          <DatePicker
+            className="!w-full"
+            format="YYYY/MM/DD"
+            placeholder={t('editor.placeholderDate')}
+            inputReadOnly
+            allowClear
+          />
         </Form.Item>
 
         <Form.Item

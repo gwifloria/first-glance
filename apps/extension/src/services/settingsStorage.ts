@@ -78,14 +78,27 @@ async function migrateLegacySettings(): Promise<void> {
 }
 
 /**
- * 更新设置（合并更新）
+ * 串行化写队列：setSettings 是「读-改-写」，非原子。
+ * 现在 FocusView / ListView / SidebarFooter 会并发写同一个 defaultProjectId，
+ * 不串行化的话后发起的读会看到旧值、把先前的更新覆盖丢失。
+ * 每次写都接在上一次之后，保证读到的是最新已写状态。
+ */
+let writeQueue: Promise<unknown> = Promise.resolve()
+
+/**
+ * 更新设置（合并更新，串行化避免并发写丢更新）
  */
 export async function setSettings(
   updates: Partial<AppSettings>
 ): Promise<void> {
-  const current = await getSettings()
-  const next = { ...current, ...updates }
-  await chrome.storage.sync.set({ [STORAGE_KEY]: next })
+  const run = writeQueue.then(async () => {
+    const current = await getSettings()
+    const next = { ...current, ...updates }
+    await chrome.storage.sync.set({ [STORAGE_KEY]: next })
+  })
+  // 队列吞掉异常以免一次失败阻断后续写入；调用方仍能从返回的 run 拿到 reject
+  writeQueue = run.catch(() => {})
+  return run
 }
 
 /**

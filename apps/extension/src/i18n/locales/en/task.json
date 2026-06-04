@@ -61,8 +61,10 @@
     "labelContent": "Description",
     "labelProject": "Project",
     "labelPriority": "Priority",
+    "labelDate": "Date",
     "placeholderTitle": "Task title",
-    "placeholderContent": "Task description (optional)"
+    "placeholderContent": "Task description (optional)",
+    "placeholderDate": "Pick a date"
   },
   "detail": {
     "subtasks": "Subtasks",

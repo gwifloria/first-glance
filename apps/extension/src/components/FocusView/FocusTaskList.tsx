@@ -309,7 +309,9 @@ const FocusTaskItem = memo(function FocusTaskItem({
                 transition: TRANSITION_REVEAL,
               }}
             >
-              {isHero && checklistCount ? (
+              {isHero ? (
+                // 当前焦点：子任务摘要可点开 Popover 看明细（含真实子任务 + 内容勾选项），
+                // 不再只在有 checklist 时才可点——纯子任务的「N subtasks left」之前点不开很别扭
                 <Popover
                   placement="bottomLeft"
                   trigger="click"
@@ -321,16 +323,18 @@ const FocusTaskItem = memo(function FocusTaskItem({
                     />
                   }
                 >
-                  <div className="flex items-center gap-3 cursor-pointer group/progress">
-                    <div className="flex-1 h-2.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden max-w-[160px]">
-                      <div
-                        className="h-full bg-[var(--accent)] rounded-full transition-all duration-500"
-                        style={{
-                          width: `${(checklistCount.completed / checklistCount.total) * 100}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="text-sm text-[var(--text-secondary)] group-hover/progress:text-[var(--text-primary)] transition-colors">
+                  <div className="inline-flex items-center gap-3 cursor-pointer group/progress">
+                    {checklistCount && (
+                      <div className="flex-1 h-2.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden max-w-[160px] min-w-[80px]">
+                        <div
+                          className="h-full bg-[var(--accent)] rounded-full transition-all duration-500"
+                          style={{
+                            width: `${(checklistCount.completed / checklistCount.total) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    )}
+                    <span className="text-sm text-[var(--text-secondary)] group-hover/progress:text-[var(--text-primary)] transition-colors underline decoration-dotted underline-offset-4">
                       <SubtaskSummaryText
                         checklistCount={checklistCount}
                         remainingChildren={remainingChildren}

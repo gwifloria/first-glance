@@ -15,12 +15,14 @@ export function formatDateStr(date: Date): string {
 
 /**
  * 从日期字符串中提取本地日期的 YYYY-MM-DD 部分
- * 始终通过 Date 对象转换，确保时区正确处理
+ * 纯日期表示日历日期，不应经过 UTC 转换；带时间的值才转换为本地日期
  *
  * 滴答清单 API 返回 UTC 时间（如 2026-01-23T16:00:00.000+0000）
  * 需要转换为本地时间（如 UTC+8 时区变成 2026-01-24）
  */
 export function extractDateStr(dueDate: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return dueDate
+
   const date = new Date(dueDate)
   return formatDateStr(date)
 }

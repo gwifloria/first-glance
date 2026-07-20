@@ -29,8 +29,7 @@ describe('date utils', () => {
   })
 
   describe('extractDateStr', () => {
-    it('从本地日期字符串提取 YYYY-MM-DD', () => {
-      // 不含时区的字符串，Date 解析为本地时间
+    it('纯日期保持日历日期，不受本地时区影响', () => {
       expect(extractDateStr('2026-01-24')).toBe('2026-01-24')
     })
 
